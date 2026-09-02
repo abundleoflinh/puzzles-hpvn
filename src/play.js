@@ -117,17 +117,26 @@ function render() {
   const done = isDone();
   const won = state.solvedGroups.length === 4;
 
-  main.innerHTML = `
-    <div class="play-header">
-      <h1>${t('play.puzzleId', { id: puzzleId })}</h1>
-    </div>
-    <div class="solved-rows" id="solved-rows"></div>
-    <div class="grid" id="grid"></div>
-    <div class="feedback" id="feedback"></div>
-    <div class="mistakes" id="mistakes"></div>
-    <div class="play-controls" id="controls"></div>
-    <div id="result-slot"></div>
-  `;
+  // Mount the shell once. Subsequent renders update slots in place, so existing
+  // solved rows aren't re-created — otherwise the CSS entrance animation fires
+  // on every guess and the whole strip flashes.
+  if (!main.querySelector('#grid')) {
+    main.innerHTML = `
+      <div class="play-header">
+        <h1>${t('play.puzzleId', { id: puzzleId })}</h1>
+      </div>
+      <div class="solved-rows" id="solved-rows"></div>
+      <div class="grid" id="grid"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="mistakes" id="mistakes"></div>
+      <div class="play-controls" id="controls"></div>
+      <div id="result-slot"></div>
+    `;
+  } else {
+    // Shell already mounted; keep the h1 in sync with current language.
+    const h1 = main.querySelector('.play-header h1');
+    if (h1) h1.textContent = t('play.puzzleId', { id: puzzleId });
+  }
 
   renderSolvedRows();
   if (!done) renderGrid();
@@ -138,11 +147,24 @@ function render() {
   if (done) renderResult(won);
 }
 
+// Force a full re-mount on the next render() — used when the whole DOM needs
+// to be rebuilt (language change, "Play again" reset).
+function invalidateShell() {
+  const grid = document.getElementById('grid');
+  if (grid) grid.id = '';
+}
+
 function renderSolvedRows() {
   const container = document.getElementById('solved-rows');
   if (!container) return;
-  container.innerHTML = '';
+  // Append only rows that aren't already in the DOM — keyed by difficulty since
+  // each puzzle has one group per difficulty. Existing rows stay put, so their
+  // entrance animation doesn't re-fire on every render.
+  const existing = new Set(
+    [...container.querySelectorAll('.solved-row')].map((r) => r.getAttribute('data-difficulty'))
+  );
   for (const g of state.solvedGroups) {
+    if (existing.has(g.difficulty)) continue;
     const row = document.createElement('div');
     row.className = 'solved-row';
     row.setAttribute('data-difficulty', g.difficulty);
@@ -257,9 +279,13 @@ function restoreFeedback() {
 
 // Measure a tile and shrink its font-size until its content fits. If it still
 // overflows at MIN_FONT, allow wrap via .tile-wrap.
-// MAX cap so short words don't look absurd on huge tiles; MIN before we allow wrap.
+// Font-fitting bounds. MAX_FONT_CAP keeps short words from looking absurd on
+// huge tiles. Two floors: single-line first, wrap fallback (up to 3 lines) if
+// single-line can't fit above MIN_FONT_SINGLE.
 const MAX_FONT_CAP = 22;
-const MIN_FONT = 9;
+const MIN_FONT_SINGLE = 14;  // below this, prefer wrapping instead of shrinking further
+const MIN_FONT_WRAP = 13;    // absolute floor when wrapping
+const MAX_LINES = 3;
 
 function fitTileText(tileEl) {
   if (!tileEl) return;
@@ -269,13 +295,23 @@ function fitTileText(tileEl) {
   const height = tileEl.clientHeight;
   if (!width || !height) return;
   // Start size proportional to tile size (~28% of the smaller dimension), capped.
-  const startSize = Math.min(MAX_FONT_CAP, Math.max(MIN_FONT, Math.floor(Math.min(width, height) * 0.28)));
-  for (let size = startSize; size >= MIN_FONT; size--) {
+  const startSize = Math.min(MAX_FONT_CAP, Math.max(MIN_FONT_WRAP, Math.floor(Math.min(width, height) * 0.28)));
+
+  // Phase 1: single line. Shrink down to MIN_FONT_SINGLE.
+  for (let size = startSize; size >= MIN_FONT_SINGLE; size--) {
     tileEl.style.fontSize = size + 'px';
     if (tileEl.scrollWidth <= width && tileEl.scrollHeight <= height) return;
   }
-  // Still overflows at the minimum — let it wrap.
+
+  // Phase 2: allow wrap (up to MAX_LINES). Shrink down to MIN_FONT_WRAP.
   tileEl.classList.add('tile-wrap');
+  for (let size = startSize; size >= MIN_FONT_WRAP; size--) {
+    tileEl.style.fontSize = size + 'px';
+    const lineHeight = parseFloat(getComputedStyle(tileEl).lineHeight) || size * 1.25;
+    const maxHeight = lineHeight * MAX_LINES;
+    if (tileEl.scrollHeight <= Math.min(height, maxHeight) && tileEl.scrollWidth <= width) return;
+  }
+  // Fallback: hold at the wrap floor even if still overflowing (very rare).
 }
 
 function fitAllTiles() {
@@ -453,6 +489,7 @@ function onReset() {
     remainingWords: shuffle(puzzle.groups.flatMap((g) => g.words)),
     feedback: null,
   };
+  invalidateShell();
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -512,6 +549,9 @@ window.addEventListener('lang-changed', () => {
   if (!state) return;
   // Clear stale translated feedback so the new render doesn't restore the old string.
   state.feedback = null;
+  // Force a full re-mount so every interpolated string (solved-row names, group
+  // labels, etc.) gets rebuilt in the new language.
+  invalidateShell();
   render();
 });
 
