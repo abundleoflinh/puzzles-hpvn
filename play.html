@@ -3,10 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Play — HPVN Puzzles</title>
+  <title data-i18n="site.title">HPVN Puzzles</title>
 </head>
 <body>
-  <h1>Play</h1>
-  <p>Phase 3 will build this.</p>
+  <div class="page">
+    <header class="page-header" data-slot="header"></header>
+    <main class="page-main">
+      <div id="play-slot" style="text-align:center; color: var(--fg-muted); padding: 40px 0;"></div>
+    </main>
+    <footer class="page-footer" data-slot="footer"></footer>
+  </div>
+  <script type="module" src="/src/play.js"></script>
 </body>
 </html>

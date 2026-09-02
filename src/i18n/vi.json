@@ -1,0 +1,26 @@
+{
+  "site.title": "HPVN Puzzles",
+  "site.tagline": "Connections & Strands — phiên bản HPVN",
+
+  "theme.light": "sáng",
+  "theme.dark": "tối",
+  "theme.hpvn": "HPVN",
+
+  "action.info": "Hướng dẫn chơi",
+  "action.theme.cycle": "Đổi giao diện (đang: {theme})",
+  "action.lang.switch": "Đổi ngôn ngữ",
+  "action.close": "Đóng",
+
+  "home.heading": "Chọn bộ đề",
+  "home.lede": "Dán link hoặc mã ngắn của bộ đề để bắt đầu chơi.",
+  "home.input.placeholder": "ví dụ: abc12 hoặc link đầy đủ",
+  "home.input.go": "Chơi",
+  "home.input.invalid": "Link hoặc mã không hợp lệ.",
+  "home.editor.link": "Chế độ soạn đề →",
+
+  "footer.credit": "Dựa theo hướng dẫn từ",
+
+  "info.title": "Hướng dẫn chơi",
+  "info.connections.heading": "Connections",
+  "info.connections.body": "<p>Bạn được cung cấp <strong>16 từ khóa</strong> đã được trộn ngẫu nhiên. Nhiệm vụ của bạn là sắp xếp chúng vào <strong>4 chủ đề (mỗi chủ đề 4 từ)</strong>.</p><p>Chỉ có <strong>một cách sắp xếp duy nhất</strong>. Đôi khi một từ khóa có thể trông như nằm trong 2 chủ đề khác nhau — đó là bẫy; nếu xếp sai, sẽ có chủ đề khác bị dư hoặc thiếu từ.</p><p>Chọn 4 từ bạn nghĩ thuộc cùng một chủ đề và nộp bài. Nếu sai, thử lại. Tùy bộ đề, bạn sẽ có <strong>4 lần sai</strong> hoặc không giới hạn.</p><p>Các chủ đề được tô màu từ dễ đến khó. Chủ đề khó hơn có liên kết rời rạc hơn, không rõ ngay nếu đọc nhanh — nhưng chắc chắn là có một liên kết nào đó.</p>"
+}

@@ -12,6 +12,6 @@
   },
   "devDependencies": {
     "vite": "^5.4.10",
-    "wrangler": "^4.128.0"
+    "wrangler": "^3.80.0"
   }
 }

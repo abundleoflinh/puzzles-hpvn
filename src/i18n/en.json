@@ -1,0 +1,26 @@
+{
+  "site.title": "HPVN Puzzles",
+  "site.tagline": "Connections & Strands — a HPVN take",
+
+  "theme.light": "light",
+  "theme.dark": "dark",
+  "theme.hpvn": "HPVN",
+
+  "action.info": "How to play",
+  "action.theme.cycle": "Switch theme (current: {theme})",
+  "action.lang.switch": "Switch language",
+  "action.close": "Close",
+
+  "home.heading": "Pick a puzzle",
+  "home.lede": "Paste a puzzle link or short code to start playing.",
+  "home.input.placeholder": "e.g. abc12 or full URL",
+  "home.input.go": "Play",
+  "home.input.invalid": "That doesn't look like a valid puzzle link or code.",
+  "home.editor.link": "Editor mode →",
+
+  "footer.credit": "Based on instructions by",
+
+  "info.title": "How to play",
+  "info.connections.heading": "Connections",
+  "info.connections.body": "<p>You get <strong>16 words</strong> shuffled at random. Your job is to sort them into <strong>4 groups of 4</strong>.</p><p>There is <strong>only one correct grouping</strong>. A word may look like it fits two categories — that's the trap; if you group wrong, another category will be short or over-full.</p><p>Pick 4 words you think belong together and submit. If wrong, try again. Depending on the puzzle, you'll have <strong>4 mistakes</strong> or unlimited tries.</p><p>Groups are color-coded from easiest to hardest. Harder groups have subtler connections — you might miss them at a glance, but there's always a link.</p>"
+}

@@ -1,0 +1,300 @@
+/* Reset + base */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+input, textarea { font: inherit; color: inherit; }
+
+/* ============== THEMES ============== */
+
+/* Default: light */
+:root, :root[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-elev: #f6f7f9;
+  --bg-elev-2: #eceff3;
+  --fg: #1a1a1a;
+  --fg-muted: #5c6470;
+  --fg-tiny: #8a94a3;
+  --border: #d8dde4;
+  --border-strong: #b7bfc9;
+  --link: #2a5cff;
+  --accent: #2a5cff;
+  --focus-ring: #2a5cff66;
+
+  /* Difficulty tiers — standard NYT-ish */
+  --diff-1: #f9df6d;  /* yellow / easiest */
+  --diff-2: #a0c35a;  /* green */
+  --diff-3: #b0c4ef;  /* blue */
+  --diff-4: #ba81c5;  /* purple / hardest */
+  --diff-fg: #1a1a1a;
+
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
+  --credit-color: #4a9dd8; /* Ravenclaw blue — used everywhere for the byline */
+}
+
+/* Dark */
+:root[data-theme="dark"] {
+  --bg: #121417;
+  --bg-elev: #1c2025;
+  --bg-elev-2: #262b32;
+  --fg: #e8ecf1;
+  --fg-muted: #9aa4b2;
+  --fg-tiny: #6b7583;
+  --border: #2f353d;
+  --border-strong: #454d58;
+  --link: #7aa5ff;
+  --accent: #7aa5ff;
+  --focus-ring: #7aa5ff66;
+
+  --diff-1: #d4b94a;
+  --diff-2: #7fa64a;
+  --diff-3: #6c8fd6;
+  --diff-4: #9a67a8;
+  --diff-fg: #0d0f12;
+}
+
+/* HPVN — dark wood + gold, difficulty = Hogwarts houses */
+:root[data-theme="hpvn"] {
+  --bg: #24160d;
+  --bg-elev: #2e1a0b;
+  --bg-elev-2: #3a2214;
+  --fg: #e9d8c7;
+  --fg-muted: #b89878;
+  --fg-tiny: #8a6848;
+  --border: #5a4030;
+  --border-strong: #7a6040;
+  --link: #e8c080;
+  --accent: #d4a017;
+  --focus-ring: #d4a01766;
+
+  /* Hogwarts houses: yellow=Hufflepuff, green=Slytherin, blue=Ravenclaw, red=Gryffindor */
+  --diff-1: #eaba3c;  /* Hufflepuff */
+  --diff-2: #4ade80;  /* Slytherin */
+  --diff-3: #4a9dd8;  /* Ravenclaw */
+  --diff-4: #ef4444;  /* Gryffindor */
+  --diff-fg: #1a0f08;
+
+  --font-display: Lora, Georgia, serif;
+}
+
+/* ============== LAYOUT ============== */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--fg);
+}
+.brand:hover { text-decoration: none; }
+
+.header-actions { display: flex; gap: 4px; }
+
+.page-main {
+  flex: 1;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 20px;
+  text-align: center;
+  color: var(--fg-tiny);
+  font-size: 13px;
+}
+.footer-credit .credit-name {
+  color: var(--credit-color) !important;
+  font-weight: 700;
+}
+
+/* ============== COMPONENTS ============== */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--fg-muted);
+  font-size: 16px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.icon-btn:hover { background: var(--bg-elev-2); color: var(--fg); }
+.icon-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.lang-btn { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.05s ease;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elev);
+  color: var(--fg);
+}
+.btn:hover { background: var(--bg-elev-2); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+:root[data-theme="hpvn"] .btn-primary { color: #1a0f08; }
+.btn-primary:hover { background: var(--accent); filter: brightness(1.1); }
+
+.field {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.field input[type="text"] {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--fg);
+}
+.field input[type="text"]:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -1px;
+  border-color: var(--accent);
+}
+
+.notice-error {
+  margin-top: 10px;
+  color: #d33;
+  font-size: 14px;
+}
+:root[data-theme="hpvn"] .notice-error { color: #ff8080; }
+:root[data-theme="dark"] .notice-error { color: #ff8080; }
+
+/* ============== MODAL ============== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+.modal-backdrop[hidden] { display: none; }
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.modal-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.modal-head h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-body h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.modal-body p + p { margin-top: 10px; }
+
+/* ============== HOME PAGE ============== */
+
+.hero {
+  text-align: center;
+  padding: 20px 0 30px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.hero p { color: var(--fg-muted); }
+
+.play-form {
+  max-width: 480px;
+  margin: 0 auto 30px;
+}
+
+.home-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.home-links a { font-weight: 600; }
+
+/* HPVN theme flourishes for hero */
+:root[data-theme="hpvn"] .hero h1 {
+  background: linear-gradient(135deg, #ffe5b4 0%, #dca450 60%, #b2792c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+/* ============== RESPONSIVE ============== */
+
+@media (max-width: 600px) {
+  .header-inner { padding: 10px 14px; }
+  .page-main { padding: 24px 14px; }
+  .hero h1 { font-size: 26px; }
+  .field { flex-direction: column; }
+}

@@ -3,15 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HPVN Puzzles</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 60px auto; padding: 0 20px; }
-    code { background: #f2f2f2; padding: 2px 6px; border-radius: 3px; }
-  </style>
+  <title data-i18n="site.title">HPVN Puzzles</title>
 </head>
 <body>
-  <h1>HPVN Puzzles — Phase 0</h1>
-  <p>Infra scaffold. Real UI ships in Phase 1.</p>
-  <p>Verify Worker is live: <code>/api/health</code></p>
+  <div class="page">
+    <header class="page-header" data-slot="header"></header>
+    <main class="page-main">
+      <section class="hero">
+        <h1 data-i18n="home.heading"></h1>
+        <p data-i18n="home.lede"></p>
+      </section>
+
+      <form id="play-form" class="play-form">
+        <div class="field">
+          <input type="text" id="puzzle-input" data-i18n-attr="placeholder:home.input.placeholder" autocomplete="off" spellcheck="false" />
+          <button type="submit" class="btn btn-primary" data-i18n="home.input.go"></button>
+        </div>
+        <p id="puzzle-error" class="notice-error" hidden></p>
+      </form>
+
+      <div class="home-links">
+        <a href="/editor.html" data-i18n="home.editor.link"></a>
+      </div>
+    </main>
+    <footer class="page-footer" data-slot="footer"></footer>
+  </div>
+  <script type="module" src="/src/home.js"></script>
 </body>
 </html>

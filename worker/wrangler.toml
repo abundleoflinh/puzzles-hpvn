@@ -6,7 +6,7 @@ compatibility_date = "2025-01-01"
 # (Workers & Pages → KV → PUZZLES → copy the ID).
 [[kv_namespaces]]
 binding = "PUZZLES"
-id = "756da01816bb4f418c05365979ddcd1e"
+id = "YOUR_KV_NAMESPACE_ID"
 
 # Editor password is set as a secret, NOT here:
 #   cd worker && npx wrangler secret put EDITOR_PASSWORD

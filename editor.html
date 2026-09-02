@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Editor — HPVN Puzzles</title>
+  <title data-i18n="site.title">HPVN Puzzles — Editor</title>
 </head>
 <body>
-  <h1>Editor</h1>
-  <p>Phase 2 will build this.</p>
+  <div class="page">
+    <header class="page-header" data-slot="header"></header>
+    <main class="page-main">
+      <section class="hero">
+        <h1>Editor</h1>
+        <p style="color: var(--fg-muted);">Phase 2 will build this.</p>
+      </section>
+    </main>
+    <footer class="page-footer" data-slot="footer"></footer>
+  </div>
+  <script type="module" src="/src/editor.js"></script>
 </body>
 </html>
