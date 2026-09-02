@@ -17,7 +17,7 @@ const DIFFICULTY_EMOJI = {
   yellow: '🟨',
   green:  '🟩',
   blue:   '🟦',
-  red:    '🟥',
+  red:    '🟪',  // Legacy key name; --diff-4 is purple in the unified palette.
 };
 
 let puzzle = null;    // { groups: [{name, words, difficulty}], mistakeMode, defaultTheme, createdAt }

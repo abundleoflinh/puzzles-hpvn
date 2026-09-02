@@ -45,7 +45,7 @@
   "editor.group.diff.1": "easiest · yellow",
   "editor.group.diff.2": "easy · green",
   "editor.group.diff.3": "hard · blue",
-  "editor.group.diff.4": "hardest · red",
+  "editor.group.diff.4": "hardest · purple",
   "editor.group.namePlaceholder": "Group name (e.g. HOGWARTS HOUSES)",
   "editor.group.wordsPlaceholder": "4 words separated by commas",
   "editor.group.wordsHelp": "e.g. GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
