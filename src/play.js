@@ -1,10 +1,14 @@
 // Play page: Connections game.
 // URL: /play.html#c/{id}
 // Flow: fetch puzzle → apply theme → render grid → gameplay loop → win/lose result.
+//
+// The full puzzle (including group answers) travels in the initial GET response;
+// the client validates guesses locally against puzzle.groups. This keeps the
+// game snappy and works offline once loaded.
 
 import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
-import { t, applyTranslations } from './lib/i18n.js';
+import { t } from './lib/i18n.js';
 import { fetchPuzzle } from './lib/api.js';
 import { getProgress, setProgress, clearProgress, getTheme } from './lib/storage.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
@@ -15,11 +19,14 @@ const DIFFICULTY_EMOJI = {
   blue:   '🟦',
   red:    '🟥',
 };
-const DIFFICULTY_ORDER = ['yellow', 'green', 'blue', 'red'];
 
-let puzzle = null;
+let puzzle = null;    // { groups: [{name, words, difficulty}], mistakeMode, defaultTheme, createdAt }
 let puzzleId = null;
-let state = null; // { selected: Set<word>, solvedGroups: [{difficulty,name,words}], mistakes: number, guessHistory: [[difficulty,...]], remainingWords: [word,...] }
+let state = null;     // see main() for shape
+
+// Module-level timers so we can cancel them across re-renders / resizes.
+let feedbackTimer = null;
+let resizeTimer = null;
 
 // ============== URL PARSE ==============
 
@@ -37,7 +44,6 @@ async function main() {
     return;
   }
 
-  // Show loading state (chrome already initialized with stored/system theme)
   renderLoading();
 
   try {
@@ -54,15 +60,17 @@ async function main() {
     applyTheme(puzzle.defaultTheme);
   }
 
-  // Restore progress if any
+  // Restore progress. solvedGroups holds full group objects; on a loss we push
+  // any remaining groups into it so the player sees the full solution.
   const saved = getProgress('connections', puzzleId);
+  const solvedGroups = saved?.solvedGroups || saved?.foundGroups || [];
   const allWords = puzzle.groups.flatMap((g) => g.words);
-  const solvedWords = saved ? saved.solvedGroups.flatMap((g) => g.words) : [];
-  const remainingWords = allWords.filter((w) => !solvedWords.includes(w));
+  const solvedWords = new Set(solvedGroups.flatMap((g) => g.words));
+  const remainingWords = allWords.filter((w) => !solvedWords.has(w));
 
   state = {
     selected: new Set(),
-    solvedGroups: saved?.solvedGroups || [],
+    solvedGroups,
     mistakes: saved?.mistakes || 0,
     guessHistory: saved?.guessHistory || [],
     remainingWords: shuffle(remainingWords),
@@ -72,16 +80,30 @@ async function main() {
   render();
 }
 
+// ============== HELPERS ==============
+
+function mainSlot() {
+  return document.querySelector('[data-slot="main"]');
+}
+
+function isEndless() {
+  return puzzle?.mistakeMode === 'endless';
+}
+
+function isDone() {
+  if (!state) return false;
+  const mistakesLeft = isEndless() ? Infinity : Math.max(0, 4 - state.mistakes);
+  return state.solvedGroups.length === 4 || (!isEndless() && mistakesLeft === 0);
+}
+
 // ============== RENDERERS ==============
 
 function renderLoading() {
-  const main = document.querySelector('[data-slot="main"]');
-  main.innerHTML = `<div class="play-loading">${t('play.loading')}</div>`;
+  mainSlot().innerHTML = `<div class="play-loading">${t('play.loading')}</div>`;
 }
 
 function renderError(msg) {
-  const main = document.querySelector('[data-slot="main"]');
-  main.innerHTML = `
+  mainSlot().innerHTML = `
     <div class="play-error">
       <p>${msg}</p>
       <a href="/">${t('play.error.backHome')}</a>
@@ -90,10 +112,8 @@ function renderError(msg) {
 }
 
 function render() {
-  const main = document.querySelector('[data-slot="main"]');
-  const isEndless = puzzle.mistakeMode === 'endless';
-  const mistakesLeft = isEndless ? Infinity : Math.max(0, 4 - state.mistakes);
-  const done = state.solvedGroups.length === 4 || (!isEndless && mistakesLeft === 0);
+  const main = mainSlot();
+  const done = isDone();
   const won = state.solvedGroups.length === 4;
 
   main.innerHTML = `
@@ -109,7 +129,7 @@ function render() {
   `;
 
   renderSolvedRows();
-  renderGrid();
+  if (!done) renderGrid();
   renderMistakes();
   renderControls(done);
   restoreFeedback();
@@ -119,6 +139,7 @@ function render() {
 
 function renderSolvedRows() {
   const container = document.getElementById('solved-rows');
+  if (!container) return;
   container.innerHTML = '';
   for (const g of state.solvedGroups) {
     const row = document.createElement('div');
@@ -134,7 +155,7 @@ function renderSolvedRows() {
 
 function renderGrid() {
   const grid = document.getElementById('grid');
-  grid.innerHTML = '';
+  if (!grid) return;
   for (const word of state.remainingWords) {
     const tile = document.createElement('button');
     tile.type = 'button';
@@ -145,12 +166,13 @@ function renderGrid() {
     tile.addEventListener('click', () => onTileClick(word));
     grid.appendChild(tile);
   }
+  fitAllTiles();
 }
 
 function renderMistakes() {
   const el = document.getElementById('mistakes');
-  const isEndless = puzzle.mistakeMode === 'endless';
-  if (isEndless) {
+  if (!el) return;
+  if (isEndless()) {
     el.innerHTML = `<span>${t('play.mistakes.endless')}</span>`;
     return;
   }
@@ -173,6 +195,7 @@ function renderMistakes() {
 
 function renderControls(done) {
   const el = document.getElementById('controls');
+  if (!el) return;
   if (done) { el.innerHTML = ''; return; }
   const selectedCount = state.selected.size;
   el.innerHTML = `
@@ -185,12 +208,9 @@ function renderControls(done) {
   document.getElementById('btn-submit').addEventListener('click', onSubmit);
 }
 
-let feedbackTimer = null;
-
 function setFeedback(message, tone = '') {
   const el = document.getElementById('feedback');
   if (!el) return;
-  // Clear any pending fade-out
   if (feedbackTimer) { clearTimeout(feedbackTimer); feedbackTimer = null; }
   state.feedback = message ? { message, tone } : null;
   if (!message) {
@@ -204,7 +224,6 @@ function setFeedback(message, tone = '') {
   // Force reflow to reset opacity transition
   void el.offsetWidth;
   el.classList.add('visible');
-  // Auto-clear after 2.8s (300ms fade + 2.5s hold)
   feedbackTimer = setTimeout(() => {
     el.classList.remove('visible');
     setTimeout(() => {
@@ -216,7 +235,7 @@ function setFeedback(message, tone = '') {
   }, 2500);
 }
 
-// Restore feedback message after a full re-render (state.feedback persists between renders)
+// Restore feedback message after a full re-render (state.feedback persists between renders).
 function restoreFeedback() {
   if (!state.feedback) return;
   const el = document.getElementById('feedback');
@@ -224,6 +243,31 @@ function restoreFeedback() {
   el.textContent = state.feedback.message;
   el.setAttribute('data-tone', state.feedback.tone || '');
   el.classList.add('visible');
+}
+
+// ============== TILE TEXT FITTING ==============
+
+// Measure a tile and shrink its font-size until its content fits. If it still
+// overflows at MIN_FONT, allow wrap via .tile-wrap.
+const MAX_FONT = 18;
+const MIN_FONT = 9;
+
+function fitTileText(tileEl) {
+  if (!tileEl) return;
+  tileEl.classList.remove('tile-wrap');
+  const width = tileEl.clientWidth;
+  const height = tileEl.clientHeight;
+  if (!width || !height) return;
+  for (let size = MAX_FONT; size >= MIN_FONT; size--) {
+    tileEl.style.fontSize = size + 'px';
+    if (tileEl.scrollWidth <= width && tileEl.scrollHeight <= height) return;
+  }
+  // Still overflows at the minimum — let it wrap.
+  tileEl.classList.add('tile-wrap');
+}
+
+function fitAllTiles() {
+  document.querySelectorAll('.tile').forEach(fitTileText);
 }
 
 // ============== ACTIONS ==============
@@ -257,9 +301,6 @@ async function onSubmit() {
   const picked = [...state.selected];
   if (picked.length !== 4) return;
 
-  // Which difficulties are the picked words? Used for one-away check and share history.
-  const pickedDifficulties = picked.map((w) => findDifficulty(w));
-
   // Check "already guessed" — same set of 4 words (order-independent).
   const pickedKey = [...picked].sort().join('|');
   const alreadyGuessed = state.guessHistory.some(
@@ -270,39 +311,38 @@ async function onSubmit() {
     return;
   }
 
-  // Record this guess (difficulties + words for share and dedup)
-  state.guessHistory.push({ words: picked, difficulties: pickedDifficulties });
-
-  // Correct? All 4 picked words belong to the same group.
+  // Validate the guess locally against the known groups.
+  const pickedDifficulties = picked.map((w) => findDifficulty(w));
   const firstDiff = pickedDifficulties[0];
   const allSame = pickedDifficulties.every((d) => d === firstDiff);
 
+  // Record the guess (real difficulties either way — good for share tiles).
+  state.guessHistory.push({ words: picked, difficulties: pickedDifficulties });
+
   if (allSame) {
-    // Correct — pop animation, then reveal solved row.
+    const group = puzzle.groups.find((g) => g.difficulty === firstDiff);
     animateTiles(picked, 'pop');
     await sleep(300);
-    const group = puzzle.groups.find((g) => g.difficulty === firstDiff);
     state.solvedGroups.push(group);
     state.remainingWords = state.remainingWords.filter((w) => !picked.includes(w));
-    state.selected.clear();
     setFeedback('');
-    persist();
-    render();
-    return;
+  } else {
+    // Wrong — shake, deduct, maybe show "one away".
+    animateTiles(picked, 'shake');
+    state.mistakes++;
+    const oneAway = isOneAway(pickedDifficulties);
+    setFeedback(oneAway ? t('play.feedback.oneAway') : t('play.feedback.wrong'), 'hint');
+    await sleep(450);
   }
 
-  // Wrong — shake, deduct, maybe show "one away".
-  animateTiles(picked, 'shake');
-  state.mistakes++;
-  // "One away" = exactly 3 of 4 belong to the same group
-  const oneAway = isOneAway(pickedDifficulties);
-  setFeedback(oneAway ? t('play.feedback.oneAway') : t('play.feedback.wrong'), 'hint');
-  await sleep(450);
+  // Shared tail for both branches.
   state.selected.clear();
   persist();
   render();
 }
 
+// "One away" = exactly 3 of 4 picked words share a difficulty. Since we know
+// every word's difficulty locally, this is exact.
 function isOneAway(difficulties) {
   const counts = {};
   for (const d of difficulties) counts[d] = (counts[d] || 0) + 1;
@@ -334,23 +374,18 @@ function renderResult(won) {
   const slot = document.getElementById('result-slot');
   if (!slot) return;
 
-  // If loss, reveal any remaining groups as solved rows so player sees the solution.
+  // On loss, reveal any remaining groups as solved rows so player sees the solution.
   if (!won) {
     const solvedDiffs = new Set(state.solvedGroups.map((g) => g.difficulty));
     for (const g of puzzle.groups) {
       if (!solvedDiffs.has(g.difficulty)) state.solvedGroups.push(g);
     }
-    // Re-render solved rows to include the newly revealed
     renderSolvedRows();
-    // Clear grid — game over
-    const grid = document.getElementById('grid');
-    if (grid) grid.innerHTML = '';
   }
 
   const title = won ? t('play.result.won.title') : t('play.result.lost.title');
-  const isEndless = puzzle.mistakeMode === 'endless';
   const body = won
-    ? (state.mistakes === 0 && !isEndless ? t('play.result.won.perfect') : t('play.result.won.body'))
+    ? (state.mistakes === 0 && !isEndless() ? t('play.result.won.perfect') : t('play.result.won.body'))
     : t('play.result.lost.body');
 
   slot.innerHTML = `
@@ -369,7 +404,6 @@ function renderResult(won) {
 }
 
 function buildShareText() {
-  // Format: title line + grid of guesses (one row per guess, using difficulty emojis).
   const url = `${window.location.origin}/play.html#c/${puzzleId}`;
   const lines = [`Puzzles HPVN — #${puzzleId}`];
   for (const g of state.guessHistory) {
@@ -388,7 +422,6 @@ async function onShare() {
     btn.textContent = t('play.result.shareCopied');
     setTimeout(() => { btn.textContent = original; }, 1500);
   } catch {
-    // Fallback: open a prompt with the text so user can copy manually
     window.prompt(t('play.result.share'), text);
   }
 }
@@ -442,7 +475,6 @@ function escapeHtml(s) {
 }
 
 function cssEscape(s) {
-  // Minimal escape for use in querySelector attribute value.
   return String(s).replace(/["\\]/g, '\\$&');
 }
 
@@ -454,4 +486,19 @@ main();
 // Re-render mistake indicator when user cycles theme (dots ↔ wands/skulls)
 document.addEventListener('theme-changed', () => {
   if (state && document.getElementById('mistakes')) renderMistakes();
+});
+
+// Language flip: re-render everything dynamic. State fully drives the view,
+// so a full re-render is safe.
+window.addEventListener('lang-changed', () => {
+  if (!state) return;
+  // Clear stale translated feedback so the new render doesn't restore the old string.
+  state.feedback = null;
+  render();
+});
+
+// Debounced font-fit on resize.
+window.addEventListener('resize', () => {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { fitAllTiles(); }, 120);
 });

@@ -514,13 +514,18 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .play-error a { display: inline-block; margin-top: 16px; color: var(--fg); font-weight: 600; }
 
-.solved-rows { margin-bottom: 12px; }
+.solved-rows { margin-bottom: 8px; }
 .solved-row {
-  padding: 12px 16px;
+  aspect-ratio: 4 / 1;
+  padding: 8px 16px;
   border-radius: 12px;
   margin-bottom: 8px;
   text-align: center;
   color: var(--diff-fg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   animation: solved-slide-in 0.4s ease-out;
 }
 .solved-row[data-difficulty="yellow"] { background: var(--diff-1); }
@@ -547,7 +552,7 @@ input, textarea, select { font: inherit; color: inherit; }
   margin-bottom: 16px;
 }
 .tile {
-  aspect-ratio: 1.4 / 1;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -556,7 +561,7 @@ input, textarea, select { font: inherit; color: inherit; }
   color: var(--tile-fg);
   border-radius: 10px;
   font-weight: 700;
-  font-size: 15px;
+  /* font-size is set dynamically by fitTileText() in play.js */
   text-transform: uppercase;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -566,6 +571,12 @@ input, textarea, select { font: inherit; color: inherit; }
   overflow: hidden;
   word-break: break-word;
   line-height: 1.1;
+}
+/* Applied by JS when a word still overflows at the minimum font size. */
+.tile.tile-wrap {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1;
 }
 .tile:hover { transform: translateY(-1px); }
 .tile.selected {
@@ -670,7 +681,7 @@ input, textarea, select { font: inherit; color: inherit; }
 /* Grid responsive: tighten tile size on small screens */
 @media (max-width: 500px) {
   .grid { gap: 6px; }
-  .tile { font-size: 12px; padding: 4px; border-radius: 8px; }
+  .tile { padding: 4px; border-radius: 8px; }
   .solved-row { padding: 10px 12px; }
   .solved-row-name { font-size: 12px; }
   .solved-row-words { font-size: 13px; }

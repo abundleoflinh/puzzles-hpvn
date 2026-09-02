@@ -38,6 +38,7 @@ export function switchLang(lang) {
   setLang(lang);
   document.documentElement.setAttribute('lang', lang);
   applyTranslations(document);
+  window.dispatchEvent(new CustomEvent('lang-changed', { detail: { lang } }));
 }
 
 export function t(key, vars) {

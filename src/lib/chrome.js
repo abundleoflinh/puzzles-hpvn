@@ -37,11 +37,32 @@ function renderFooter() {
   const el = document.querySelector('[data-slot="footer"]');
   if (!el) return;
   el.innerHTML = `
-    <p class="footer-credit">
-      <span data-i18n="footer.credit"></span>
-      <span class="credit-name">thu_nguyen_209</span>
-    </p>
+    <p class="footer-credit" data-slot="footer-nyt"></p>
+    <p class="footer-credit" data-i18n="footer.credit.instructions"></p>
   `;
+  updateFooterNytLine();
+}
+
+// The NYT credit interpolates a link into the translated string, so it can't
+// use plain data-i18n. Rebuild it whenever the language changes.
+function updateFooterNytLine() {
+  const line = document.querySelector('[data-slot="footer-nyt"]');
+  if (!line) return;
+  const linkText = escapeHtml(t('footer.credit.nyt.linkText'));
+  const link = `<a href="https://www.nytimes.com/games/connections" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+  const template = t('footer.credit.nyt');
+  // Split on {link} so we can safely escape the surrounding translation text.
+  const parts = template.split('{link}');
+  line.innerHTML = parts.map(escapeHtml).join(link);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function renderInfoModal() {
@@ -120,8 +141,6 @@ function wireActions() {
       document.dispatchEvent(new CustomEvent('theme-changed'));
     } else if (action === 'lang') {
       switchLang(getCurrentLang() === 'en' ? 'vi' : 'en');
-      updateThemeButton();
-      updateLangButton();
     } else if (action === 'info') {
       e.preventDefault();
       openInfo();
@@ -137,4 +156,11 @@ export function initChrome({ puzzleDefaultTheme } = {}) {
   renderInfoModal();
   applyTranslations(document);
   wireActions();
+
+  // Keep chrome-owned dynamic content in sync when the language flips.
+  window.addEventListener('lang-changed', () => {
+    updateThemeButton();
+    updateLangButton();
+    updateFooterNytLine();
+  });
 }

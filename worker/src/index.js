@@ -67,24 +67,32 @@ function validatePuzzle(puzzle, type) {
   return null;
 }
 
+// Parse JSON body or throw a short-circuit Response.
+async function parseJsonBody(request) {
+  try {
+    return await request.json();
+  } catch {
+    throw json({ error: 'invalid JSON' }, 400);
+  }
+}
+
+// Validate + serialize a puzzle for storage, or throw a short-circuit Response.
+function validateAndSerialize(puzzle, type) {
+  const validationError = validatePuzzle(puzzle, type);
+  if (validationError) throw json({ error: validationError }, 400);
+  const serialized = JSON.stringify(puzzle);
+  if (serialized.length > MAX_PUZZLE_BYTES) throw json({ error: 'puzzle too large' }, 413);
+  return serialized;
+}
+
 async function handleCreate(request, env) {
   if (!checkPassword(request, env)) return json({ error: 'unauthorized' }, 401);
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'invalid JSON' }, 400);
-  }
-
+  const body = await parseJsonBody(request);
   const { type, puzzle } = body || {};
   if (!ALLOWED_TYPES.has(type)) return json({ error: 'unknown game type' }, 400);
 
-  const validationError = validatePuzzle(puzzle, type);
-  if (validationError) return json({ error: validationError }, 400);
-
-  const serialized = JSON.stringify(puzzle);
-  if (serialized.length > MAX_PUZZLE_BYTES) return json({ error: 'puzzle too large' }, 413);
+  const serialized = validateAndSerialize(puzzle, type);
 
   // Retry on rare ID collision (odds ~1 in 656M per attempt).
   let id;
@@ -108,24 +116,16 @@ async function handleUpdate(request, env, type, id) {
   const existing = await env.PUZZLES.get(`${type}:${id}`);
   if (!existing) return json({ error: 'not found' }, 404);
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'invalid JSON' }, 400);
-  }
-
+  const body = await parseJsonBody(request);
   const puzzle = body?.puzzle;
-  const validationError = validatePuzzle(puzzle, type);
-  if (validationError) return json({ error: validationError }, 400);
-
-  const serialized = JSON.stringify(puzzle);
-  if (serialized.length > MAX_PUZZLE_BYTES) return json({ error: 'puzzle too large' }, 413);
+  const serialized = validateAndSerialize(puzzle, type);
 
   await env.PUZZLES.put(`${type}:${id}`, serialized);
   return json({ ok: true });
 }
 
+// Public fetch: returns the full puzzle. Answers travel in this response;
+// the client validates guesses locally.
 async function handleFetch(env, type, id) {
   if (!ALLOWED_TYPES.has(type)) return json({ error: 'unknown game type' }, 400);
   const raw = await env.PUZZLES.get(`${type}:${id}`);
@@ -146,24 +146,30 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // POST /api/puzzle
-    if (path === '/api/puzzle' && request.method === 'POST') {
-      return handleCreate(request, env);
-    }
+    try {
+      // POST /api/puzzle
+      if (path === '/api/puzzle' && request.method === 'POST') {
+        return await handleCreate(request, env);
+      }
 
-    // GET/PUT /api/puzzle/:type/:id
-    const match = path.match(/^\/api\/puzzle\/([a-z]+)\/([A-Za-z0-9]+)$/);
-    if (match) {
-      const [, type, id] = match;
-      if (request.method === 'GET') return handleFetch(env, type, id);
-      if (request.method === 'PUT') return handleUpdate(request, env, type, id);
-    }
+      // GET/PUT /api/puzzle/:type/:id
+      const match = path.match(/^\/api\/puzzle\/([a-z]+)\/([A-Za-z0-9]+)$/);
+      if (match) {
+        const [, type, id] = match;
+        if (request.method === 'GET') return await handleFetch(env, type, id);
+        if (request.method === 'PUT') return await handleUpdate(request, env, type, id);
+      }
 
-    // Health check — handy for verifying deployment
-    if (path === '/api/health' && request.method === 'GET') {
-      return json({ ok: true, ts: new Date().toISOString() });
-    }
+      // Health check — handy for verifying deployment
+      if (path === '/api/health' && request.method === 'GET') {
+        return json({ ok: true, ts: new Date().toISOString() });
+      }
 
-    return json({ error: 'not found' }, 404);
+      return json({ error: 'not found' }, 404);
+    } catch (thrown) {
+      // Helpers throw a Response to short-circuit. Anything else is a real error.
+      if (thrown instanceof Response) return thrown;
+      throw thrown;
+    }
   },
 };

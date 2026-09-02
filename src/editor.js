@@ -177,7 +177,7 @@ async function onLoadExisting() {
     renderGroupRows(puzzle);
     document.getElementById('mistake-mode').value = puzzle.mistakeMode === 'endless' ? 'endless' : 'four';
     document.getElementById('default-theme').value = puzzle.defaultTheme || '';
-    document.getElementById('submit-btn').textContent = t('editor.actions.update');
+    setSubmitMode('update');
     input.value = id;
     showResult({ kind: 'loaded', id });
   } catch (err) {
@@ -193,10 +193,20 @@ function onReset() {
   document.getElementById('mistake-mode').value = 'four';
   document.getElementById('default-theme').value = '';
   document.getElementById('load-id').value = '';
-  document.getElementById('submit-btn').textContent = t('editor.actions.create');
+  setSubmitMode('create');
   document.getElementById('editor-error').hidden = true;
   document.getElementById('result-slot').innerHTML = '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Set the submit button label + keep data-i18n in sync so applyTranslations()
+// picks up the right key on the next language flip.
+function setSubmitMode(mode) {
+  const btn = document.getElementById('submit-btn');
+  if (!btn) return;
+  const key = mode === 'update' ? 'editor.actions.update' : 'editor.actions.create';
+  btn.dataset.i18n = key;
+  btn.textContent = t(key);
 }
 
 // ============== VALIDATION + SUBMIT ==============
@@ -342,6 +352,29 @@ async function copyToClipboard(text) {
     window.getSelection().addRange(range);
   }
 }
+
+// ============== I18N SYNC ==============
+
+// The group-row header labels are built with runtime interpolation (t() calls
+// happen at row-render time), so they can't use data-i18n. Rewrite them here
+// when the language flips. Typed input values are left untouched.
+function onLangChanged() {
+  document.querySelectorAll('.group-row').forEach((row) => {
+    const diffIndex = Number(row.getAttribute('data-difficulty'));
+    if (!diffIndex) return;
+    const label = row.querySelector('.group-row-label');
+    const diff = row.querySelector('.group-row-difficulty');
+    if (label) label.textContent = t('editor.group.label', { n: diffIndex });
+    if (diff) diff.textContent = t(`editor.group.diff.${diffIndex}`);
+  });
+  // Submit button label — dataset.i18n was updated by setSubmitMode, but
+  // applyTranslations (called from switchLang) already handled the plain text.
+  // We call setSubmitMode again to be defensive if something else edited textContent.
+  const btn = document.getElementById('submit-btn');
+  if (btn && btn.dataset.i18n) btn.textContent = t(btn.dataset.i18n);
+}
+
+window.addEventListener('lang-changed', onLangChanged);
 
 // ============== INIT ==============
 

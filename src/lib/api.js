@@ -12,6 +12,14 @@ export class ApiError extends Error {
   }
 }
 
+function jsonHeaders() {
+  return { 'Content-Type': 'application/json' };
+}
+
+function authHeaders(password) {
+  return { 'X-Editor-Password': password };
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, options);
   const text = await res.text();
@@ -27,6 +35,8 @@ async function request(path, options = {}) {
   return data;
 }
 
+// Public fetch: returns the full puzzle including groups. The client validates
+// guesses locally against these answers.
 export function fetchPuzzle(type, id) {
   return request(`/api/puzzle/${type}/${id}`);
 }
@@ -34,10 +44,7 @@ export function fetchPuzzle(type, id) {
 export function createPuzzle(type, puzzle, password) {
   return request('/api/puzzle', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Editor-Password': password,
-    },
+    headers: { ...jsonHeaders(), ...authHeaders(password) },
     body: JSON.stringify({ type, puzzle }),
   });
 }
@@ -45,10 +52,7 @@ export function createPuzzle(type, puzzle, password) {
 export function updatePuzzle(type, id, puzzle, password) {
   return request(`/api/puzzle/${type}/${id}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Editor-Password': password,
-    },
+    headers: { ...jsonHeaders(), ...authHeaders(password) },
     body: JSON.stringify({ puzzle }),
   });
 }

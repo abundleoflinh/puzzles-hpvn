@@ -18,7 +18,9 @@
   "home.input.invalid": "That doesn't look like a valid puzzle link or code.",
   "home.greeting": "Let the challenge begin 🪄",
 
-  "footer.credit": "Based on instructions by",
+  "footer.credit.nyt": "Custom edition inspired by the {link}.",
+  "footer.credit.nyt.linkText": "New York Times original game",
+  "footer.credit.instructions": "Vietnamese instructions adapted from thu_nguyen_209.",
 
   "info.title": "How to play",
   "info.connections.heading": "Connections",
