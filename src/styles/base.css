@@ -657,6 +657,34 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .mistake-icon.used { opacity: 0.85; }
 
+/* Endless mode: pill showing "<label> · Attempt N". Dot separates the two halves. */
+.endless-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elev);
+}
+.endless-pill-label {
+  font-size: 13px;
+  color: var(--fg-muted);
+  letter-spacing: 0.02em;
+}
+.endless-pill-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+.endless-pill-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+:root[data-theme="hpvn"] .endless-pill-count { color: var(--accent); }
+
 .play-controls {
   display: flex;
   justify-content: center;

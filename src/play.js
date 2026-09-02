@@ -72,6 +72,7 @@ async function main() {
     selected: new Set(),
     solvedGroups,
     mistakes: saved?.mistakes || 0,
+    attempts: saved?.attempts || 0,
     guessHistory: saved?.guessHistory || [],
     remainingWords: shuffle(remainingWords),
     feedback: null,
@@ -174,7 +175,13 @@ function renderMistakes() {
   const el = document.getElementById('mistakes');
   if (!el) return;
   if (isEndless()) {
-    el.innerHTML = `<span>${t('play.mistakes.endless')}</span>`;
+    el.innerHTML = `
+      <span class="endless-pill">
+        <span class="endless-pill-label">${t('play.mistakes.endless')}</span>
+        <span class="endless-pill-dot" aria-hidden="true"></span>
+        <span class="endless-pill-count">${t('play.mistakes.attempt', { n: state.attempts })}</span>
+      </span>
+    `;
     return;
   }
   const used = state.mistakes;
@@ -326,6 +333,7 @@ async function onSubmit() {
 
   // Record the guess (real difficulties either way — good for share tiles).
   state.guessHistory.push({ words: picked, difficulties: pickedDifficulties });
+  state.attempts++;
 
   if (allSame) {
     const group = puzzle.groups.find((g) => g.difficulty === firstDiff);
@@ -440,6 +448,7 @@ function onReset() {
     selected: new Set(),
     solvedGroups: [],
     mistakes: 0,
+    attempts: 0,
     guessHistory: [],
     remainingWords: shuffle(puzzle.groups.flatMap((g) => g.words)),
     feedback: null,
@@ -454,6 +463,7 @@ function persist() {
   setProgress('connections', puzzleId, {
     solvedGroups: state.solvedGroups,
     mistakes: state.mistakes,
+    attempts: state.attempts,
     guessHistory: state.guessHistory,
   });
 }

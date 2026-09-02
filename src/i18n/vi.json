@@ -87,6 +87,7 @@
   "play.puzzleId": "Bộ đề #{id}",
   "play.mistakes.remaining": "Số lần sai còn lại:",
   "play.mistakes.endless": "Không giới hạn",
+  "play.mistakes.attempt": "Lượt {n}",
   "play.controls.shuffle": "Trộn",
   "play.controls.deselect": "Bỏ chọn",
   "play.controls.submit": "Nộp",
