@@ -1,0 +1,79 @@
+{
+  "site.tabTitle": "Puzzles",
+  "site.tabTitle.editor": "Soạn đề · Puzzles",
+
+  "theme.light": "sáng",
+  "theme.dark": "tối",
+  "theme.hpvn": "HPVN",
+
+  "nav.about": "Giới thiệu",
+  "nav.create": "Soạn đề",
+
+  "action.theme.cycle": "Đổi giao diện (đang: {theme})",
+  "action.lang.switch": "Đổi ngôn ngữ",
+  "action.close": "Đóng",
+
+  "home.input.placeholder": "Nhập mã bộ đề hoặc dán link",
+  "home.input.go": "Chơi",
+  "home.input.invalid": "Link hoặc mã không hợp lệ.",
+
+  "footer.credit": "Dựa theo hướng dẫn từ",
+
+  "info.title": "Hướng dẫn chơi",
+  "info.connections.heading": "Connections",
+  "info.connections.body": "<p>Bạn được cung cấp <strong>16 từ khóa</strong> đã được trộn ngẫu nhiên. Nhiệm vụ của bạn là sắp xếp chúng vào <strong>4 chủ đề (mỗi chủ đề 4 từ)</strong>.</p><p>Chỉ có <strong>một cách sắp xếp đúng duy nhất</strong>. Đôi khi một từ khóa có thể trông như nằm trong 2 chủ đề khác nhau, nhưng đó là bẫy.</p><p>Chọn 4 từ bạn nghĩ thuộc cùng một chủ đề. Nếu sai, bạn có thể thử lại. Tùy bộ đề, bạn sẽ có <strong>4 lần sai</strong> hoặc không giới hạn. Nếu bạn chọn đúng 3 trên 4 từ của một chủ đề, trò chơi sẽ báo <em>\"Chỉ còn một từ nữa!\"</em>.</p><p>Các chủ đề được tô màu từ dễ đến khó.</p>",
+
+  "editor.gate.title": "Soạn đề",
+  "editor.gate.lede": "Nhập mật khẩu để tiếp tục.",
+  "editor.gate.placeholder": "Mật khẩu",
+  "editor.gate.submit": "Vào",
+
+  "editor.title": "Soạn đề",
+  "editor.lede": "Tạo một bộ đề Connections mới hoặc chỉnh sửa bộ đề có sẵn.",
+
+  "editor.load.label": "Chỉnh sửa bộ đề có sẵn?",
+  "editor.load.placeholder": "Mã hoặc URL bộ đề",
+  "editor.load.button": "Tải",
+  "editor.load.invalid": "Nhập mã 5 ký tự hoặc URL của bộ đề.",
+  "editor.load.notFound": "Không tìm thấy bộ đề với mã này.",
+
+  "editor.groups.heading": "Các chủ đề",
+  "editor.group.label": "Chủ đề {n}",
+  "editor.group.diff.1": "dễ nhất · vàng",
+  "editor.group.diff.2": "dễ · xanh lá",
+  "editor.group.diff.3": "khó · xanh dương",
+  "editor.group.diff.4": "khó nhất · đỏ",
+  "editor.group.namePlaceholder": "Tên chủ đề (VD: BỐN NHÀ HOGWARTS)",
+  "editor.group.wordsPlaceholder": "4 từ khóa, cách nhau bằng dấu phẩy",
+  "editor.group.wordsHelp": "VD: GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
+
+  "editor.options.mistakeMode.label": "Số lần sai",
+  "editor.options.mistakeMode.four": "4 lần sai",
+  "editor.options.mistakeMode.endless": "Không giới hạn",
+  "editor.options.defaultTheme.label": "Giao diện mặc định",
+  "editor.options.defaultTheme.none": "Không (để người chơi tự chọn)",
+
+  "editor.actions.reset": "Làm mới",
+  "editor.actions.create": "Tạo bộ đề",
+  "editor.actions.update": "Cập nhật bộ đề",
+  "editor.actions.submitting": "Đang lưu...",
+
+  "editor.validation.groupName": "Chủ đề {n}: cần nhập tên.",
+  "editor.validation.groupWords": "Chủ đề {n}: cần đúng 4 từ (hiện có {count}).",
+  "editor.validation.duplicateName": "Trùng tên chủ đề: \"{name}\".",
+  "editor.validation.duplicateWord": "Trùng từ khóa giữa các chủ đề: \"{word}\".",
+
+  "editor.error.wrongPassword": "Sai mật khẩu. Vui lòng thử lại.",
+  "editor.error.generic": "Có lỗi xảy ra. Vui lòng thử lại.",
+
+  "editor.result.created.title": "Đã tạo bộ đề",
+  "editor.result.created.body": "Chia sẻ link này để mọi người vào chơi.",
+  "editor.result.updated.title": "Đã cập nhật bộ đề",
+  "editor.result.updated.body": "Bộ đề tại link này giờ dùng nội dung mới của bạn.",
+  "editor.result.loaded.title": "Đã tải bộ đề",
+  "editor.result.loaded.body": "Đang chỉnh sửa bộ đề {id}. Lưu lại để đăng thay đổi.",
+  "editor.result.playNow": "Chơi thử",
+  "editor.result.copy": "Copy link",
+  "editor.result.copied": "Đã copy!",
+  "editor.result.another": "Tạo bộ đề khác"
+}
