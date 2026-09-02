@@ -38,9 +38,10 @@ function renderFooter() {
   if (!el) return;
   el.innerHTML = `
     <p class="footer-credit" data-slot="footer-nyt"></p>
-    <p class="footer-credit" data-i18n="footer.credit.instructions"></p>
+    <p class="footer-credit" data-slot="footer-instructions"></p>
   `;
   updateFooterNytLine();
+  updateFooterInstructionsLine();
 }
 
 // The NYT credit interpolates a link into the translated string, so it can't
@@ -54,6 +55,16 @@ function updateFooterNytLine() {
   // Split on {link} so we can safely escape the surrounding translation text.
   const parts = template.split('{link}');
   line.innerHTML = parts.map(escapeHtml).join(link);
+}
+
+// Instructions credit: interpolate a styled (blue, bold) name span, no link.
+function updateFooterInstructionsLine() {
+  const line = document.querySelector('[data-slot="footer-instructions"]');
+  if (!line) return;
+  const name = '<span class="credit-name">thu_nguyen_209</span>';
+  const template = t('footer.credit.instructions');
+  const parts = template.split('{name}');
+  line.innerHTML = parts.map(escapeHtml).join(name);
 }
 
 function escapeHtml(s) {
@@ -162,5 +173,6 @@ export function initChrome({ puzzleDefaultTheme } = {}) {
     updateThemeButton();
     updateLangButton();
     updateFooterNytLine();
+    updateFooterInstructionsLine();
   });
 }

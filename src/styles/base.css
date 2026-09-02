@@ -136,7 +136,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .footer-credit .credit-name {
   color: var(--credit-color) !important;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ============== NAV ============== */

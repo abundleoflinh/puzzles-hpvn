@@ -156,6 +156,7 @@ function renderSolvedRows() {
 function renderGrid() {
   const grid = document.getElementById('grid');
   if (!grid) return;
+  grid.innerHTML = '';
   for (const word of state.remainingWords) {
     const tile = document.createElement('button');
     tile.type = 'button';
@@ -250,7 +251,7 @@ function restoreFeedback() {
 // Measure a tile and shrink its font-size until its content fits. If it still
 // overflows at MIN_FONT, allow wrap via .tile-wrap.
 // MAX cap so short words don't look absurd on huge tiles; MIN before we allow wrap.
-const MAX_FONT_CAP = 32;
+const MAX_FONT_CAP = 22;
 const MIN_FONT = 9;
 
 function fitTileText(tileEl) {
