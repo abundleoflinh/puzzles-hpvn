@@ -2,9 +2,9 @@ import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 
 // v1 stub — Phase 3 replaces this with the real game.
-// Reads /c/:id or /s/:id from URL so we know what to load later.
+// Reads #c/:id or #s/:id from URL hash so we know what to load.
 function parseUrl() {
-  const m = window.location.pathname.match(/^\/(c|s)\/([A-Za-z0-9]{5})$/);
+  const m = window.location.hash.match(/^#(c|s)\/([A-Za-z0-9]{5})$/);
   if (!m) return null;
   return { type: m[1] === 'c' ? 'connections' : 'strands', id: m[2] };
 }
