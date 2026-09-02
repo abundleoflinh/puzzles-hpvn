@@ -6,7 +6,7 @@
   "theme.dark": "tối",
   "theme.hpvn": "HPVN",
 
-  "nav.about": "Giới thiệu",
+  "nav.about": "Hướng dẫn",
   "nav.create": "Soạn đề",
 
   "action.theme.cycle": "Đổi giao diện (đang: {theme})",
@@ -16,6 +16,7 @@
   "home.input.placeholder": "Nhập mã bộ đề hoặc dán link",
   "home.input.go": "Chơi",
   "home.input.invalid": "Link hoặc mã không hợp lệ.",
+  "home.greeting": "Thử thách bắt đầu 🪄",
 
   "footer.credit": "Dựa theo hướng dẫn từ",
 
@@ -75,5 +76,28 @@
   "editor.result.playNow": "Chơi thử",
   "editor.result.copy": "Copy link",
   "editor.result.copied": "Đã copy!",
-  "editor.result.another": "Tạo bộ đề khác"
+  "editor.result.another": "Tạo bộ đề khác",
+
+  "play.loading": "Đang tải bộ đề...",
+  "play.error.notFound": "Không tìm thấy bộ đề.",
+  "play.error.generic": "Không tải được bộ đề. Vui lòng thử lại.",
+  "play.error.backHome": "← Về trang chủ",
+  "play.puzzleId": "Bộ đề #{id}",
+  "play.mistakes.remaining": "Số lần sai còn lại:",
+  "play.mistakes.endless": "Không giới hạn",
+  "play.controls.shuffle": "Trộn",
+  "play.controls.deselect": "Bỏ chọn",
+  "play.controls.submit": "Nộp",
+  "play.feedback.oneAway": "Chỉ còn một từ nữa!",
+  "play.feedback.wrong": "Chưa đúng.",
+  "play.feedback.alreadyGuessed": "Bạn đã thử tổ hợp này rồi.",
+  "play.result.won.title": "Đã giải xong!",
+  "play.result.won.body": "Bạn đã tìm ra cả 4 chủ đề.",
+  "play.result.won.perfect": "Giải hoàn hảo không sai lần nào. Quá đỉnh.",
+  "play.result.lost.title": "Hết lượt",
+  "play.result.lost.body": "Đây là đáp án đầy đủ.",
+  "play.result.share": "Chia sẻ kết quả",
+  "play.result.shareCopied": "Đã copy!",
+  "play.result.playAnother": "Chơi bộ đề khác",
+  "play.result.reset": "Chơi lại"
 }

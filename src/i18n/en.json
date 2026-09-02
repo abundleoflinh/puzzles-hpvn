@@ -6,7 +6,7 @@
   "theme.dark": "dark",
   "theme.hpvn": "HPVN",
 
-  "nav.about": "About",
+  "nav.about": "How to play",
   "nav.create": "Create",
 
   "action.theme.cycle": "Switch theme (current: {theme})",
@@ -16,6 +16,7 @@
   "home.input.placeholder": "Enter puzzle code or paste link",
   "home.input.go": "Play",
   "home.input.invalid": "That doesn't look like a valid puzzle link or code.",
+  "home.greeting": "Let the challenge begin 🪄",
 
   "footer.credit": "Based on instructions by",
 
@@ -75,5 +76,28 @@
   "editor.result.playNow": "Play it now",
   "editor.result.copy": "Copy link",
   "editor.result.copied": "Copied!",
-  "editor.result.another": "Create another"
+  "editor.result.another": "Create another",
+
+  "play.loading": "Loading puzzle...",
+  "play.error.notFound": "Puzzle not found.",
+  "play.error.generic": "Couldn't load puzzle. Please try again.",
+  "play.error.backHome": "← Back to home",
+  "play.puzzleId": "Puzzle #{id}",
+  "play.mistakes.remaining": "Mistakes remaining:",
+  "play.mistakes.endless": "Unlimited tries",
+  "play.controls.shuffle": "Shuffle",
+  "play.controls.deselect": "Deselect all",
+  "play.controls.submit": "Submit",
+  "play.feedback.oneAway": "One away!",
+  "play.feedback.wrong": "Not quite.",
+  "play.feedback.alreadyGuessed": "You already tried that combination.",
+  "play.result.won.title": "Solved!",
+  "play.result.won.body": "You got all 4 groups.",
+  "play.result.won.perfect": "Solved with no mistakes. Well done.",
+  "play.result.lost.title": "Out of tries",
+  "play.result.lost.body": "Here's the full solution.",
+  "play.result.share": "Share result",
+  "play.result.shareCopied": "Copied!",
+  "play.result.playAnother": "Play another puzzle",
+  "play.result.reset": "Play this again"
 }
