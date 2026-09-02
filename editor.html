@@ -3,17 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="site.title">HPVN Puzzles — Editor</title>
+  <title data-i18n="site.tabTitle.editor">Editor · Puzzles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@700;800;900&family=Cinzel+Decorative:wght@700;900&display=swap" />
 </head>
 <body>
   <div class="page">
     <header class="page-header" data-slot="header"></header>
-    <main class="page-main">
-      <section class="hero">
-        <h1>Editor</h1>
-        <p style="color: var(--fg-muted);">Phase 2 will build this.</p>
-      </section>
-    </main>
+    <main class="page-main" data-slot="main"></main>
     <footer class="page-footer" data-slot="footer"></footer>
   </div>
   <script type="module" src="/src/editor.js"></script>

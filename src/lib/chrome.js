@@ -1,5 +1,5 @@
-// Shared page chrome: theme + language toggles, info modal, footer credit.
-// Each page calls initChrome() after DOM is ready.
+// Shared page chrome: wordmark + nav (About, Create, theme toggle, lang toggle),
+// footer credit, info modal. Each page calls initChrome() after DOM is ready.
 
 import { initTheme, cycleTheme, getActiveTheme } from './theme.js';
 import { initI18n, switchLang, getCurrentLang, t, applyTranslations } from './i18n.js';
@@ -8,17 +8,25 @@ function themeLabel(theme) {
   return t(`theme.${theme}`);
 }
 
+// Icon per theme — small text glyphs rather than emoji, feels less "AI defaults"
+function themeIcon(theme) {
+  if (theme === 'light') return '☀';
+  if (theme === 'dark') return '☾';
+  return '✦'; // hpvn
+}
+
 function renderHeader() {
   const el = document.querySelector('[data-slot="header"]');
   if (!el) return;
   el.innerHTML = `
     <div class="header-inner">
-      <a href="/" class="brand" data-i18n="site.title"></a>
-      <div class="header-actions">
-        <button type="button" class="icon-btn" data-action="info" data-i18n-attr="aria-label:action.info, title:action.info">ⓘ</button>
+      <a href="/" class="brand">Puzzles</a>
+      <nav class="header-actions" aria-label="Primary">
+        <a href="#" class="nav-link" data-action="info" data-i18n="nav.about"></a>
+        <a href="/editor.html" class="nav-cta" data-i18n="nav.create"></a>
         <button type="button" class="icon-btn" data-action="theme"></button>
         <button type="button" class="icon-btn lang-btn" data-action="lang"></button>
-      </div>
+      </nav>
     </div>
   `;
   updateThemeButton();
@@ -37,7 +45,6 @@ function renderFooter() {
 }
 
 function renderInfoModal() {
-  // Only inject once
   if (document.getElementById('info-modal')) return;
   const modal = document.createElement('div');
   modal.id = 'info-modal';
@@ -86,8 +93,7 @@ function updateThemeButton() {
   const btn = document.querySelector('[data-action="theme"]');
   if (!btn) return;
   const theme = getActiveTheme();
-  const icon = theme === 'light' ? '☀︎' : theme === 'dark' ? '☾' : '⚯';
-  btn.textContent = icon;
+  btn.textContent = themeIcon(theme);
   const label = t('action.theme.cycle', { theme: themeLabel(theme) });
   btn.setAttribute('aria-label', label);
   btn.setAttribute('title', label);
@@ -113,9 +119,10 @@ function wireActions() {
       updateThemeButton();
     } else if (action === 'lang') {
       switchLang(getCurrentLang() === 'en' ? 'vi' : 'en');
-      updateThemeButton(); // theme button label uses translated theme name
+      updateThemeButton();
       updateLangButton();
     } else if (action === 'info') {
+      e.preventDefault();
       openInfo();
     }
   });

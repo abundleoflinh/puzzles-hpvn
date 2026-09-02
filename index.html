@@ -3,27 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="site.title">HPVN Puzzles</title>
+  <title data-i18n="site.tabTitle">Puzzles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@700;800;900&family=Cinzel+Decorative:wght@700;900&display=swap" />
 </head>
 <body>
   <div class="page">
     <header class="page-header" data-slot="header"></header>
-    <main class="page-main">
-      <section class="hero">
-        <h1 data-i18n="home.heading"></h1>
-        <p data-i18n="home.lede"></p>
-      </section>
-
-      <form id="play-form" class="play-form">
-        <div class="field">
-          <input type="text" id="puzzle-input" data-i18n-attr="placeholder:home.input.placeholder" autocomplete="off" spellcheck="false" />
-          <button type="submit" class="btn btn-primary" data-i18n="home.input.go"></button>
-        </div>
-        <p id="puzzle-error" class="notice-error" hidden></p>
-      </form>
-
-      <div class="home-links">
-        <a href="/editor.html" data-i18n="home.editor.link"></a>
+    <main class="page-main home-main">
+      <div class="home-content">
+        <form id="play-form">
+          <div class="field">
+            <input type="text" id="puzzle-input" data-i18n-attr="placeholder:home.input.placeholder" autocomplete="off" spellcheck="false" />
+            <button type="submit" class="btn btn-primary" data-i18n="home.input.go"></button>
+          </div>
+          <p id="puzzle-error" class="notice-error" hidden></p>
+        </form>
       </div>
     </main>
     <footer class="page-footer" data-slot="footer"></footer>

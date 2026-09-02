@@ -2,19 +2,13 @@ import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t } from './lib/i18n.js';
 
-// Accept: 5-char short id, "/c/abc12", "/s/abc12", "#c/abc12", or a full URL
-// containing any of those. Returns { type, id } or null.
+// Accept: 5-char short id, "/c/abc12", "/s/abc12", "#c/abc12", or a full URL.
 function parseInput(raw) {
   const s = (raw || '').trim();
   if (!s) return null;
-  // Direct short id — assume connections (only game shipped in v1)
   if (/^[A-Za-z0-9]{5}$/.test(s)) return { type: 'connections', id: s };
-  // URL or path — look for /c/xxxxx, /s/xxxxx, #c/xxxxx, or #s/xxxxx
   const match = s.match(/[/#](c|s)\/([A-Za-z0-9]{5})(?:[/?#&]|$)/);
-  if (match) {
-    const type = match[1] === 'c' ? 'connections' : 'strands';
-    return { type, id: match[2] };
-  }
+  if (match) return { type: match[1] === 'c' ? 'connections' : 'strands', id: match[2] };
   return null;
 }
 
