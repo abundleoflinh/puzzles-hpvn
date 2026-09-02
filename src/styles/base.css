@@ -79,10 +79,10 @@ input, textarea, select { font: inherit; color: inherit; }
   --accent: #d4a017;
   --accent-fg: #1a0f08;
   --focus-ring: #d4a01766;
-  --diff-1: #eaba3c;  /* Hufflepuff */
-  --diff-2: #4ade80;  /* Slytherin */
-  --diff-3: #4a9dd8;  /* Ravenclaw */
-  --diff-4: #ef4444;  /* Gryffindor */
+  --diff-1: #c9962b;  /* Hufflepuff — rich gold */
+  --diff-2: #3a8a52;  /* Slytherin — deep forest */
+  --diff-3: #3776a3;  /* Ravenclaw — deep blue */
+  --diff-4: #b83a3a;  /* Gryffindor — deep crimson */
   --diff-fg: #1a0f08;
   --tile-bg: #3a2214;
   --tile-fg: #e9d8c7;
