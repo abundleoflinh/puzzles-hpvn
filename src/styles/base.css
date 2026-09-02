@@ -595,17 +595,18 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 
 .feedback {
-  min-height: 24px;
+  min-height: 32px;
   text-align: center;
-  font-size: 14px;
+  font-family: var(--font-wordmark);
+  font-size: 20px;
   font-weight: 600;
-  color: var(--fg-muted);
-  margin-bottom: 12px;
-  transition: opacity 0.2s ease;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+  margin-bottom: 16px;
+  transition: opacity 0.4s ease;
+  opacity: 0;
 }
-.feedback[data-tone="warn"] { color: #d33; }
-:root[data-theme="hpvn"] .feedback[data-tone="warn"],
-:root[data-theme="dark"] .feedback[data-tone="warn"] { color: #ff8080; }
+.feedback.visible { opacity: 1; }
 .feedback[data-tone="hint"] { color: var(--accent); }
 
 .mistakes {
@@ -618,6 +619,7 @@ input, textarea, select { font: inherit; color: inherit; }
   margin-bottom: 16px;
 }
 .mistake-dots { display: inline-flex; gap: 5px; }
+.mistake-dot { display: inline-block; }
 .mistake-dot {
   width: 10px;
   height: 10px;
@@ -626,6 +628,13 @@ input, textarea, select { font: inherit; color: inherit; }
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .mistake-dot.used { opacity: 0.2; transform: scale(0.7); }
+.mistake-icon {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.mistake-icon.used { opacity: 0.85; }
 
 .play-controls {
   display: flex;

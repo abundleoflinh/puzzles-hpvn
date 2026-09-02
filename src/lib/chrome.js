@@ -117,6 +117,7 @@ function wireActions() {
     if (action === 'theme') {
       cycleTheme();
       updateThemeButton();
+      document.dispatchEvent(new CustomEvent('theme-changed'));
     } else if (action === 'lang') {
       switchLang(getCurrentLang() === 'en' ? 'vi' : 'en');
       updateThemeButton();

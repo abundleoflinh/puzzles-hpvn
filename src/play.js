@@ -7,7 +7,7 @@ import { initChrome } from './lib/chrome.js';
 import { t, applyTranslations } from './lib/i18n.js';
 import { fetchPuzzle } from './lib/api.js';
 import { getProgress, setProgress, clearProgress, getTheme } from './lib/storage.js';
-import { applyTheme } from './lib/theme.js';
+import { getActiveTheme, applyTheme } from './lib/theme.js';
 
 const DIFFICULTY_EMOJI = {
   yellow: '🟨',
@@ -66,6 +66,7 @@ async function main() {
     mistakes: saved?.mistakes || 0,
     guessHistory: saved?.guessHistory || [],
     remainingWords: shuffle(remainingWords),
+    feedback: null,
   };
 
   render();
@@ -111,6 +112,7 @@ function render() {
   renderGrid();
   renderMistakes();
   renderControls(done);
+  restoreFeedback();
 
   if (done) renderResult(won);
 }
@@ -153,13 +155,19 @@ function renderMistakes() {
     return;
   }
   const used = state.mistakes;
-  const dots = [];
+  const isHpvn = getActiveTheme() === 'hpvn';
+  const items = [];
   for (let i = 0; i < 4; i++) {
-    dots.push(`<span class="mistake-dot ${i < used ? 'used' : ''}"></span>`);
+    const isUsed = i < used;
+    if (isHpvn) {
+      items.push(`<span class="mistake-icon ${isUsed ? 'used' : ''}">${isUsed ? '💀' : '🪄'}</span>`);
+    } else {
+      items.push(`<span class="mistake-dot ${isUsed ? 'used' : ''}"></span>`);
+    }
   }
   el.innerHTML = `
     <span>${t('play.mistakes.remaining')}</span>
-    <span class="mistake-dots">${dots.join('')}</span>
+    <span class="mistake-dots">${items.join('')}</span>
   `;
 }
 
@@ -177,11 +185,45 @@ function renderControls(done) {
   document.getElementById('btn-submit').addEventListener('click', onSubmit);
 }
 
+let feedbackTimer = null;
+
 function setFeedback(message, tone = '') {
   const el = document.getElementById('feedback');
   if (!el) return;
+  // Clear any pending fade-out
+  if (feedbackTimer) { clearTimeout(feedbackTimer); feedbackTimer = null; }
+  state.feedback = message ? { message, tone } : null;
+  if (!message) {
+    el.textContent = '';
+    el.classList.remove('visible');
+    el.setAttribute('data-tone', '');
+    return;
+  }
   el.textContent = message;
   el.setAttribute('data-tone', tone);
+  // Force reflow to reset opacity transition
+  void el.offsetWidth;
+  el.classList.add('visible');
+  // Auto-clear after 2.8s (300ms fade + 2.5s hold)
+  feedbackTimer = setTimeout(() => {
+    el.classList.remove('visible');
+    setTimeout(() => {
+      state.feedback = null;
+      const stillEl = document.getElementById('feedback');
+      if (stillEl) stillEl.textContent = '';
+    }, 400);
+    feedbackTimer = null;
+  }, 2500);
+}
+
+// Restore feedback message after a full re-render (state.feedback persists between renders)
+function restoreFeedback() {
+  if (!state.feedback) return;
+  const el = document.getElementById('feedback');
+  if (!el) return;
+  el.textContent = state.feedback.message;
+  el.setAttribute('data-tone', state.feedback.tone || '');
+  el.classList.add('visible');
 }
 
 // ============== ACTIONS ==============
@@ -224,7 +266,7 @@ async function onSubmit() {
     (h) => h.words && [...h.words].sort().join('|') === pickedKey
   );
   if (alreadyGuessed) {
-    setFeedback(t('play.feedback.alreadyGuessed'), 'warn');
+    setFeedback(t('play.feedback.alreadyGuessed'), 'hint');
     return;
   }
 
@@ -254,7 +296,7 @@ async function onSubmit() {
   state.mistakes++;
   // "One away" = exactly 3 of 4 belong to the same group
   const oneAway = isOneAway(pickedDifficulties);
-  setFeedback(oneAway ? t('play.feedback.oneAway') : t('play.feedback.wrong'), 'warn');
+  setFeedback(oneAway ? t('play.feedback.oneAway') : t('play.feedback.wrong'), 'hint');
   await sleep(450);
   state.selected.clear();
   persist();
@@ -359,6 +401,7 @@ function onReset() {
     mistakes: 0,
     guessHistory: [],
     remainingWords: shuffle(puzzle.groups.flatMap((g) => g.words)),
+    feedback: null,
   };
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -407,3 +450,8 @@ function cssEscape(s) {
 
 initChrome();
 main();
+
+// Re-render mistake indicator when user cycles theme (dots ↔ wands/skulls)
+document.addEventListener('theme-changed', () => {
+  if (state && document.getElementById('mistakes')) renderMistakes();
+});
