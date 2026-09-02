@@ -1,0 +1,16 @@
+name = "hpvn-puzzles-api"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Replace YOUR_KV_NAMESPACE_ID with the ID from Cloudflare dashboard
+# (Workers & Pages → KV → PUZZLES → copy the ID).
+[[kv_namespaces]]
+binding = "PUZZLES"
+id = "YOUR_KV_NAMESPACE_ID"
+
+# Editor password is set as a secret, NOT here:
+#   cd worker && npx wrangler secret put EDITOR_PASSWORD
+# (wrangler will prompt for the value; it's stored encrypted on Cloudflare.)
+
+[observability]
+enabled = true

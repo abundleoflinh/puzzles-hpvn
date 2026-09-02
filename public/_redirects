@@ -1,0 +1,4 @@
+# Short-link routing: /c/xxxxx and /s/xxxxx both serve play.html.
+# The play page reads the URL client-side to know which game + id to load.
+/c/*  /play.html  200
+/s/*  /play.html  200
