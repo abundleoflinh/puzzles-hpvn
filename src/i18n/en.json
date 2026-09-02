@@ -16,6 +16,7 @@
   "home.input.placeholder": "Enter puzzle code or paste link",
   "home.input.go": "Play",
   "home.input.invalid": "That doesn't look like a valid puzzle link or code.",
+  "home.greeting": "Let the challenge begin.",
 
   "footer.credit": "Based on instructions by",
 

@@ -322,6 +322,16 @@ input, textarea, select { font: inherit; color: inherit; }
   min-height: calc(100vh - 220px);
 }
 .home-content { width: 100%; max-width: 480px; padding: 0 20px; }
+.home-greeting {
+  text-align: center;
+  font-family: var(--font-wordmark);
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--fg-muted);
+  letter-spacing: 0.03em;
+  margin-bottom: 28px;
+}
+:root[data-theme="hpvn"] .home-greeting { color: var(--accent); }
 
 /* ============== EDITOR ============== */
 

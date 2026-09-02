@@ -6,7 +6,7 @@
   "theme.dark": "tối",
   "theme.hpvn": "HPVN",
 
-  "nav.about": "Giới thiệu",
+  "nav.about": "Hướng dẫn",
   "nav.create": "Soạn đề",
 
   "action.theme.cycle": "Đổi giao diện (đang: {theme})",
@@ -16,6 +16,7 @@
   "home.input.placeholder": "Nhập mã bộ đề hoặc dán link",
   "home.input.go": "Chơi",
   "home.input.invalid": "Link hoặc mã không hợp lệ.",
+  "home.greeting": "Thử thách bắt đầu.",
 
   "footer.credit": "Dựa theo hướng dẫn từ",
 
