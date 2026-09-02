@@ -79,10 +79,7 @@ input, textarea, select { font: inherit; color: inherit; }
   --accent: #d4a017;
   --accent-fg: #1a0f08;
   --focus-ring: #d4a01766;
-  --diff-1: #c9962b;  /* Hufflepuff — rich gold */
-  --diff-2: #3a8a52;  /* Slytherin — deep forest */
-  --diff-3: #3776a3;  /* Ravenclaw — deep blue */
-  --diff-4: #b83a3a;  /* Gryffindor — deep crimson */
+  /* Difficulty colors are shared across themes — see :root default palette. */
   --diff-fg: #1a0f08;
   --tile-bg: #3a2214;
   --tile-fg: #e9d8c7;
@@ -580,7 +577,7 @@ input, textarea, select { font: inherit; color: inherit; }
   overflow: hidden;
   white-space: nowrap;
   word-break: normal;
-  line-height: 1.1;
+  line-height: 1.25;
 }
 /* Applied by JS only when a word still overflows at the minimum font size.
    Break by word first (e.g. "FINCH-FLETCHLEY"); fall back to anywhere as last resort. */
@@ -588,7 +585,7 @@ input, textarea, select { font: inherit; color: inherit; }
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: normal;
-  line-height: 1;
+  line-height: 1.25;
 }
 .tile:hover { transform: translateY(-1px); }
 .tile.selected {
