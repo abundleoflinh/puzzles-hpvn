@@ -43,9 +43,9 @@
   "editor.group.diff.2": "dễ · xanh lá",
   "editor.group.diff.3": "khó · xanh dương",
   "editor.group.diff.4": "khó nhất · đỏ",
-  "editor.group.namePlaceholder": "Tên chủ đề (VD: NHỮNG TỪ CHỈ NHỎ)",
+  "editor.group.namePlaceholder": "Tên chủ đề (VD: BỐN NHÀ HOGWARTS)",
   "editor.group.wordsPlaceholder": "4 từ khóa, cách nhau bằng dấu phẩy",
-  "editor.group.wordsHelp": "VD: NHỎ, BÉ, XÍU, TÝ",
+  "editor.group.wordsHelp": "VD: GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
 
   "editor.options.mistakeMode.label": "Số lần sai",
   "editor.options.mistakeMode.four": "4 lần sai",

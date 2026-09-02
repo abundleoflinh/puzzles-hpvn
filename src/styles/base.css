@@ -36,9 +36,9 @@ input, textarea, select { font: inherit; color: inherit; }
   --diff-4: #ba81c5;
   --diff-fg: #1a1a1a;
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
-  --font-wordmark: "Fraunces", Georgia, serif;
-  --font-wordmark-weight: 900;
-  --font-wordmark-tracking: -0.02em;
+  --font-wordmark: "Cormorant SC", Georgia, serif;
+  --font-wordmark-weight: 700;
+  --font-wordmark-tracking: 0.02em;
   --credit-color: #4a9dd8;
   --tile-bg: #efefef;
   --tile-fg: #111;
@@ -84,9 +84,6 @@ input, textarea, select { font: inherit; color: inherit; }
   --diff-3: #4a9dd8;  /* Ravenclaw */
   --diff-4: #ef4444;  /* Gryffindor */
   --diff-fg: #1a0f08;
-  --font-wordmark: "Cinzel Decorative", Georgia, serif;
-  --font-wordmark-weight: 900;
-  --font-wordmark-tracking: 0.02em;
   --tile-bg: #3a2214;
   --tile-fg: #e9d8c7;
 }
@@ -296,7 +293,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .modal-head h2 {
   font-family: var(--font-wordmark);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 22px;
   letter-spacing: -0.01em;
 }
@@ -335,7 +332,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .gate h1 {
   font-family: var(--font-wordmark);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 28px;
   margin-bottom: 12px;
   letter-spacing: -0.01em;
@@ -346,7 +343,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .editor-header { margin-bottom: 28px; }
 .editor-header h1 {
   font-family: var(--font-wordmark);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 28px;
   letter-spacing: -0.01em;
   margin-bottom: 6px;
@@ -460,7 +457,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .result-card h2 {
   font-family: var(--font-wordmark);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 22px;
   margin-bottom: 8px;
 }

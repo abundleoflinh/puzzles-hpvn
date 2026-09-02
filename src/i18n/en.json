@@ -43,9 +43,9 @@
   "editor.group.diff.2": "easy · green",
   "editor.group.diff.3": "hard · blue",
   "editor.group.diff.4": "hardest · red",
-  "editor.group.namePlaceholder": "Group name (e.g. WORDS FOR SMALL)",
+  "editor.group.namePlaceholder": "Group name (e.g. HOGWARTS HOUSES)",
   "editor.group.wordsPlaceholder": "4 words separated by commas",
-  "editor.group.wordsHelp": "e.g. TINY, MINI, PETITE, WEE",
+  "editor.group.wordsHelp": "e.g. GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
 
   "editor.options.mistakeMode.label": "Mistakes",
   "editor.options.mistakeMode.four": "4 strikes",
