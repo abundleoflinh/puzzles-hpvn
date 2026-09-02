@@ -371,7 +371,7 @@ function renderResult(won) {
 function buildShareText() {
   // Format: title line + grid of guesses (one row per guess, using difficulty emojis).
   const url = `${window.location.origin}/play.html#c/${puzzleId}`;
-  const lines = [`Puzzles HPVN — #${puzzleId}`];
+  const lines = [`Puzzles HPVN #${puzzleId}`];
   for (const g of state.guessHistory) {
     lines.push(g.difficulties.map((d) => DIFFICULTY_EMOJI[d] || '⬜').join(''));
   }
