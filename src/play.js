@@ -249,16 +249,20 @@ function restoreFeedback() {
 
 // Measure a tile and shrink its font-size until its content fits. If it still
 // overflows at MIN_FONT, allow wrap via .tile-wrap.
-const MAX_FONT = 18;
+// MAX cap so short words don't look absurd on huge tiles; MIN before we allow wrap.
+const MAX_FONT_CAP = 32;
 const MIN_FONT = 9;
 
 function fitTileText(tileEl) {
   if (!tileEl) return;
   tileEl.classList.remove('tile-wrap');
+  tileEl.style.fontSize = '';
   const width = tileEl.clientWidth;
   const height = tileEl.clientHeight;
   if (!width || !height) return;
-  for (let size = MAX_FONT; size >= MIN_FONT; size--) {
+  // Start size proportional to tile size (~28% of the smaller dimension), capped.
+  const startSize = Math.min(MAX_FONT_CAP, Math.max(MIN_FONT, Math.floor(Math.min(width, height) * 0.28)));
+  for (let size = startSize; size >= MIN_FONT; size--) {
     tileEl.style.fontSize = size + 'px';
     if (tileEl.scrollWidth <= width && tileEl.scrollHeight <= height) return;
   }
@@ -267,7 +271,10 @@ function fitTileText(tileEl) {
 }
 
 function fitAllTiles() {
-  document.querySelectorAll('.tile').forEach(fitTileText);
+  // Defer to the next frame so aspect-ratio layout is settled before measuring.
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.tile').forEach(fitTileText);
+  });
 }
 
 // ============== ACTIONS ==============

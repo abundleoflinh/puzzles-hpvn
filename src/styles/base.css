@@ -514,6 +514,15 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .play-error a { display: inline-block; margin-top: 16px; color: var(--fg); font-weight: 600; }
 
+/* Play board: keep the whole solved+grid area on-screen at all sizes.
+   Width caps so that (board_width / 4) tiles × 4 rows fit within the viewport
+   below the header, title, and controls (~ reserved space). */
+.solved-rows,
+.grid {
+  max-width: min(560px, calc(100vh - 300px));
+  margin-left: auto;
+  margin-right: auto;
+}
 .solved-rows { margin-bottom: 8px; }
 .solved-row {
   aspect-ratio: 4 / 1;
@@ -569,13 +578,16 @@ input, textarea, select { font: inherit; color: inherit; }
   transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
   text-align: center;
   overflow: hidden;
-  word-break: break-word;
+  white-space: nowrap;
+  word-break: normal;
   line-height: 1.1;
 }
-/* Applied by JS when a word still overflows at the minimum font size. */
+/* Applied by JS only when a word still overflows at the minimum font size.
+   Break by word first (e.g. "FINCH-FLETCHLEY"); fall back to anywhere as last resort. */
 .tile.tile-wrap {
   white-space: normal;
-  word-break: break-word;
+  overflow-wrap: anywhere;
+  word-break: normal;
   line-height: 1;
 }
 .tile:hover { transform: translateY(-1px); }
