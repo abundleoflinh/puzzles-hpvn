@@ -329,10 +329,11 @@ input, textarea, select { font: inherit; color: inherit; }
   letter-spacing: 0.02em;
   margin-bottom: 40px;
   line-height: 1.2;
+  white-space: nowrap;
 }
 :root[data-theme="hpvn"] .home-greeting { color: var(--accent); }
 @media (max-width: 600px) {
-  .home-greeting { font-size: 30px; margin-bottom: 30px; }
+  .home-greeting { font-size: 26px; margin-bottom: 30px; }
   .home-main { padding-top: 10vh; }
 }
 
