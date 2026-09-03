@@ -10,7 +10,8 @@ import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t } from './lib/i18n.js';
 import { fetchPuzzle } from './lib/api.js';
-import { getProgress, setProgress, clearProgress, getTheme } from './lib/storage.js';
+import { getProgress, setProgress, clearProgress, getTheme, getLang } from './lib/storage.js';
+import { switchLang } from './lib/i18n.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
 
 const DIFFICULTY_EMOJI = {
@@ -58,6 +59,10 @@ async function main() {
   // Apply puzzle's default theme only if user hasn't picked one themselves.
   if (!getTheme() && puzzle.defaultTheme) {
     applyTheme(puzzle.defaultTheme);
+  }
+  // Same for language — respect a viewer's explicit choice, otherwise honor the puzzle's.
+  if (!getLang() && puzzle.defaultLang) {
+    switchLang(puzzle.defaultLang);
   }
 
   // Restore progress. solvedGroups holds full group objects; on a loss we push

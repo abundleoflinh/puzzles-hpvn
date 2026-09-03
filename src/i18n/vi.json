@@ -55,6 +55,10 @@
   "editor.options.mistakeMode.endless": "Không giới hạn",
   "editor.options.defaultTheme.label": "Giao diện mặc định",
   "editor.options.defaultTheme.none": "Không (để người chơi tự chọn)",
+  "editor.options.defaultLang.label": "Ngôn ngữ mặc định",
+  "editor.options.defaultLang.none": "Không (để người chơi tự chọn)",
+  "lang.en": "Tiếng Anh",
+  "lang.vi": "Tiếng Việt",
 
   "editor.actions.reset": "Làm mới",
   "editor.actions.create": "Tạo bộ đề",

@@ -55,6 +55,10 @@
   "editor.options.mistakeMode.endless": "Endless",
   "editor.options.defaultTheme.label": "Default theme",
   "editor.options.defaultTheme.none": "None (use viewer's choice)",
+  "editor.options.defaultLang.label": "Default language",
+  "editor.options.defaultLang.none": "None (use viewer's choice)",
+  "lang.en": "English",
+  "lang.vi": "Vietnamese",
 
   "editor.actions.reset": "Reset",
   "editor.actions.create": "Create puzzle",

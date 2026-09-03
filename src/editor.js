@@ -96,6 +96,14 @@ function renderEditor() {
             <option value="hpvn" data-i18n="theme.hpvn"></option>
           </select>
         </div>
+        <div>
+          <label class="field-label" for="default-lang" data-i18n="editor.options.defaultLang.label"></label>
+          <select class="input-block" id="default-lang">
+            <option value="" data-i18n="editor.options.defaultLang.none"></option>
+            <option value="en" data-i18n="lang.en"></option>
+            <option value="vi" data-i18n="lang.vi"></option>
+          </select>
+        </div>
       </div>
 
       <p id="editor-error" class="notice-error" hidden></p>
@@ -177,6 +185,7 @@ async function onLoadExisting() {
     renderGroupRows(puzzle);
     document.getElementById('mistake-mode').value = puzzle.mistakeMode === 'endless' ? 'endless' : 'four';
     document.getElementById('default-theme').value = puzzle.defaultTheme || '';
+    document.getElementById('default-lang').value = puzzle.defaultLang || '';
     setSubmitMode('update');
     input.value = id;
     showResult({ kind: 'loaded', id });
@@ -262,6 +271,7 @@ async function onEditorSubmit(e) {
     groups: validation.groups,
     mistakeMode: document.getElementById('mistake-mode').value,
     defaultTheme: document.getElementById('default-theme').value || null,
+    defaultLang: document.getElementById('default-lang').value || null,
     createdAt: new Date().toISOString(),
   };
 
