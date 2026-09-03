@@ -1,6 +1,6 @@
 name = "hpvn-puzzles-api"
 main = "src/index.js"
-compatibility_date = "2025-01-01"
+compatibility_date = "2026-01-01"
 
 # Replace YOUR_KV_NAMESPACE_ID with the ID from Cloudflare dashboard
 # (Workers & Pages → KV → PUZZLES → copy the ID).

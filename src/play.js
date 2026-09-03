@@ -13,6 +13,7 @@ import { fetchPuzzle } from './lib/api.js';
 import { getProgress, setProgress, clearProgress, getTheme, getLang } from './lib/storage.js';
 import { switchLang } from './lib/i18n.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
+import { escapeHtml } from './lib/util.js';
 
 const DIFFICULTY_EMOJI = {
   yellow: '🟨',
@@ -191,7 +192,10 @@ function renderGrid() {
     tile.className = 'tile';
     tile.textContent = word;
     tile.setAttribute('data-word', word);
-    if (state.selected.has(word)) tile.classList.add('selected');
+    // aria-pressed makes each tile a proper toggle button for screen readers.
+    const isSelected = state.selected.has(word);
+    tile.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    if (isSelected) tile.classList.add('selected');
     tile.addEventListener('click', () => onTileClick(word));
     grid.appendChild(tile);
   }
@@ -462,7 +466,7 @@ function renderResult(won) {
 
 function buildShareText() {
   const url = `${window.location.origin}/play.html#c/${puzzleId}`;
-  const lines = [`Puzzles HPVN #${puzzleId}`];
+  const lines = [t('play.result.shareTitle', { id: puzzleId })];
   for (const g of state.guessHistory) {
     lines.push(g.difficulties.map((d) => DIFFICULTY_EMOJI[d] || '⬜').join(''));
   }
@@ -523,15 +527,6 @@ function shuffle(arr) {
 
 function sleep(ms) {
   return new Promise((res) => setTimeout(res, ms));
-}
-
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
 }
 
 function cssEscape(s) {

@@ -18,6 +18,11 @@
   "home.input.invalid": "Link hoặc mã không hợp lệ.",
   "home.greeting": "Thử thách bắt đầu 🪄",
 
+  "home.collections.heading": "Bộ sưu tập",
+  "home.collections.puzzleFallback": "Bộ đề #{id}",
+  "home.collections.type.connections": "Connections",
+  "home.collections.type.strands": "Strands",
+
   "footer.credit.nyt": "Phiên bản tùy chỉnh, lấy cảm hứng từ {link}.",
   "footer.credit.nyt.linkText": "trò chơi gốc của New York Times",
   "footer.credit.instructions": "Hướng dẫn tiếng Việt của {name}.",
@@ -39,6 +44,15 @@
   "editor.load.button": "Tải",
   "editor.load.invalid": "Nhập mã 5 ký tự hoặc URL của bộ đề.",
   "editor.load.notFound": "Không tìm thấy bộ đề với mã này.",
+
+  "editor.meta.heading": "Thông tin bộ đề",
+  "editor.meta.title.label": "Tiêu đề",
+  "editor.meta.title.placeholder": "VD: Đố vui Hogwarts #1",
+  "editor.meta.collection.label": "Bộ sưu tập",
+  "editor.meta.collection.none": "Không",
+  "editor.meta.collection.new": "+ Tạo bộ sưu tập mới",
+  "editor.meta.collection.prompt": "Tên bộ sưu tập mới:",
+  "editor.meta.collection.help": "Bộ sưu tập nhóm các bộ đề thành danh sách đánh số trên trang chủ.",
 
   "editor.groups.heading": "Các chủ đề",
   "editor.group.label": "Chủ đề {n}",
@@ -105,6 +119,7 @@
   "play.result.lost.body": "Đây là đáp án đầy đủ.",
   "play.result.share": "Chia sẻ kết quả",
   "play.result.shareCopied": "Đã copy!",
+  "play.result.shareTitle": "Puzzles HPVN #{id}",
   "play.result.playAnother": "Chơi bộ đề khác",
   "play.result.reset": "Chơi lại"
 }

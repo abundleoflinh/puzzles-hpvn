@@ -42,6 +42,7 @@ input, textarea, select { font: inherit; color: inherit; }
   --credit-color: #4a9dd8;
   --tile-bg: #efefef;
   --tile-fg: #111;
+  --danger: #d33;
 }
 
 :root[data-theme="dark"] {
@@ -64,6 +65,7 @@ input, textarea, select { font: inherit; color: inherit; }
   --diff-fg: #0d0f12;
   --tile-bg: #2a2a2e;
   --tile-fg: #f0f0f0;
+  --danger: #ff8080;
 }
 
 :root[data-theme="hpvn"] {
@@ -83,6 +85,7 @@ input, textarea, select { font: inherit; color: inherit; }
   --diff-fg: #1a0f08;
   --tile-bg: #3a2214;
   --tile-fg: #e9d8c7;
+  --danger: #ff8080;
 }
 
 /* ============== LAYOUT ============== */
@@ -239,12 +242,10 @@ input, textarea, select { font: inherit; color: inherit; }
 
 .notice-error {
   margin-top: 12px;
-  color: #d33;
+  color: var(--danger);
   font-size: 14px;
   text-align: center;
 }
-:root[data-theme="hpvn"] .notice-error,
-:root[data-theme="dark"] .notice-error { color: #ff8080; }
 
 .notice-info {
   padding: 12px 16px;
@@ -319,7 +320,7 @@ input, textarea, select { font: inherit; color: inherit; }
   padding-top: 14vh;
   min-height: calc(100vh - 220px);
 }
-.home-content { width: 100%; max-width: 480px; padding: 0 20px; }
+.home-content { width: 100%; max-width: 560px; padding: 0 20px; }
 .home-greeting {
   text-align: center;
   font-family: var(--font-wordmark);
@@ -336,6 +337,67 @@ input, textarea, select { font: inherit; color: inherit; }
   .home-greeting { font-size: 26px; margin-bottom: 30px; }
   .home-main { padding-top: 10vh; }
 }
+
+/* Collections section on the home page. Empty when there are no
+   collections, so we let the layout stay compact in that case. */
+.collections { margin-top: 40px; }
+.collections:empty { display: none; }
+.collections-heading {
+  font-family: var(--font-wordmark);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--fg-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  text-align: center;
+}
+:root[data-theme="hpvn"] .collections-heading { color: var(--accent); }
+
+.collection {
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-elev);
+  margin-bottom: 14px;
+}
+.collection-name {
+  font-family: var(--font-wordmark);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--fg);
+  letter-spacing: 0.01em;
+  margin-bottom: 10px;
+}
+:root[data-theme="hpvn"] .collection-name { color: var(--accent); }
+
+.collection-type-heading {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-tiny);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+.collection-type-heading:first-child { margin-top: 0; }
+
+.collection-list {
+  list-style: decimal inside;
+  padding-left: 4px;
+  color: var(--fg-muted);
+  font-size: 15px;
+}
+.collection-list li { padding: 3px 0; }
+.collection-list li::marker {
+  color: var(--fg-tiny);
+  font-variant-numeric: tabular-nums;
+}
+.collection-list a {
+  color: var(--fg);
+  font-weight: 500;
+}
+.collection-list a:hover { color: var(--link); }
 
 /* ============== EDITOR ============== */
 
@@ -413,6 +475,22 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 @media (max-width: 500px) {
   .options-row { grid-template-columns: 1fr; }
+}
+
+/* Puzzle-info block (title + collection). Same two-column grid as options-row
+   but has a help line beneath. */
+.meta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 500px) {
+  .meta-row { grid-template-columns: 1fr; }
+}
+.meta-help {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--fg-tiny);
 }
 .field-label {
   display: block;

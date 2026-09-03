@@ -8,12 +8,19 @@
 import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t, applyTranslations } from './lib/i18n.js';
-import { fetchPuzzle, createPuzzle, updatePuzzle } from './lib/api.js';
+import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollection } from './lib/api.js';
+import { escapeHtml } from './lib/util.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
 const DIFFICULTIES = ['yellow', 'green', 'blue', 'red'];
+const NEW_COLLECTION_VALUE = '__new__'; // sentinel option in the collection dropdown
 
 let editingId = null; // null = creating new; string = editing existing puzzle id
+let editingCreatedAt = null; // preserved so updates don't reset home-page ordering
+
+// Cached collection list so we can rebuild the dropdown after inline creation
+// without a refetch. Refreshed on editor render.
+let collectionsCache = []; // [{ id, name, ... }]
 
 // ============== PASSWORD GATE ==============
 
@@ -75,6 +82,21 @@ function renderEditor() {
 
     <form id="editor-form">
       <div class="editor-section">
+        <div class="editor-section-title" data-i18n="editor.meta.heading"></div>
+        <div class="meta-row">
+          <div>
+            <label class="field-label" for="puzzle-title" data-i18n="editor.meta.title.label"></label>
+            <input type="text" class="input-block" id="puzzle-title" data-i18n-attr="placeholder:editor.meta.title.placeholder" autocomplete="off" maxlength="80" />
+          </div>
+          <div>
+            <label class="field-label" for="puzzle-collection" data-i18n="editor.meta.collection.label"></label>
+            <select class="input-block" id="puzzle-collection"></select>
+          </div>
+        </div>
+        <p class="meta-help" data-i18n="editor.meta.collection.help"></p>
+      </div>
+
+      <div class="editor-section">
         <div class="editor-section-title" data-i18n="editor.groups.heading"></div>
         <div id="groups-container"></div>
       </div>
@@ -119,6 +141,90 @@ function renderEditor() {
   renderGroupRows();
   applyTranslations(main);
   wireEditorEvents();
+  // Fetch collections in the background so the dropdown fills in without
+  // blocking the editor from rendering. Failures are silent — the editor
+  // still works, just with an empty collection list.
+  loadCollections();
+}
+
+// ============== COLLECTIONS ==============
+
+async function loadCollections(selectedId) {
+  try {
+    const res = await listCollections();
+    collectionsCache = Array.isArray(res?.collections) ? res.collections : [];
+  } catch {
+    collectionsCache = [];
+  }
+  renderCollectionOptions(selectedId);
+}
+
+// Rebuilds the <select> options. Preserves the currently selected id
+// (or accepts an explicit override — used right after inline create).
+function renderCollectionOptions(selectedIdOverride) {
+  const sel = document.getElementById('puzzle-collection');
+  if (!sel) return;
+  const currentValue = selectedIdOverride ?? sel.value ?? '';
+  const sorted = [...collectionsCache].sort((a, b) =>
+    (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
+  );
+  const noneLabel = t('editor.meta.collection.none');
+  const newLabel = t('editor.meta.collection.new');
+  const options = [
+    `<option value="">${escapeHtml(noneLabel)}</option>`,
+    ...sorted.map(
+      (c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`
+    ),
+    `<option value="${NEW_COLLECTION_VALUE}">${escapeHtml(newLabel)}</option>`,
+  ];
+  sel.innerHTML = options.join('');
+  // Restore selection if it still exists.
+  if (currentValue && sorted.some((c) => c.id === currentValue)) {
+    sel.value = currentValue;
+  } else {
+    sel.value = '';
+  }
+}
+
+// Fired when the collection dropdown changes. If the user picked the
+// "+ New collection" sentinel, prompt for a name, create it via the API,
+// then re-render options with the new id selected. If they cancel the
+// prompt or the create fails, fall back to "no collection".
+async function onCollectionChange(e) {
+  const sel = e.target;
+  if (sel.value !== NEW_COLLECTION_VALUE) return;
+
+  const name = window.prompt(t('editor.meta.collection.prompt'));
+  const trimmed = (name || '').trim();
+  if (!trimmed) {
+    sel.value = '';
+    return;
+  }
+
+  const password = getCachedPassword();
+  if (!password) {
+    sel.value = '';
+    renderGate();
+    return;
+  }
+
+  const errEl = document.getElementById('editor-error');
+  try {
+    const created = await createCollection(trimmed, password);
+    collectionsCache.push({ id: created.id, name: created.name, createdAt: created.createdAt });
+    renderCollectionOptions(created.id);
+  } catch (err) {
+    sel.value = '';
+    if (err.status === 401) {
+      clearCachedPassword();
+      errEl.textContent = t('editor.error.wrongPassword');
+      errEl.hidden = false;
+      setTimeout(() => renderGate(), 1200);
+    } else {
+      errEl.textContent = err.message || t('editor.error.generic');
+      errEl.hidden = false;
+    }
+  }
 }
 
 function renderGroupRows(prefill) {
@@ -158,6 +264,7 @@ function wireEditorEvents() {
   document.getElementById('load-id').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); onLoadExisting(); }
   });
+  document.getElementById('puzzle-collection').addEventListener('change', onCollectionChange);
 }
 
 // ============== LOAD EXISTING ==============
@@ -182,10 +289,15 @@ async function onLoadExisting() {
   try {
     const { puzzle } = await fetchPuzzle('connections', id);
     editingId = id;
+    editingCreatedAt = puzzle.createdAt || null;
     renderGroupRows(puzzle);
     document.getElementById('mistake-mode').value = puzzle.mistakeMode === 'endless' ? 'endless' : 'four';
     document.getElementById('default-theme').value = puzzle.defaultTheme || '';
     document.getElementById('default-lang').value = puzzle.defaultLang || '';
+    document.getElementById('puzzle-title').value = puzzle.title || '';
+    // Re-render options with the loaded collectionId preselected. If the
+    // collection no longer exists, this quietly falls back to "no collection".
+    renderCollectionOptions(puzzle.collectionId || '');
     setSubmitMode('update');
     input.value = id;
     showResult({ kind: 'loaded', id });
@@ -198,10 +310,14 @@ async function onLoadExisting() {
 
 function onReset() {
   editingId = null;
+  editingCreatedAt = null;
   renderGroupRows();
   document.getElementById('mistake-mode').value = 'four';
   document.getElementById('default-theme').value = '';
+  document.getElementById('default-lang').value = '';
+  document.getElementById('puzzle-title').value = '';
   document.getElementById('load-id').value = '';
+  renderCollectionOptions('');
   setSubmitMode('create');
   document.getElementById('editor-error').hidden = true;
   document.getElementById('result-slot').innerHTML = '';
@@ -266,13 +382,26 @@ async function onEditorSubmit(e) {
   }
   errEl.hidden = true;
 
+  const rawTitle = document.getElementById('puzzle-title').value.trim();
+  const rawCollection = document.getElementById('puzzle-collection').value;
+  // The "__new__" sentinel means the user opened the picker but never named
+  // a collection — treat that as "no collection" rather than silently sending
+  // an invalid id to the Worker.
+  const collectionId = rawCollection && rawCollection !== NEW_COLLECTION_VALUE
+    ? rawCollection
+    : null;
+
   const puzzle = {
     type: 'connections',
     groups: validation.groups,
     mistakeMode: document.getElementById('mistake-mode').value,
     defaultTheme: document.getElementById('default-theme').value || null,
     defaultLang: document.getElementById('default-lang').value || null,
-    createdAt: new Date().toISOString(),
+    title: rawTitle || null,
+    collectionId,
+    // Preserve the original createdAt on update — the home page uses it for
+    // in-collection ordering, so overwriting would shuffle history.
+    createdAt: editingId && editingCreatedAt ? editingCreatedAt : new Date().toISOString(),
   };
 
   const password = getCachedPassword();
@@ -382,6 +511,9 @@ function onLangChanged() {
   // We call setSubmitMode again to be defensive if something else edited textContent.
   const btn = document.getElementById('submit-btn');
   if (btn && btn.dataset.i18n) btn.textContent = t(btn.dataset.i18n);
+  // Rebuild the collection dropdown so "None" / "+ New collection" get the new
+  // language. Real collection names come from the API and stay untouched.
+  if (document.getElementById('puzzle-collection')) renderCollectionOptions();
 }
 
 window.addEventListener('lang-changed', onLangChanged);

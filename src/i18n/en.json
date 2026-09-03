@@ -18,6 +18,11 @@
   "home.input.invalid": "That doesn't look like a valid puzzle link or code.",
   "home.greeting": "Let the challenge begin 🪄",
 
+  "home.collections.heading": "Collections",
+  "home.collections.puzzleFallback": "Puzzle #{id}",
+  "home.collections.type.connections": "Connections",
+  "home.collections.type.strands": "Strands",
+
   "footer.credit.nyt": "Custom edition inspired by the {link}.",
   "footer.credit.nyt.linkText": "New York Times original game",
   "footer.credit.instructions": "Vietnamese instructions adapted from {name}.",
@@ -39,6 +44,15 @@
   "editor.load.button": "Load",
   "editor.load.invalid": "Enter a 5-character puzzle ID or a puzzle URL.",
   "editor.load.notFound": "No puzzle found with that ID.",
+
+  "editor.meta.heading": "Puzzle info",
+  "editor.meta.title.label": "Title",
+  "editor.meta.title.placeholder": "e.g. Hogwarts Trivia #1",
+  "editor.meta.collection.label": "Collection",
+  "editor.meta.collection.none": "None",
+  "editor.meta.collection.new": "+ New collection",
+  "editor.meta.collection.prompt": "Name for the new collection:",
+  "editor.meta.collection.help": "Collections group puzzles into a numbered list on the home page.",
 
   "editor.groups.heading": "Groups",
   "editor.group.label": "Group {n}",
@@ -105,6 +119,7 @@
   "play.result.lost.body": "Here's the full solution.",
   "play.result.share": "Share result",
   "play.result.shareCopied": "Copied!",
+  "play.result.shareTitle": "Puzzles HPVN #{id}",
   "play.result.playAnother": "Play another puzzle",
   "play.result.reset": "Play this again"
 }

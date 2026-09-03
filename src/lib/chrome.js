@@ -3,6 +3,7 @@
 
 import { initTheme, cycleTheme, getActiveTheme } from './theme.js';
 import { initI18n, switchLang, getCurrentLang, t, applyTranslations } from './i18n.js';
+import { escapeHtml } from './util.js';
 
 function themeLabel(theme) {
   return t(`theme.${theme}`);
@@ -65,15 +66,6 @@ function updateFooterInstructionsLine() {
   const template = t('footer.credit.instructions');
   const parts = template.split('{name}');
   line.innerHTML = parts.map(escapeHtml).join(name);
-}
-
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
 }
 
 function renderInfoModal() {

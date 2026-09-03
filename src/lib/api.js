@@ -56,3 +56,19 @@ export function updatePuzzle(type, id, puzzle, password) {
     body: JSON.stringify({ puzzle }),
   });
 }
+
+// Collections API. Public list + fetch, password-gated create.
+// Response shape from listCollections:
+//   { collections: [{ id, name, createdAt, typeGroups: [{ type, puzzles: [...] }] }] }
+// Puzzle entries carry only metadata (id, title, createdAt) — no answers.
+export function listCollections() {
+  return request('/api/collections');
+}
+
+export function createCollection(name, password) {
+  return request('/api/collection', {
+    method: 'POST',
+    headers: { ...jsonHeaders(), ...authHeaders(password) },
+    body: JSON.stringify({ name }),
+  });
+}
