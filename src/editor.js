@@ -93,6 +93,11 @@ function renderEditor() {
             <select class="input-block" id="puzzle-collection"></select>
           </div>
         </div>
+        <div class="new-collection-row" id="new-collection-row" hidden>
+          <input type="text" class="input-block" id="new-collection-name" data-i18n-attr="placeholder:editor.meta.collection.namePlaceholder" autocomplete="off" maxlength="60" />
+          <button type="button" class="btn btn-sm btn-primary" id="new-collection-create" data-i18n="editor.meta.collection.createBtn"></button>
+          <button type="button" class="btn btn-sm" id="new-collection-cancel" data-i18n="editor.meta.collection.cancelBtn"></button>
+        </div>
         <p class="meta-help" data-i18n="editor.meta.collection.help"></p>
       </div>
 
@@ -186,43 +191,86 @@ function renderCollectionOptions(selectedIdOverride) {
   }
 }
 
-// Fired when the collection dropdown changes. If the user picked the
-// "+ New collection" sentinel, prompt for a name, create it via the API,
-// then re-render options with the new id selected. If they cancel the
-// prompt or the create fails, fall back to "no collection".
-async function onCollectionChange(e) {
+// Fired when the collection dropdown changes. Picking the "+ New collection"
+// sentinel reveals an inline name field; picking anything else hides it.
+// The actual create happens when the user clicks the inline Create button.
+function onCollectionChange(e) {
   const sel = e.target;
-  if (sel.value !== NEW_COLLECTION_VALUE) return;
+  if (sel.value === NEW_COLLECTION_VALUE) {
+    showNewCollectionRow();
+  } else {
+    hideNewCollectionRow();
+  }
+}
 
-  const name = window.prompt(t('editor.meta.collection.prompt'));
-  const trimmed = (name || '').trim();
-  if (!trimmed) {
-    sel.value = '';
+function showNewCollectionRow() {
+  const row = document.getElementById('new-collection-row');
+  const input = document.getElementById('new-collection-name');
+  if (!row || !input) return;
+  row.hidden = false;
+  input.value = '';
+  input.focus();
+}
+
+function hideNewCollectionRow() {
+  const row = document.getElementById('new-collection-row');
+  if (row) row.hidden = true;
+}
+
+// User clicked Cancel on the inline "new collection" row — revert the
+// dropdown to "None" and hide the row.
+function onNewCollectionCancel() {
+  const sel = document.getElementById('puzzle-collection');
+  if (sel) sel.value = '';
+  hideNewCollectionRow();
+}
+
+// User clicked Create. Validate, call the API, then swap the new collection
+// into the dropdown as the current selection.
+async function onNewCollectionCreate() {
+  const input = document.getElementById('new-collection-name');
+  const errEl = document.getElementById('editor-error');
+  const name = (input?.value || '').trim();
+  if (!name) {
+    input?.focus();
     return;
   }
 
   const password = getCachedPassword();
   if (!password) {
-    sel.value = '';
+    onNewCollectionCancel();
     renderGate();
     return;
   }
 
-  const errEl = document.getElementById('editor-error');
+  const createBtn = document.getElementById('new-collection-create');
+  const originalText = createBtn?.textContent;
+  if (createBtn) {
+    createBtn.disabled = true;
+    createBtn.textContent = t('editor.actions.submitting');
+  }
   try {
-    const created = await createCollection(trimmed, password);
+    const created = await createCollection(name, password);
     collectionsCache.push({ id: created.id, name: created.name, createdAt: created.createdAt });
+    hideNewCollectionRow();
     renderCollectionOptions(created.id);
+    if (errEl) errEl.hidden = true;
   } catch (err) {
-    sel.value = '';
     if (err.status === 401) {
       clearCachedPassword();
-      errEl.textContent = t('editor.error.wrongPassword');
-      errEl.hidden = false;
+      if (errEl) {
+        errEl.textContent = t('editor.error.wrongPassword');
+        errEl.hidden = false;
+      }
       setTimeout(() => renderGate(), 1200);
-    } else {
+    } else if (errEl) {
       errEl.textContent = err.message || t('editor.error.generic');
       errEl.hidden = false;
+    }
+  } finally {
+    if (createBtn) {
+      createBtn.disabled = false;
+      createBtn.textContent = originalText;
     }
   }
 }
@@ -265,6 +313,13 @@ function wireEditorEvents() {
     if (e.key === 'Enter') { e.preventDefault(); onLoadExisting(); }
   });
   document.getElementById('puzzle-collection').addEventListener('change', onCollectionChange);
+  document.getElementById('new-collection-create').addEventListener('click', onNewCollectionCreate);
+  document.getElementById('new-collection-cancel').addEventListener('click', onNewCollectionCancel);
+  // Enter in the name field creates; Escape cancels.
+  document.getElementById('new-collection-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); onNewCollectionCreate(); }
+    else if (e.key === 'Escape') { e.preventDefault(); onNewCollectionCancel(); }
+  });
 }
 
 // ============== LOAD EXISTING ==============
@@ -298,6 +353,7 @@ async function onLoadExisting() {
     // Re-render options with the loaded collectionId preselected. If the
     // collection no longer exists, this quietly falls back to "no collection".
     renderCollectionOptions(puzzle.collectionId || '');
+    hideNewCollectionRow();
     setSubmitMode('update');
     input.value = id;
     showResult({ kind: 'loaded', id });
@@ -318,6 +374,7 @@ function onReset() {
   document.getElementById('puzzle-title').value = '';
   document.getElementById('load-id').value = '';
   renderCollectionOptions('');
+  hideNewCollectionRow();
   setSubmitMode('create');
   document.getElementById('editor-error').hidden = true;
   document.getElementById('result-slot').innerHTML = '';
@@ -416,12 +473,13 @@ async function onEditorSubmit(e) {
     if (editingId) {
       await updatePuzzle('connections', editingId, puzzle, password);
       id = editingId;
-      url = `/play.html#c/${id}`;
+      // Short URL — Cloudflare Pages redirects /c/{id} → /play.html#c/{id}.
+      url = `/c/${id}`;
       showResult({ kind: 'updated', id, url });
     } else {
       const res = await createPuzzle('connections', puzzle, password);
       id = res.id;
-      url = `/play.html#c/${id}`;
+      url = `/c/${id}`;
       showResult({ kind: 'created', id, url });
     }
   } catch (err) {

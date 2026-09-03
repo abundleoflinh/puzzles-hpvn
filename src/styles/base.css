@@ -492,6 +492,26 @@ input, textarea, select { font: inherit; color: inherit; }
   font-size: 12px;
   color: var(--fg-tiny);
 }
+
+/* Inline "new collection" row: appears below the meta-row when the
+   "+ New collection" option is picked. Hidden by [hidden]. */
+.new-collection-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.new-collection-row input {
+  flex: 1;
+  min-width: 140px;
+}
+@media (max-width: 500px) {
+  .new-collection-row .btn { flex: 1; }
+}
 .field-label {
   display: block;
   font-size: 12px;

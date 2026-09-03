@@ -51,7 +51,9 @@
   "editor.meta.collection.label": "Bộ sưu tập",
   "editor.meta.collection.none": "Không",
   "editor.meta.collection.new": "+ Tạo bộ sưu tập mới",
-  "editor.meta.collection.prompt": "Tên bộ sưu tập mới:",
+  "editor.meta.collection.namePlaceholder": "Tên bộ sưu tập mới",
+  "editor.meta.collection.createBtn": "Tạo",
+  "editor.meta.collection.cancelBtn": "Hủy",
   "editor.meta.collection.help": "Bộ sưu tập nhóm các bộ đề thành danh sách đánh số trên trang chủ.",
 
   "editor.groups.heading": "Các chủ đề",

@@ -68,6 +68,21 @@ function updateFooterInstructionsLine() {
   line.innerHTML = parts.map(escapeHtml).join(name);
 }
 
+// Focusable-element selector for the trap. Excludes disabled controls and
+// elements explicitly opted out with tabindex="-1".
+const FOCUSABLE_SEL = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+// Element to return focus to when the modal closes. Captured on open so we
+// don't need to guess (usually the About link).
+let lastFocusedBeforeModal = null;
+
 function renderInfoModal() {
   if (document.getElementById('info-modal')) return;
   const modal = document.createElement('div');
@@ -97,13 +112,44 @@ function renderInfoModal() {
     if (e.target === modal || e.target.closest('[data-action="close-info"]')) closeInfo();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeInfo();
+    if (modal.hasAttribute('hidden')) return;
+    if (e.key === 'Escape') { closeInfo(); return; }
+    // Focus trap: Tab and Shift+Tab wrap within the modal.
+    if (e.key === 'Tab') trapTab(modal, e);
   });
+}
+
+// Keep Tab / Shift+Tab focus movement inside the modal. Preserves natural
+// keyboard behavior when there are multiple focusable elements, and clamps
+// to the close button if there's only one.
+function trapTab(modal, e) {
+  const focusables = [...modal.querySelectorAll(FOCUSABLE_SEL)].filter(
+    (el) => !el.hasAttribute('hidden') && el.offsetParent !== null
+  );
+  if (!focusables.length) { e.preventDefault(); return; }
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (e.shiftKey && (active === first || !modal.contains(active))) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && (active === last || !modal.contains(active))) {
+    e.preventDefault();
+    first.focus();
+  }
 }
 
 function openInfo() {
   const modal = document.getElementById('info-modal');
   if (!modal) return;
+  lastFocusedBeforeModal = document.activeElement;
+  // Hide the rest of the page from AT + pointer while the modal is up.
+  // `inert` is broadly supported in modern browsers; the aria-hidden
+  // fallback catches older ones. Excludes the modal itself.
+  document.querySelectorAll('body > :not(#info-modal)').forEach((el) => {
+    el.setAttribute('inert', '');
+    el.setAttribute('aria-hidden', 'true');
+  });
   modal.removeAttribute('hidden');
   modal.querySelector('.icon-btn[data-action="close-info"]').focus();
 }
@@ -111,6 +157,15 @@ function closeInfo() {
   const modal = document.getElementById('info-modal');
   if (!modal) return;
   modal.setAttribute('hidden', '');
+  document.querySelectorAll('body > :not(#info-modal)').forEach((el) => {
+    el.removeAttribute('inert');
+    el.removeAttribute('aria-hidden');
+  });
+  // Restore focus to whatever the user was on before the modal opened.
+  if (lastFocusedBeforeModal && typeof lastFocusedBeforeModal.focus === 'function') {
+    lastFocusedBeforeModal.focus();
+  }
+  lastFocusedBeforeModal = null;
 }
 
 function updateThemeButton() {

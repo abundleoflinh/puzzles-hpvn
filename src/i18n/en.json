@@ -51,7 +51,9 @@
   "editor.meta.collection.label": "Collection",
   "editor.meta.collection.none": "None",
   "editor.meta.collection.new": "+ New collection",
-  "editor.meta.collection.prompt": "Name for the new collection:",
+  "editor.meta.collection.namePlaceholder": "New collection name",
+  "editor.meta.collection.createBtn": "Create",
+  "editor.meta.collection.cancelBtn": "Cancel",
   "editor.meta.collection.help": "Collections group puzzles into a numbered list on the home page.",
 
   "editor.groups.heading": "Groups",

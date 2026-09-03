@@ -1,0 +1,12 @@
+# Short-link routing for shareable puzzle URLs.
+#
+# The Worker's create response returns short paths like "/c/abc12". These
+# rules 302 the browser to the hash-based play page so play.js can pick up
+# the id from the URL fragment. Cloudflare Pages preserves the fragment in
+# the Location header.
+#
+# The trailing "!" (force) is deliberately omitted — if a real file ever
+# exists at these paths (it shouldn't), it wins over the redirect.
+
+/c/:id  /play.html#c/:id  302
+/s/:id  /play.html#s/:id  302

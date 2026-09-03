@@ -5,3 +5,6 @@ dist/
 .env.local
 .DS_Store
 *.log
+
+# Local wrangler config carries the real KV namespace id — see wrangler.toml.example.
+worker/wrangler.toml

@@ -69,7 +69,7 @@ async function main() {
   // Restore progress. solvedGroups holds full group objects; on a loss we push
   // any remaining groups into it so the player sees the full solution.
   const saved = getProgress('connections', puzzleId);
-  const solvedGroups = saved?.solvedGroups || saved?.foundGroups || [];
+  const solvedGroups = saved?.solvedGroups || [];
   const allWords = puzzle.groups.flatMap((g) => g.words);
   const solvedWords = new Set(solvedGroups.flatMap((g) => g.words));
   const remainingWords = allWords.filter((w) => !solvedWords.has(w));
