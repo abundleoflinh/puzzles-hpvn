@@ -139,7 +139,7 @@ function render() {
   }
 
   renderSolvedRows();
-  if (!done) renderGrid();
+  renderGrid();  // idempotent — clears then re-appends state.remainingWords (empty when done)
   renderMistakes();
   renderControls(done);
   restoreFeedback();
