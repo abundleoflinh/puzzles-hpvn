@@ -288,7 +288,7 @@ function restoreFeedback() {
 // huge tiles. Two floors: single-line first, wrap fallback (up to 3 lines) if
 // single-line can't fit above MIN_FONT_SINGLE.
 const MAX_FONT_CAP = 22;
-const MIN_FONT_SINGLE = 11;  // below this, prefer wrapping instead of shrinking further
+const MIN_FONT_SINGLE = 10;  // below this, prefer wrapping instead of shrinking further
 const MIN_FONT_WRAP = 13;    // absolute floor when wrapping
 const MAX_LINES = 3;
 
