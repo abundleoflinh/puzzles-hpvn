@@ -342,6 +342,14 @@ export default {
         return await handleFetchCollection(env, collectionMatch[1]);
       }
 
+      // ---------- auth ----------
+      // Password check for the editor gate. Returns 200 on match, 401 otherwise.
+      // No side effects — used only to decide whether to render the editor UI.
+      if (path === '/api/auth/check' && request.method === 'GET') {
+        if (!checkPassword(request, env)) return json({ error: 'unauthorized' }, 401);
+        return json({ ok: true });
+      }
+
       // ---------- misc ----------
       if (path === '/api/health' && request.method === 'GET') {
         return json({ ok: true, ts: new Date().toISOString() });

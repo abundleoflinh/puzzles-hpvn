@@ -8,7 +8,7 @@
 import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t, applyTranslations } from './lib/i18n.js';
-import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollection } from './lib/api.js';
+import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollection, verifyPassword } from './lib/api.js';
 import { escapeHtml } from './lib/util.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
@@ -54,14 +54,39 @@ function renderGate() {
   document.getElementById('gate-password').focus();
 }
 
-function onGateSubmit(e) {
+async function onGateSubmit(e) {
   e.preventDefault();
   const pw = document.getElementById('gate-password').value;
   if (!pw) return;
-  // No pre-validation endpoint — we cache and show the form.
-  // Real validation happens on submit. If wrong, we bounce back here.
-  cachePassword(pw);
-  renderEditor();
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const input = document.getElementById('gate-password');
+  const errEl = document.getElementById('gate-error');
+  errEl.hidden = true;
+  // Disable the form while the check is in flight so a mash of Enter doesn't
+  // stack up requests or race the redirect.
+  submitBtn.disabled = true;
+  input.disabled = true;
+  try {
+    const ok = await verifyPassword(pw);
+    if (!ok) {
+      errEl.textContent = t('editor.error.wrongPassword');
+      errEl.hidden = false;
+      // Do NOT cache — a wrong password must never grant access to the editor.
+      input.value = '';
+      input.focus();
+      return;
+    }
+    cachePassword(pw);
+    renderEditor();
+  } catch (err) {
+    // Network / 5xx: keep the user on the gate rather than showing an editor
+    // we can't verify auth against.
+    errEl.textContent = err.message || t('editor.error.generic');
+    errEl.hidden = false;
+  } finally {
+    submitBtn.disabled = false;
+    input.disabled = false;
+  }
 }
 
 // ============== EDITOR FORM ==============
@@ -580,5 +605,20 @@ window.addEventListener('lang-changed', onLangChanged);
 
 initChrome();
 
-if (getCachedPassword()) renderEditor();
-else renderGate();
+// Verify any cached password against the Worker before showing the editor.
+// A stale/rotated password must not slip through just because it's in
+// sessionStorage from an earlier successful login.
+(async () => {
+  const cached = getCachedPassword();
+  if (!cached) { renderGate(); return; }
+  try {
+    const ok = await verifyPassword(cached);
+    if (ok) { renderEditor(); return; }
+    clearCachedPassword();
+    renderGate();
+  } catch {
+    // Network error verifying — fall back to the gate rather than show an
+    // editor whose auth we can't confirm.
+    renderGate();
+  }
+})();

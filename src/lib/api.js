@@ -65,6 +65,19 @@ export function listCollections() {
   return request('/api/collections');
 }
 
+// Verify the editor password against the Worker. Resolves true on 200,
+// false on 401. Any other error (network, 5xx) rethrows so the caller can
+// distinguish "wrong password" from "couldn't reach server".
+export async function verifyPassword(password) {
+  try {
+    await request('/api/auth/check', { headers: authHeaders(password) });
+    return true;
+  } catch (err) {
+    if (err.status === 401) return false;
+    throw err;
+  }
+}
+
 export function createCollection(name, password) {
   return request('/api/collection', {
     method: 'POST',
