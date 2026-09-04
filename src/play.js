@@ -554,7 +554,11 @@ function renderResult(won) {
     for (const g of puzzle.groups) {
       if (!solvedDiffs.has(g.difficulty)) state.solvedGroups.push(g);
     }
+    // Clear remaining tiles so the grid doesn't render them alongside the
+    // revealed solution rows (otherwise the same words show twice).
+    state.remainingWords = [];
     renderSolvedRows();
+    renderGrid();
   }
 
   const title = won ? t('play.result.won.title') : t('play.result.lost.title');
