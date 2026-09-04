@@ -66,6 +66,17 @@
   "editor.group.wordsPlaceholder": "4 words separated by commas",
   "editor.group.wordsHelp": "e.g. GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
 
+  "editor.layout.heading": "Initial layout (optional)",
+  "editor.layout.help": "Pin tiles to specific positions on first load. Click a word, then click a slot. Shuffling or a first guess ignores pins for that session.",
+  "editor.layout.clear": "Clear pins",
+  "editor.layout.preview": "Preview random fill",
+  "editor.layout.exitPreview": "Exit preview",
+  "editor.layout.count": "{n} pinned",
+  "editor.layout.emptyGroup": "(enter 4 words above)",
+  "editor.layout.slotAria": "Grid slot {n}",
+  "editor.layout.gridAria": "Pinned tile grid",
+  "editor.layout.poolAria": "Available words",
+
   "editor.options.mistakeMode.label": "Mistakes",
   "editor.options.mistakeMode.four": "4 strikes",
   "editor.options.mistakeMode.endless": "Endless",

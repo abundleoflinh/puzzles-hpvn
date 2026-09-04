@@ -72,6 +72,24 @@ function validatePuzzle(puzzle, type) {
     for (const g of puzzle.groups) {
       if (!Array.isArray(g.words) || g.words.length !== 4) return 'each group needs 4 words';
     }
+    // Optional pinnedLayout: 16-slot array of null | {g:0-3, w:0-3}. Each
+    // {g,w} must be unique — otherwise two tiles would race for one slot.
+    if (puzzle.pinnedLayout != null) {
+      if (!Array.isArray(puzzle.pinnedLayout) || puzzle.pinnedLayout.length !== 16) {
+        return 'pinnedLayout must be a 16-item array';
+      }
+      const seen = new Set();
+      for (let i = 0; i < 16; i++) {
+        const p = puzzle.pinnedLayout[i];
+        if (p === null) continue;
+        if (!p || typeof p !== 'object') return `pinnedLayout[${i}] must be null or an object`;
+        if (!Number.isInteger(p.g) || p.g < 0 || p.g > 3) return `pinnedLayout[${i}].g out of range`;
+        if (!Number.isInteger(p.w) || p.w < 0 || p.w > 3) return `pinnedLayout[${i}].w out of range`;
+        const key = `${p.g}:${p.w}`;
+        if (seen.has(key)) return `pinnedLayout has duplicate reference to group ${p.g} word ${p.w}`;
+        seen.add(key);
+      }
+    }
   }
   // Optional title: string, trimmed length ≤ MAX_TITLE_LEN.
   if (puzzle.title != null) {

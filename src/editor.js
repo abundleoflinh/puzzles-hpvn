@@ -22,6 +22,16 @@ let editingCreatedAt = null; // preserved so updates don't reset home-page order
 // without a refetch. Refreshed on editor render.
 let collectionsCache = []; // [{ id, name, ... }]
 
+// ============== INITIAL LAYOUT (PINNED TILES) ==============
+// Editor can pin 0–16 tiles to specific slots of the 4x4 grid. Only affects
+// first-load rendering on the player side — Shuffle or the first guess wipes
+// pins for that session. Pins reference words by {g, w} index (not string),
+// so renaming a word preserves its pin.
+let pinnedLayout = Array(16).fill(null); // each entry: null | { g: 0-3, w: 0-3 }
+let poolSelected = null;                 // null | { g, w } — pool word waiting to be placed
+let layoutExpanded = false;              // collapsed by default
+let previewFill = null;                  // null | full 16-slot preview render (temp)
+
 // ============== PASSWORD GATE ==============
 
 function getCachedPassword() {
@@ -131,6 +141,8 @@ function renderEditor() {
         <div id="groups-container"></div>
       </div>
 
+      <div class="editor-section" id="layout-section"></div>
+
       <div class="options-row">
         <div>
           <label class="field-label" for="mistake-mode" data-i18n="editor.options.mistakeMode.label"></label>
@@ -169,6 +181,7 @@ function renderEditor() {
     <div id="result-slot"></div>
   `;
   renderGroupRows();
+  renderLayoutSection();
   applyTranslations(main);
   wireEditorEvents();
   // Fetch collections in the background so the dropdown fills in without
@@ -327,7 +340,225 @@ function renderGroupRows(prefill) {
       rows[i].querySelector('.group-words').value = (g.words || []).join(', ');
     });
   }
+  // Live sync: whenever the editor changes a group's words, the layout pool
+  // may need to reflect renames or dropped words. Pins survive rename (index-based)
+  // but are silently reconciled when their target index no longer exists.
+  container.querySelectorAll('.group-words').forEach((input) => {
+    input.addEventListener('input', onGroupWordsChanged);
+  });
   applyTranslations(container);
+}
+
+function onGroupWordsChanged() {
+  if (layoutExpanded) renderLayoutBody();
+  else updateLayoutCount();
+}
+
+// ============== LAYOUT SECTION ==============
+
+// Read the current typed words for a group from the DOM. Source of truth is
+// the input, not any cached copy — that way pins react live to editor typing.
+function getGroupWords(g) {
+  const rows = document.querySelectorAll('.group-row');
+  if (!rows[g]) return [];
+  return splitWords(rows[g].querySelector('.group-words').value);
+}
+
+function isPinned(g, w) {
+  return pinnedLayout.some((p) => p && p.g === g && p.w === w);
+}
+
+// Drop any pin whose {g,w} no longer resolves to a real word. Called every
+// time we render the layout body so stale pins never appear in the UI or
+// leak into the submit payload.
+function reconcilePins() {
+  for (let i = 0; i < 16; i++) {
+    const p = pinnedLayout[i];
+    if (!p) continue;
+    if (!getGroupWords(p.g)[p.w]) pinnedLayout[i] = null;
+  }
+  if (poolSelected && !getGroupWords(poolSelected.g)[poolSelected.w]) {
+    poolSelected = null;
+  }
+}
+
+function renderLayoutSection() {
+  const section = document.getElementById('layout-section');
+  if (!section) return;
+  section.innerHTML = `
+    <button type="button" class="layout-toggle" id="layout-toggle" aria-expanded="${layoutExpanded}">
+      <span class="layout-chevron" aria-hidden="true">${layoutExpanded ? '▾' : '▸'}</span>
+      <span data-i18n="editor.layout.heading"></span>
+      <span class="layout-count" id="layout-count"></span>
+    </button>
+    <div class="layout-body" id="layout-body" ${layoutExpanded ? '' : 'hidden'}></div>
+  `;
+  applyTranslations(section);
+  document.getElementById('layout-toggle').addEventListener('click', onLayoutToggle);
+  updateLayoutCount();
+  if (layoutExpanded) renderLayoutBody();
+}
+
+function onLayoutToggle() {
+  layoutExpanded = !layoutExpanded;
+  const body = document.getElementById('layout-body');
+  const toggle = document.getElementById('layout-toggle');
+  const chev = toggle?.querySelector('.layout-chevron');
+  if (body) body.hidden = !layoutExpanded;
+  if (toggle) toggle.setAttribute('aria-expanded', layoutExpanded ? 'true' : 'false');
+  if (chev) chev.textContent = layoutExpanded ? '▾' : '▸';
+  if (layoutExpanded) renderLayoutBody();
+}
+
+function updateLayoutCount() {
+  const el = document.getElementById('layout-count');
+  if (!el) return;
+  const n = pinnedLayout.filter(Boolean).length;
+  el.textContent = n === 0 ? '' : t('editor.layout.count', { n });
+}
+
+function renderLayoutBody() {
+  const body = document.getElementById('layout-body');
+  if (!body) return;
+  reconcilePins();
+
+  // Which array to render into the 4x4 grid: preview overlay if the editor
+  // hit "Preview random fill", else just the pinned tiles.
+  const displayGrid = previewFill || pinnedLayout;
+  const gridCells = [];
+  for (let i = 0; i < 16; i++) {
+    const slot = displayGrid[i];
+    let inner = '';
+    let cls = 'layout-slot';
+    if (slot) {
+      const word = getGroupWords(slot.g)[slot.w] || '';
+      inner = `<span class="layout-slot-word">${escapeHtml(word)}</span>`;
+      cls += ` diff-${slot.g + 1}`;
+      cls += previewFill && !pinnedLayout[i] ? ' preview' : ' pinned';
+    } else {
+      inner = `<span class="layout-slot-index" aria-hidden="true">${i + 1}</span>`;
+    }
+    gridCells.push(
+      `<button type="button" class="${cls}" data-slot="${i}" aria-label="${t('editor.layout.slotAria', { n: i + 1 })}">${inner}</button>`
+    );
+  }
+
+  const poolGroups = [];
+  for (let g = 0; g < 4; g++) {
+    const words = getGroupWords(g);
+    if (!words.length) {
+      poolGroups.push(
+        `<div class="layout-pool-group diff-${g + 1}"><span class="layout-pool-empty" data-i18n="editor.layout.emptyGroup"></span></div>`
+      );
+      continue;
+    }
+    const wordEls = words.map((word, wIdx) => {
+      const pinned = isPinned(g, wIdx);
+      const selected = poolSelected && poolSelected.g === g && poolSelected.w === wIdx;
+      const classes = ['layout-pool-word'];
+      if (pinned) classes.push('pinned');
+      if (selected) classes.push('selected');
+      return `<button type="button" class="${classes.join(' ')}" data-g="${g}" data-w="${wIdx}" ${pinned ? 'disabled' : ''}>${escapeHtml(word)}</button>`;
+    }).join('');
+    poolGroups.push(`<div class="layout-pool-group diff-${g + 1}">${wordEls}</div>`);
+  }
+
+  body.innerHTML = `
+    <p class="layout-help" data-i18n="editor.layout.help"></p>
+    <div class="layout-actions">
+      <button type="button" class="btn btn-sm" id="layout-clear" data-i18n="editor.layout.clear"></button>
+      <button type="button" class="btn btn-sm" id="layout-preview" data-i18n="editor.layout.preview"></button>
+      ${previewFill ? `<button type="button" class="btn btn-sm" id="layout-exit-preview" data-i18n="editor.layout.exitPreview"></button>` : ''}
+    </div>
+    <div class="layout-workspace">
+      <div class="layout-grid" role="grid" aria-label="${t('editor.layout.gridAria')}">${gridCells.join('')}</div>
+      <div class="layout-pool" role="list" aria-label="${t('editor.layout.poolAria')}">${poolGroups.join('')}</div>
+    </div>
+  `;
+  applyTranslations(body);
+  updateLayoutCount();
+
+  body.querySelectorAll('.layout-slot').forEach((el) => {
+    el.addEventListener('click', () => onSlotClick(Number(el.dataset.slot)));
+  });
+  body.querySelectorAll('.layout-pool-word').forEach((el) => {
+    if (el.disabled) return;
+    el.addEventListener('click', () => onPoolWordClick(Number(el.dataset.g), Number(el.dataset.w)));
+  });
+  document.getElementById('layout-clear').addEventListener('click', onClearPins);
+  document.getElementById('layout-preview').addEventListener('click', onPreviewFill);
+  const exitBtn = document.getElementById('layout-exit-preview');
+  if (exitBtn) exitBtn.addEventListener('click', onExitPreview);
+}
+
+function onPoolWordClick(g, w) {
+  previewFill = null; // any interaction exits preview mode
+  if (isPinned(g, w)) return;
+  if (poolSelected && poolSelected.g === g && poolSelected.w === w) {
+    poolSelected = null; // toggle off
+  } else {
+    poolSelected = { g, w };
+  }
+  renderLayoutBody();
+}
+
+// Click behavior:
+//  - Empty slot + pool word selected → pin it there
+//  - Occupied slot + pool word selected → replace (occupant returns to pool)
+//  - Occupied slot + nothing selected → unpin (return to pool)
+//  - Empty slot + nothing selected → no-op
+function onSlotClick(slot) {
+  previewFill = null;
+  if (poolSelected) {
+    pinnedLayout[slot] = poolSelected;
+    poolSelected = null;
+  } else if (pinnedLayout[slot]) {
+    pinnedLayout[slot] = null;
+  }
+  renderLayoutBody();
+}
+
+function onClearPins() {
+  pinnedLayout = Array(16).fill(null);
+  poolSelected = null;
+  previewFill = null;
+  renderLayoutBody();
+}
+
+// Build a one-shot random arrangement using current pins + typed group words.
+// Meant as a sanity check for the editor — not persisted anywhere.
+function onPreviewFill() {
+  reconcilePins();
+  const fill = pinnedLayout.slice();
+  const remaining = [];
+  for (let g = 0; g < 4; g++) {
+    const words = getGroupWords(g);
+    for (let w = 0; w < words.length; w++) {
+      if (!isPinned(g, w)) remaining.push({ g, w });
+    }
+  }
+  // Fisher-Yates
+  for (let i = remaining.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+  }
+  let idx = 0;
+  for (let i = 0; i < 16; i++) {
+    if (!fill[i] && idx < remaining.length) fill[i] = remaining[idx++];
+  }
+  previewFill = fill;
+  renderLayoutBody();
+}
+
+function onExitPreview() {
+  previewFill = null;
+  renderLayoutBody();
+}
+
+// Called on language flip so section chrome (heading, help, buttons) rebuilds
+// in the new language. State is preserved.
+function rerenderLayoutSection() {
+  renderLayoutSection();
 }
 
 function wireEditorEvents() {
@@ -370,7 +601,21 @@ async function onLoadExisting() {
     const { puzzle } = await fetchPuzzle('connections', id);
     editingId = id;
     editingCreatedAt = puzzle.createdAt || null;
+    // Load pinned layout if the puzzle has one; otherwise start empty.
+    if (Array.isArray(puzzle.pinnedLayout) && puzzle.pinnedLayout.length === 16) {
+      pinnedLayout = puzzle.pinnedLayout.map((p) =>
+        p && Number.isInteger(p.g) && Number.isInteger(p.w) &&
+        p.g >= 0 && p.g <= 3 && p.w >= 0 && p.w <= 3
+          ? { g: p.g, w: p.w }
+          : null
+      );
+    } else {
+      pinnedLayout = Array(16).fill(null);
+    }
+    poolSelected = null;
+    previewFill = null;
     renderGroupRows(puzzle);
+    renderLayoutSection();
     document.getElementById('mistake-mode').value = puzzle.mistakeMode === 'endless' ? 'endless' : 'four';
     document.getElementById('default-theme').value = puzzle.defaultTheme || '';
     document.getElementById('default-lang').value = puzzle.defaultLang || '';
@@ -392,7 +637,12 @@ async function onLoadExisting() {
 function onReset() {
   editingId = null;
   editingCreatedAt = null;
+  pinnedLayout = Array(16).fill(null);
+  poolSelected = null;
+  previewFill = null;
+  layoutExpanded = false;
   renderGroupRows();
+  renderLayoutSection();
   document.getElementById('mistake-mode').value = 'four';
   document.getElementById('default-theme').value = '';
   document.getElementById('default-lang').value = '';
@@ -473,6 +723,11 @@ async function onEditorSubmit(e) {
     ? rawCollection
     : null;
 
+  // Reconcile any stale pins (e.g. word count dropped below 4 in a group) so
+  // we never send a pin whose {g,w} doesn't resolve to a real word.
+  reconcilePins();
+  const hasPins = pinnedLayout.some(Boolean);
+
   const puzzle = {
     type: 'connections',
     groups: validation.groups,
@@ -485,6 +740,11 @@ async function onEditorSubmit(e) {
     // in-collection ordering, so overwriting would shuffle history.
     createdAt: editingId && editingCreatedAt ? editingCreatedAt : new Date().toISOString(),
   };
+  // Only include pinnedLayout when at least one tile is pinned. Absent field
+  // = current shuffle-everything behavior (no migration).
+  if (hasPins) {
+    puzzle.pinnedLayout = pinnedLayout.map((p) => (p ? { g: p.g, w: p.w } : null));
+  }
 
   const password = getCachedPassword();
   if (!password) { renderGate(); return; }
@@ -597,6 +857,9 @@ function onLangChanged() {
   // Rebuild the collection dropdown so "None" / "+ New collection" get the new
   // language. Real collection names come from the API and stay untouched.
   if (document.getElementById('puzzle-collection')) renderCollectionOptions();
+  // Layout section chrome (heading, help text, buttons, aria labels) is built
+  // with runtime t() — rebuild it so it flips language too. State preserved.
+  if (document.getElementById('layout-section')) rerenderLayoutSection();
 }
 
 window.addEventListener('lang-changed', onLangChanged);

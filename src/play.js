@@ -80,7 +80,13 @@ async function main() {
     mistakes: saved?.mistakes || 0,
     attempts: saved?.attempts || 0,
     guessHistory: saved?.guessHistory || [],
-    remainingWords: shuffle(remainingWords),
+    // Pinned layout only applies on a genuinely fresh load — no saved progress,
+    // full 16 tiles remaining, and the puzzle actually declares one. Any prior
+    // interaction (Shuffle, guess) means we already saved progress and the
+    // pins are ignored for the rest of the session, per the spec.
+    remainingWords: (!saved && puzzle.pinnedLayout && remainingWords.length === 16)
+      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups)
+      : shuffle(remainingWords),
     feedback: null,
   };
 
@@ -489,13 +495,17 @@ async function onShare() {
 
 function onReset() {
   clearProgress('connections', puzzleId);
+  const allWords = puzzle.groups.flatMap((g) => g.words);
   state = {
     selected: new Set(),
     solvedGroups: [],
     mistakes: 0,
     attempts: 0,
     guessHistory: [],
-    remainingWords: shuffle(puzzle.groups.flatMap((g) => g.words)),
+    // "Play this again" = fresh puzzle → re-apply pins if declared.
+    remainingWords: puzzle.pinnedLayout
+      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups)
+      : shuffle(allWords),
     feedback: null,
   };
   invalidateShell();
@@ -515,6 +525,35 @@ function persist() {
 }
 
 // ============== UTILS ==============
+
+// Arrange 16 words for first-load render, honoring the editor's pinned tiles.
+// Pins reference words by {g, w} index. Any pin that can't resolve (stale
+// data from a since-edited puzzle) is silently ignored — the tile just falls
+// into the shuffle pool instead. Unpinned words are Fisher-Yates shuffled and
+// placed into the remaining slots in order.
+function applyPinnedLayout(layout, groups) {
+  const arr = Array(16).fill(null);
+  const pinnedWords = new Set();
+  for (let i = 0; i < 16; i++) {
+    const p = layout[i];
+    if (
+      p && typeof p === 'object' &&
+      Number.isInteger(p.g) && Number.isInteger(p.w) &&
+      groups[p.g] && typeof groups[p.g].words?.[p.w] === 'string'
+    ) {
+      arr[i] = groups[p.g].words[p.w];
+      pinnedWords.add(arr[i]);
+    }
+  }
+  const remaining = shuffle(
+    groups.flatMap((g) => g.words).filter((w) => !pinnedWords.has(w))
+  );
+  let idx = 0;
+  for (let i = 0; i < 16; i++) {
+    if (!arr[i]) arr[i] = remaining[idx++];
+  }
+  return arr;
+}
 
 function shuffle(arr) {
   const out = [...arr];

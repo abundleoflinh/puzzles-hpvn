@@ -66,6 +66,17 @@
   "editor.group.wordsPlaceholder": "4 từ khóa, cách nhau bằng dấu phẩy",
   "editor.group.wordsHelp": "VD: GRYFFINDOR, SLYTHERIN, RAVENCLAW, HUFFLEPUFF",
 
+  "editor.layout.heading": "Vị trí ban đầu (tùy chọn)",
+  "editor.layout.help": "Ghim từ khóa vào ô cụ thể khi bộ đề mới mở. Nhấn vào một từ, rồi nhấn vào ô muốn ghim. Khi người chơi trộn hoặc đoán lần đầu, các ghim sẽ hết tác dụng cho lượt chơi đó.",
+  "editor.layout.clear": "Xóa ghim",
+  "editor.layout.preview": "Xem thử sắp xếp",
+  "editor.layout.exitPreview": "Thoát xem thử",
+  "editor.layout.count": "{n} ô đã ghim",
+  "editor.layout.emptyGroup": "(nhập 4 từ ở trên)",
+  "editor.layout.slotAria": "Ô số {n}",
+  "editor.layout.gridAria": "Lưới ô đã ghim",
+  "editor.layout.poolAria": "Từ khóa để chọn",
+
   "editor.options.mistakeMode.label": "Số lần sai",
   "editor.options.mistakeMode.four": "4 lần sai",
   "editor.options.mistakeMode.endless": "Không giới hạn",
