@@ -121,7 +121,7 @@
   "play.puzzleId": "Puzzle #{id}",
   "play.mistakes.remaining": "Mistakes remaining:",
   "play.mistakes.endless": "Endless",
-  "play.mistakes.attempt": "Attempt {n}",
+  "play.mistakes.attempt": "Wrong {n}",
   "play.controls.shuffle": "Shuffle",
   "play.controls.deselect": "Deselect all",
   "play.controls.submit": "Submit",
@@ -136,7 +136,6 @@
   "play.result.lost.bodyHidden": "Better luck next time — the editor kept the solution hidden.",
   "play.result.share": "Share result",
   "play.result.shareCopied": "Copied!",
-  "play.result.shareTitle": "Puzzles HPVN #{id}",
   "play.result.playAnother": "Play another puzzle",
   "play.result.reset": "Play this again"
 }

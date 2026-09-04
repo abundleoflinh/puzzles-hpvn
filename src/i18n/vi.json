@@ -121,7 +121,7 @@
   "play.puzzleId": "Bộ đề #{id}",
   "play.mistakes.remaining": "Số lần sai còn lại:",
   "play.mistakes.endless": "Không giới hạn",
-  "play.mistakes.attempt": "Lượt {n}",
+  "play.mistakes.attempt": "Sai {n}",
   "play.controls.shuffle": "Trộn",
   "play.controls.deselect": "Bỏ chọn",
   "play.controls.submit": "Nộp",
@@ -136,7 +136,6 @@
   "play.result.lost.bodyHidden": "Chúc may mắn lần sau — người soạn đề đã ẩn đáp án.",
   "play.result.share": "Chia sẻ kết quả",
   "play.result.shareCopied": "Đã copy!",
-  "play.result.shareTitle": "Puzzles HPVN #{id}",
   "play.result.playAnother": "Chơi bộ đề khác",
   "play.result.reset": "Chơi lại"
 }

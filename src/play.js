@@ -313,7 +313,7 @@ function renderMistakes() {
       <span class="endless-pill">
         <span class="endless-pill-label">${t('play.mistakes.endless')}</span>
         <span class="endless-pill-dot" aria-hidden="true"></span>
-        <span class="endless-pill-count">${t('play.mistakes.attempt', { n: state.attempts })}</span>
+        <span class="endless-pill-count">${t('play.mistakes.attempt', { n: state.mistakes })}</span>
       </span>
     `;
     return;
@@ -581,7 +581,8 @@ function renderResult(won) {
 
 function buildShareText() {
   const url = `${window.location.origin}/play.html#c/${puzzleId}`;
-  const lines = [t('play.result.shareTitle', { id: puzzleId })];
+  const title = puzzle?.title?.trim() || t('home.collections.puzzleFallback', { id: puzzleId });
+  const lines = [title];
   for (const g of state.guessHistory) {
     lines.push(g.difficulties.map((d) => DIFFICULTY_EMOJI[d] || '⬜').join(''));
   }
