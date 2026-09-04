@@ -223,7 +223,10 @@ function renderError(msg) {
 function render() {
   const main = mainSlot();
   const done = isDone();
-  const won = state.solvedGroups.length === puzzle.size;
+  // Won only if all groups solved AND player still had lives (endless never
+  // "loses"). Prevents the post-loss reveal — which fills solvedGroups with
+  // the answers — from being misread as a win on later re-renders.
+  const won = state.solvedGroups.length === puzzle.size && (isEndless() || livesLeft() > 0);
 
   // Mount the shell once. Subsequent renders update slots in place, so existing
   // solved rows aren't re-created — otherwise the CSS entrance animation fires
