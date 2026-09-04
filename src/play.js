@@ -228,10 +228,11 @@ function render() {
   // Mount the shell once. Subsequent renders update slots in place, so existing
   // solved rows aren't re-created — otherwise the CSS entrance animation fires
   // on every guess and the whole strip flashes.
+  const headerTitle = puzzle?.title?.trim() || t('home.collections.puzzleFallback', { id: puzzleId });
   if (!main.querySelector('#grid')) {
     main.innerHTML = `
       <div class="play-header">
-        <h1>${t('play.puzzleId', { id: puzzleId })}</h1>
+        <h1>${escapeHtml(headerTitle)}</h1>
       </div>
       <div class="solved-rows" id="solved-rows" style="--grid-size: ${puzzle.size}"></div>
       <div class="grid" id="grid" style="--grid-size: ${puzzle.size}"></div>
@@ -243,7 +244,7 @@ function render() {
   } else {
     // Shell already mounted; keep the h1 in sync with current language.
     const h1 = main.querySelector('.play-header h1');
-    if (h1) h1.textContent = t('play.puzzleId', { id: puzzleId });
+    if (h1) h1.textContent = headerTitle;
   }
 
   renderSolvedRows();
