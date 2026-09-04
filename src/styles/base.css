@@ -479,6 +479,9 @@ input, textarea, select { font: inherit; color: inherit; }
   gap: 16px;
   margin-bottom: 28px;
 }
+/* Hide contents but keep the grid cell — used for the reveal-on-fail slot in
+   endless mode so Default Theme / Default Language stay on the same row. */
+.options-row .is-invisible { visibility: hidden; }
 @media (max-width: 500px) {
   .options-row { grid-template-columns: 1fr; }
 }

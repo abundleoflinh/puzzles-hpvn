@@ -430,7 +430,9 @@ function updateRevealVisibility() {
   const wrap = document.getElementById('reveal-on-fail-wrap');
   const mode = document.getElementById('mistake-mode')?.value;
   if (!wrap) return;
-  wrap.hidden = mode === 'endless';
+  // Use a class (not the `hidden` attribute) so the grid cell stays occupied —
+  // keeps Default Theme / Default Language on the same row regardless of mode.
+  wrap.classList.toggle('is-invisible', mode === 'endless');
 }
 
 function onMistakeModeChange() {
