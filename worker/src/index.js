@@ -62,29 +62,76 @@ function generateId() {
 // Minimal shape validation. Games do their own richer validation client-side;
 // this just prevents obviously broken writes from filling KV.
 // Optional metadata fields (title, collectionId) are validated here too.
+const CONNECTIONS_MIN_SIZE = 3;
+const CONNECTIONS_MAX_SIZE = 6;
+const LEGACY_DIFFICULTY_MAP = { yellow: 1, green: 2, blue: 3, red: 4, purple: 4 };
+
 function validatePuzzle(puzzle, type) {
   if (!puzzle || typeof puzzle !== 'object') return 'puzzle must be an object';
   if (puzzle.type !== type) return 'puzzle.type mismatch';
   if (type === 'connections') {
-    if (!Array.isArray(puzzle.groups) || puzzle.groups.length !== 4) {
-      return 'connections puzzle needs exactly 4 groups';
+    // Size: explicit puzzle.size when present, else infer from groups[0].words.length,
+    // else default 4 (legacy puzzles). Must be an int in [3, 6] either way — we
+    // reject out-of-range inferred sizes too, so a bogus payload with 8-word groups
+    // can't sneak through as an "8×8 puzzle".
+    let size;
+    if (puzzle.size != null) {
+      if (!Number.isInteger(puzzle.size) || puzzle.size < CONNECTIONS_MIN_SIZE || puzzle.size > CONNECTIONS_MAX_SIZE) {
+        return `size must be an integer in [${CONNECTIONS_MIN_SIZE}, ${CONNECTIONS_MAX_SIZE}]`;
+      }
+      size = puzzle.size;
+    } else if (Array.isArray(puzzle.groups) && puzzle.groups[0] && Array.isArray(puzzle.groups[0].words)) {
+      const inferred = puzzle.groups[0].words.length;
+      if (inferred < CONNECTIONS_MIN_SIZE || inferred > CONNECTIONS_MAX_SIZE) {
+        return `inferred size ${inferred} out of range [${CONNECTIONS_MIN_SIZE}, ${CONNECTIONS_MAX_SIZE}]`;
+      }
+      size = inferred;
+    } else {
+      size = 4;
+    }
+    if (!Array.isArray(puzzle.groups) || puzzle.groups.length !== size) {
+      return `connections puzzle needs exactly ${size} groups`;
     }
     for (const g of puzzle.groups) {
-      if (!Array.isArray(g.words) || g.words.length !== 4) return 'each group needs 4 words';
+      if (!Array.isArray(g.words) || g.words.length !== size) return `each group needs ${size} words`;
+      // Difficulty (optional): int 1..size OR legacy string in LEGACY_DIFFICULTY_MAP.
+      // If absent, derived by position in the client; we don't enforce presence here.
+      if (g.difficulty != null) {
+        if (typeof g.difficulty === 'string') {
+          if (!(g.difficulty in LEGACY_DIFFICULTY_MAP)) return `unknown legacy difficulty "${g.difficulty}"`;
+        } else if (!Number.isInteger(g.difficulty) || g.difficulty < 1 || g.difficulty > size) {
+          return `group difficulty must be an integer in [1, ${size}]`;
+        }
+      }
     }
-    // Optional pinnedLayout: 16-slot array of null | {g:0-3, w:0-3}. Each
-    // {g,w} must be unique — otherwise two tiles would race for one slot.
+    // Optional mistakeMode: 'endless', integer 3..6, or legacy 'four'/'four_strikes'.
+    if (puzzle.mistakeMode != null) {
+      const m = puzzle.mistakeMode;
+      const isLegacyFour = m === 'four';
+      const isEndless = m === 'endless';
+      const isValidInt = Number.isInteger(m) && m >= 3 && m <= 6;
+      if (!isLegacyFour && !isEndless && !isValidInt) {
+        return `mistakeMode must be 'endless' or an integer in [3, 6]`;
+      }
+    }
+    // Optional revealOnFail (default true when absent — preserves legacy behavior).
+    if (puzzle.revealOnFail != null && typeof puzzle.revealOnFail !== 'boolean') {
+      return 'revealOnFail must be a boolean';
+    }
+    // Optional pinnedLayout: (size*size)-slot array of null | {g:0..size-1, w:0..size-1}.
+    // Each {g,w} must be unique — otherwise two tiles would race for one slot.
     if (puzzle.pinnedLayout != null) {
-      if (!Array.isArray(puzzle.pinnedLayout) || puzzle.pinnedLayout.length !== 16) {
-        return 'pinnedLayout must be a 16-item array';
+      const expected = size * size;
+      if (!Array.isArray(puzzle.pinnedLayout) || puzzle.pinnedLayout.length !== expected) {
+        return `pinnedLayout must be a ${expected}-item array`;
       }
       const seen = new Set();
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < expected; i++) {
         const p = puzzle.pinnedLayout[i];
         if (p === null) continue;
         if (!p || typeof p !== 'object') return `pinnedLayout[${i}] must be null or an object`;
-        if (!Number.isInteger(p.g) || p.g < 0 || p.g > 3) return `pinnedLayout[${i}].g out of range`;
-        if (!Number.isInteger(p.w) || p.w < 0 || p.w > 3) return `pinnedLayout[${i}].w out of range`;
+        if (!Number.isInteger(p.g) || p.g < 0 || p.g >= size) return `pinnedLayout[${i}].g out of range`;
+        if (!Number.isInteger(p.w) || p.w < 0 || p.w >= size) return `pinnedLayout[${i}].w out of range`;
         const key = `${p.g}:${p.w}`;
         if (seen.has(key)) return `pinnedLayout has duplicate reference to group ${p.g} word ${p.w}`;
         seen.add(key);

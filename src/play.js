@@ -15,14 +15,23 @@ import { switchLang } from './lib/i18n.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
 import { escapeHtml } from './lib/util.js';
 
+// Share-tile emoji per difficulty tier. Six because a puzzle can be up to 6x6.
 const DIFFICULTY_EMOJI = {
-  yellow: '🟨',
-  green:  '🟩',
-  blue:   '🟦',
-  red:    '🟪',  // Legacy key name; --diff-4 is purple in the unified palette.
+  1: '🟨',
+  2: '🟩',
+  3: '🟦',
+  4: '🟪',
+  5: '🟧',
+  6: '🩷',
 };
+// Legacy string difficulties on puzzles saved before the numeric-tier migration.
+const LEGACY_DIFFICULTY_MAP = { yellow: 1, green: 2, blue: 3, red: 4, purple: 4 };
+const MIN_SIZE = 3;
+const MAX_SIZE = 6;
+const DEFAULT_SIZE = 4;
+const DEFAULT_MISTAKES = 4;
 
-let puzzle = null;    // { groups: [{name, words, difficulty}], mistakeMode, defaultTheme, createdAt }
+let puzzle = null;    // normalized: { groups[{name, words, difficulty:int}], size, mistakeMode, revealOnFail, ... }
 let puzzleId = null;
 let state = null;     // see main() for shape
 
@@ -35,6 +44,71 @@ let resizeTimer = null;
 function parseUrl() {
   const m = window.location.hash.match(/^#c\/([A-Za-z0-9]{5})$/);
   return m ? m[1] : null;
+}
+
+// ============== PUZZLE NORMALIZATION ==============
+
+// Coerce a difficulty field to a numeric tier. Numeric passthrough; legacy
+// strings map via LEGACY_DIFFICULTY_MAP; anything else falls back to `fallback`.
+function coerceDifficulty(d, fallback) {
+  if (Number.isInteger(d)) return d;
+  if (typeof d === 'string' && d in LEGACY_DIFFICULTY_MAP) return LEGACY_DIFFICULTY_MAP[d];
+  return fallback;
+}
+
+// Normalize a fetched puzzle so the rest of play.js can assume:
+//  - `size` is an int in [MIN_SIZE, MAX_SIZE]
+//  - each group's `difficulty` is a numeric tier in [1, size]
+//  - `mistakeMode` is 'endless' or an int
+//  - `revealOnFail` is a boolean
+// Puzzles saved before these fields existed get sensible defaults so old links
+// keep working with no server-side migration.
+// Returns null (with an error logged) if the puzzle is structurally unusable —
+// caller should show the generic load error rather than a broken board.
+function normalizePuzzle(raw) {
+  const p = { ...raw };
+  // Size: explicit and in-range, else infer from first group's word count.
+  // If the inferred value is out of range too, the puzzle is corrupt — refuse
+  // rather than silently rendering a mismatched grid.
+  let size;
+  if (Number.isInteger(p.size) && p.size >= MIN_SIZE && p.size <= MAX_SIZE) {
+    size = p.size;
+  } else if (Array.isArray(p.groups) && p.groups[0] && Array.isArray(p.groups[0].words)) {
+    const inferred = p.groups[0].words.length;
+    if (inferred >= MIN_SIZE && inferred <= MAX_SIZE) {
+      size = inferred;
+    } else {
+      console.error(`[connections] puzzle size ${inferred} outside [${MIN_SIZE}, ${MAX_SIZE}]`);
+      return null;
+    }
+  } else {
+    size = DEFAULT_SIZE;
+  }
+  p.size = size;
+  p.groups = (p.groups || []).map((g, i) => ({
+    ...g,
+    difficulty: coerceDifficulty(g.difficulty, i + 1),
+  }));
+  // mistakeMode: legacy 'four' → 4; already-endless or already-int passthrough; default 4.
+  if (p.mistakeMode === 'four') p.mistakeMode = DEFAULT_MISTAKES;
+  else if (p.mistakeMode !== 'endless' && !Number.isInteger(p.mistakeMode)) p.mistakeMode = DEFAULT_MISTAKES;
+  // revealOnFail: default true (matches legacy behavior — old puzzles always revealed).
+  p.revealOnFail = p.revealOnFail !== false;
+  return p;
+}
+
+// Also normalize a saved-progress solvedGroups array so difficulties from old
+// saves (strings) don't mix with numeric tiers in the same UI state.
+function normalizeSavedSolvedGroups(saved, groups) {
+  if (!Array.isArray(saved)) return [];
+  return saved.map((g) => {
+    // Try to match by name against the current puzzle groups so we can pick up
+    // the puzzle's authoritative difficulty tier. Falls back to coercing what
+    // the save had, then to a null-safe default.
+    const canonical = groups.find((cg) => cg.name === g.name);
+    if (canonical) return { ...g, difficulty: canonical.difficulty };
+    return { ...g, difficulty: coerceDifficulty(g.difficulty, 1) };
+  });
 }
 
 // ============== INIT ==============
@@ -50,10 +124,16 @@ async function main() {
 
   try {
     const res = await fetchPuzzle('connections', puzzleId);
-    puzzle = res.puzzle;
+    puzzle = normalizePuzzle(res.puzzle);
   } catch (err) {
     if (err.status === 404) renderError(t('play.error.notFound'));
     else renderError(t('play.error.generic'));
+    return;
+  }
+  // normalizePuzzle returned null → puzzle is structurally unusable (e.g. an
+  // out-of-range size). Show the generic error rather than crashing later.
+  if (!puzzle) {
+    renderError(t('play.error.generic'));
     return;
   }
 
@@ -66,10 +146,14 @@ async function main() {
     switchLang(puzzle.defaultLang);
   }
 
-  // Restore progress. solvedGroups holds full group objects; on a loss we push
-  // any remaining groups into it so the player sees the full solution.
+  const size = puzzle.size;
+  const totalTiles = size * size;
+
+  // Restore progress. solvedGroups holds full group objects; on a loss with
+  // revealOnFail=true we push any remaining groups into it so the player sees
+  // the full solution.
   const saved = getProgress('connections', puzzleId);
-  const solvedGroups = saved?.solvedGroups || [];
+  const solvedGroups = normalizeSavedSolvedGroups(saved?.solvedGroups, puzzle.groups);
   const allWords = puzzle.groups.flatMap((g) => g.words);
   const solvedWords = new Set(solvedGroups.flatMap((g) => g.words));
   const remainingWords = allWords.filter((w) => !solvedWords.has(w));
@@ -81,11 +165,11 @@ async function main() {
     attempts: saved?.attempts || 0,
     guessHistory: saved?.guessHistory || [],
     // Pinned layout only applies on a genuinely fresh load — no saved progress,
-    // full 16 tiles remaining, and the puzzle actually declares one. Any prior
+    // full N² tiles remaining, and the puzzle actually declares one. Any prior
     // interaction (Shuffle, guess) means we already saved progress and the
     // pins are ignored for the rest of the session, per the spec.
-    remainingWords: (!saved && puzzle.pinnedLayout && remainingWords.length === 16)
-      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups)
+    remainingWords: (!saved && puzzle.pinnedLayout && puzzle.pinnedLayout.length === totalTiles && remainingWords.length === totalTiles)
+      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups, totalTiles)
       : shuffle(remainingWords),
     feedback: null,
   };
@@ -103,10 +187,22 @@ function isEndless() {
   return puzzle?.mistakeMode === 'endless';
 }
 
+// Total lives allowed for this puzzle. Infinity for endless; otherwise the
+// numeric mistake mode (falls back to DEFAULT_MISTAKES if somehow missing).
+function totalLives() {
+  if (isEndless()) return Infinity;
+  const m = puzzle?.mistakeMode;
+  return Number.isInteger(m) ? m : DEFAULT_MISTAKES;
+}
+
+function livesLeft() {
+  if (isEndless()) return Infinity;
+  return Math.max(0, totalLives() - state.mistakes);
+}
+
 function isDone() {
-  if (!state) return false;
-  const mistakesLeft = isEndless() ? Infinity : Math.max(0, 4 - state.mistakes);
-  return state.solvedGroups.length === 4 || (!isEndless() && mistakesLeft === 0);
+  if (!state || !puzzle) return false;
+  return state.solvedGroups.length === puzzle.size || (!isEndless() && livesLeft() === 0);
 }
 
 // ============== RENDERERS ==============
@@ -127,7 +223,7 @@ function renderError(msg) {
 function render() {
   const main = mainSlot();
   const done = isDone();
-  const won = state.solvedGroups.length === 4;
+  const won = state.solvedGroups.length === puzzle.size;
 
   // Mount the shell once. Subsequent renders update slots in place, so existing
   // solved rows aren't re-created — otherwise the CSS entrance animation fires
@@ -137,8 +233,8 @@ function render() {
       <div class="play-header">
         <h1>${t('play.puzzleId', { id: puzzleId })}</h1>
       </div>
-      <div class="solved-rows" id="solved-rows"></div>
-      <div class="grid" id="grid"></div>
+      <div class="solved-rows" id="solved-rows" style="--grid-size: ${puzzle.size}"></div>
+      <div class="grid" id="grid" style="--grid-size: ${puzzle.size}"></div>
       <div class="feedback" id="feedback"></div>
       <div class="mistakes" id="mistakes"></div>
       <div class="play-controls" id="controls"></div>
@@ -169,17 +265,18 @@ function invalidateShell() {
 function renderSolvedRows() {
   const container = document.getElementById('solved-rows');
   if (!container) return;
-  // Append only rows that aren't already in the DOM — keyed by difficulty since
-  // each puzzle has one group per difficulty. Existing rows stay put, so their
+  // Append only rows that aren't already in the DOM — keyed by difficulty tier
+  // since each puzzle has one group per tier. Existing rows stay put, so their
   // entrance animation doesn't re-fire on every render.
   const existing = new Set(
     [...container.querySelectorAll('.solved-row')].map((r) => r.getAttribute('data-difficulty'))
   );
   for (const g of state.solvedGroups) {
-    if (existing.has(g.difficulty)) continue;
+    const key = String(g.difficulty);
+    if (existing.has(key)) continue;
     const row = document.createElement('div');
     row.className = 'solved-row';
-    row.setAttribute('data-difficulty', g.difficulty);
+    row.setAttribute('data-difficulty', key);
     row.innerHTML = `
       <div class="solved-row-name">${escapeHtml(g.name)}</div>
       <div class="solved-row-words">${g.words.map(escapeHtml).join(', ')}</div>
@@ -221,10 +318,11 @@ function renderMistakes() {
     `;
     return;
   }
+  const total = totalLives();
   const used = state.mistakes;
   const isHpvn = getActiveTheme() === 'hpvn';
   const items = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < total; i++) {
     const isUsed = i < used;
     if (isHpvn) {
       items.push(`<span class="mistake-icon ${isUsed ? 'used' : ''}">${isUsed ? '💀' : '🪄'}</span>`);
@@ -242,11 +340,12 @@ function renderControls(done) {
   const el = document.getElementById('controls');
   if (!el) return;
   if (done) { el.innerHTML = ''; return; }
+  const size = puzzle.size;
   const selectedCount = state.selected.size;
   el.innerHTML = `
     <button type="button" class="btn" id="btn-shuffle">${t('play.controls.shuffle')}</button>
     <button type="button" class="btn" id="btn-deselect" ${selectedCount === 0 ? 'disabled' : ''}>${t('play.controls.deselect')}</button>
-    <button type="button" class="btn btn-primary" id="btn-submit" ${selectedCount !== 4 ? 'disabled' : ''}>${t('play.controls.submit')}</button>
+    <button type="button" class="btn btn-primary" id="btn-submit" ${selectedCount !== size ? 'disabled' : ''}>${t('play.controls.submit')}</button>
   `;
   document.getElementById('btn-shuffle').addEventListener('click', onShuffle);
   document.getElementById('btn-deselect').addEventListener('click', onDeselect);
@@ -339,10 +438,11 @@ function fitAllTiles() {
 // ============== ACTIONS ==============
 
 function onTileClick(word) {
+  const size = puzzle.size;
   if (state.selected.has(word)) {
     state.selected.delete(word);
   } else {
-    if (state.selected.size >= 4) return;
+    if (state.selected.size >= size) return;
     state.selected.add(word);
   }
   setFeedback('');
@@ -364,10 +464,11 @@ function onDeselect() {
 }
 
 async function onSubmit() {
+  const size = puzzle.size;
   const picked = [...state.selected];
-  if (picked.length !== 4) return;
+  if (picked.length !== size) return;
 
-  // Check "already guessed" — same set of 4 words (order-independent).
+  // Check "already guessed" — same set of N words (order-independent).
   const pickedKey = [...picked].sort().join('|');
   const alreadyGuessed = state.guessHistory.some(
     (h) => h.words && [...h.words].sort().join('|') === pickedKey
@@ -397,7 +498,7 @@ async function onSubmit() {
     // Wrong — shake, deduct, maybe show "one away".
     animateTiles(picked, 'shake');
     state.mistakes++;
-    const oneAway = isOneAway(pickedDifficulties);
+    const oneAway = isOneAway(pickedDifficulties, size);
     setFeedback(oneAway ? t('play.feedback.oneAway') : t('play.feedback.wrong'), 'hint');
     await sleep(450);
   }
@@ -408,12 +509,12 @@ async function onSubmit() {
   render();
 }
 
-// "One away" = exactly 3 of 4 picked words share a difficulty. Since we know
-// every word's difficulty locally, this is exact.
-function isOneAway(difficulties) {
+// "One away" = exactly (N-1) of N picked words share a difficulty. Since we
+// know every word's difficulty locally, this is exact.
+function isOneAway(difficulties, size) {
   const counts = {};
   for (const d of difficulties) counts[d] = (counts[d] || 0) + 1;
-  return Object.values(counts).some((c) => c === 3);
+  return Object.values(counts).some((c) => c === size - 1);
 }
 
 function findDifficulty(word) {
@@ -441,8 +542,13 @@ function renderResult(won) {
   const slot = document.getElementById('result-slot');
   if (!slot) return;
 
-  // On loss, reveal any remaining groups as solved rows so player sees the solution.
-  if (!won) {
+  // On loss, reveal any remaining groups as solved rows so player sees the
+  // solution — but only if the editor didn't opt out via revealOnFail=false.
+  // Note: puzzle answers travel in the initial GET response (see file header),
+  // so a determined user can still read them from the network payload. This
+  // toggle only controls the in-UI reveal — the honest UX contract with the
+  // editor, not a security boundary.
+  if (!won && puzzle.revealOnFail) {
     const solvedDiffs = new Set(state.solvedGroups.map((g) => g.difficulty));
     for (const g of puzzle.groups) {
       if (!solvedDiffs.has(g.difficulty)) state.solvedGroups.push(g);
@@ -451,9 +557,12 @@ function renderResult(won) {
   }
 
   const title = won ? t('play.result.won.title') : t('play.result.lost.title');
-  const body = won
-    ? (state.mistakes === 0 && !isEndless() ? t('play.result.won.perfect') : t('play.result.won.body'))
-    : t('play.result.lost.body');
+  let body;
+  if (won) {
+    body = (state.mistakes === 0 && !isEndless()) ? t('play.result.won.perfect') : t('play.result.won.body');
+  } else {
+    body = puzzle.revealOnFail ? t('play.result.lost.body') : t('play.result.lost.bodyHidden');
+  }
 
   slot.innerHTML = `
     <div class="play-result">
@@ -495,6 +604,7 @@ async function onShare() {
 
 function onReset() {
   clearProgress('connections', puzzleId);
+  const totalTiles = puzzle.size * puzzle.size;
   const allWords = puzzle.groups.flatMap((g) => g.words);
   state = {
     selected: new Set(),
@@ -502,9 +612,9 @@ function onReset() {
     mistakes: 0,
     attempts: 0,
     guessHistory: [],
-    // "Play this again" = fresh puzzle → re-apply pins if declared.
-    remainingWords: puzzle.pinnedLayout
-      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups)
+    // "Play this again" = fresh puzzle → re-apply pins if declared and sized to N².
+    remainingWords: (puzzle.pinnedLayout && puzzle.pinnedLayout.length === totalTiles)
+      ? applyPinnedLayout(puzzle.pinnedLayout, puzzle.groups, totalTiles)
       : shuffle(allWords),
     feedback: null,
   };
@@ -526,15 +636,15 @@ function persist() {
 
 // ============== UTILS ==============
 
-// Arrange 16 words for first-load render, honoring the editor's pinned tiles.
+// Arrange N² words for first-load render, honoring the editor's pinned tiles.
 // Pins reference words by {g, w} index. Any pin that can't resolve (stale
 // data from a since-edited puzzle) is silently ignored — the tile just falls
 // into the shuffle pool instead. Unpinned words are Fisher-Yates shuffled and
 // placed into the remaining slots in order.
-function applyPinnedLayout(layout, groups) {
-  const arr = Array(16).fill(null);
+function applyPinnedLayout(layout, groups, totalTiles) {
+  const arr = Array(totalTiles).fill(null);
   const pinnedWords = new Set();
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < totalTiles; i++) {
     const p = layout[i];
     if (
       p && typeof p === 'object' &&
@@ -549,7 +659,7 @@ function applyPinnedLayout(layout, groups) {
     groups.flatMap((g) => g.words).filter((w) => !pinnedWords.has(w))
   );
   let idx = 0;
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < totalTiles; i++) {
     if (!arr[i]) arr[i] = remaining[idx++];
   }
   return arr;

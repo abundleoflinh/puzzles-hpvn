@@ -1,8 +1,10 @@
 // Connections editor. Flow:
 //   1. Password gate (cached in sessionStorage after first successful submit).
 //   2. Optional: paste an existing puzzle ID to load & edit.
-//   3. 4 rows (group name + 4 words). Order = difficulty (row 1 = yellow, row 4 = red).
-//   4. Mistake mode + default theme.
+//   3. Pick size (3–6). Editor renders N group rows, each = group name + N words.
+//      Row order defines difficulty tier: row 1 = tier 1 (easiest) … row N = tier N (hardest).
+//   4. Mistake mode (endless / 3 / 4 / 5 / 6) + optional reveal-on-fail toggle
+//      + default theme + default language.
 //   5. Submit → result card with short URL + copy + Play Now.
 
 import './styles/base.css';
@@ -12,25 +14,33 @@ import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollect
 import { escapeHtml } from './lib/util.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
-const DIFFICULTIES = ['yellow', 'green', 'blue', 'red'];
 const NEW_COLLECTION_VALUE = '__new__'; // sentinel option in the collection dropdown
+const MIN_SIZE = 3;
+const MAX_SIZE = 6;
+const DEFAULT_SIZE = 4;
+// Numeric mistake-mode options offered in the dropdown. 'endless' handled separately.
+// If this range changes, mirror the change in worker/src/index.js validatePuzzle.
+const MISTAKE_INT_OPTIONS = [3, 4, 5, 6];
 
 let editingId = null; // null = creating new; string = editing existing puzzle id
 let editingCreatedAt = null; // preserved so updates don't reset home-page ordering
+let currentSize = DEFAULT_SIZE; // 3–6; drives row count, pin array length, word count enforcement
 
 // Cached collection list so we can rebuild the dropdown after inline creation
 // without a refetch. Refreshed on editor render.
 let collectionsCache = []; // [{ id, name, ... }]
 
 // ============== INITIAL LAYOUT (PINNED TILES) ==============
-// Editor can pin 0–16 tiles to specific slots of the 4x4 grid. Only affects
+// Editor can pin 0–(size*size) tiles to specific slots of the N×N grid. Only affects
 // first-load rendering on the player side — Shuffle or the first guess wipes
 // pins for that session. Pins reference words by {g, w} index (not string),
 // so renaming a word preserves its pin.
-let pinnedLayout = Array(16).fill(null); // each entry: null | { g: 0-3, w: 0-3 }
-let poolSelected = null;                 // null | { g, w } — pool word waiting to be placed
-let layoutExpanded = false;              // collapsed by default
-let previewFill = null;                  // null | full 16-slot preview render (temp)
+let pinnedLayout = makeEmptyPins(currentSize); // length = size*size; each: null | { g, w }
+let poolSelected = null;                       // null | { g, w } — pool word waiting to be placed
+let layoutExpanded = false;                    // collapsed by default
+let previewFill = null;                        // null | full preview render (temp)
+
+function makeEmptyPins(size) { return Array(size * size).fill(null); }
 
 // ============== PASSWORD GATE ==============
 
@@ -103,6 +113,19 @@ async function onGateSubmit(e) {
 
 function renderEditor() {
   const main = document.querySelector('[data-slot="main"]');
+  // Build size + mistake-mode option markup once here so the HTML template
+  // below stays legible. Both are simple option lists driven by constants.
+  const sizeOptions = [];
+  for (let n = MIN_SIZE; n <= MAX_SIZE; n++) {
+    sizeOptions.push(`<option value="${n}">${t('editor.options.size.option', { n })}</option>`);
+  }
+  const mistakeOptions = [
+    `<option value="endless" data-i18n="editor.options.mistakeMode.endless"></option>`,
+    ...MISTAKE_INT_OPTIONS.map(
+      (n) => `<option value="${n}">${t('editor.options.mistakeMode.strikes', { n })}</option>`
+    ),
+  ];
+
   main.innerHTML = `
     <div class="editor-header">
       <h1 data-i18n="editor.title"></h1>
@@ -138,6 +161,11 @@ function renderEditor() {
 
       <div class="editor-section">
         <div class="editor-section-title" data-i18n="editor.groups.heading"></div>
+        <div class="size-row">
+          <label class="field-label" for="puzzle-size" data-i18n="editor.options.size.label"></label>
+          <select class="input-block" id="puzzle-size">${sizeOptions.join('')}</select>
+          <p class="size-help" data-i18n="editor.options.size.help"></p>
+        </div>
         <div id="groups-container"></div>
       </div>
 
@@ -146,10 +174,15 @@ function renderEditor() {
       <div class="options-row">
         <div>
           <label class="field-label" for="mistake-mode" data-i18n="editor.options.mistakeMode.label"></label>
-          <select class="input-block" id="mistake-mode">
-            <option value="four" data-i18n="editor.options.mistakeMode.four"></option>
-            <option value="endless" data-i18n="editor.options.mistakeMode.endless"></option>
-          </select>
+          <select class="input-block" id="mistake-mode">${mistakeOptions.join('')}</select>
+        </div>
+        <div id="reveal-on-fail-wrap">
+          <div class="field-label" data-i18n="editor.options.revealOnFail.label"></div>
+          <label class="checkbox-inline" for="reveal-on-fail">
+            <input type="checkbox" id="reveal-on-fail" checked />
+            <span data-i18n="editor.options.revealOnFail.checkboxText"></span>
+          </label>
+          <p class="field-help" data-i18n="editor.options.revealOnFail.help"></p>
         </div>
         <div>
           <label class="field-label" for="default-theme" data-i18n="editor.options.defaultTheme.label"></label>
@@ -180,10 +213,12 @@ function renderEditor() {
 
     <div id="result-slot"></div>
   `;
+  document.getElementById('puzzle-size').value = String(currentSize);
   renderGroupRows();
   renderLayoutSection();
   applyTranslations(main);
   wireEditorEvents();
+  updateRevealVisibility();
   // Fetch collections in the background so the dropdown fills in without
   // blocking the editor from rendering. Failures are silent — the editor
   // still works, just with an empty collection list.
@@ -313,26 +348,61 @@ async function onNewCollectionCreate() {
   }
 }
 
+// ============== SIZE + GROUP ROWS ==============
+
+// Size dropdown change: preserves typed words for the first min(oldSize, newSize)
+// groups so a user who's mid-typing doesn't lose their work. Pins reset because
+// their {g,w} bounds and slot count both depend on the size.
+function onSizeChange(e) {
+  const newSize = parseInt(e.target.value, 10);
+  if (!Number.isInteger(newSize) || newSize < MIN_SIZE || newSize > MAX_SIZE) return;
+  if (newSize === currentSize) return;
+  // Snapshot current row values before we redraw.
+  const rows = document.querySelectorAll('.group-row');
+  const snapshot = [];
+  rows.forEach((row) => {
+    snapshot.push({
+      name: row.querySelector('.group-name').value,
+      words: row.querySelector('.group-words').value,
+    });
+  });
+  currentSize = newSize;
+  pinnedLayout = makeEmptyPins(currentSize);
+  poolSelected = null;
+  previewFill = null;
+  renderGroupRows({ snapshot });
+  renderLayoutSection();
+}
+
 function renderGroupRows(prefill) {
   const container = document.getElementById('groups-container');
   container.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const diffIndex = i + 1;
+  for (let i = 0; i < currentSize; i++) {
+    const tier = i + 1;
     const row = document.createElement('div');
     row.className = 'group-row';
-    row.setAttribute('data-difficulty', diffIndex);
+    row.setAttribute('data-difficulty', String(tier));
     row.innerHTML = `
       <div class="group-row-head">
-        <span class="group-row-label">${t('editor.group.label', { n: diffIndex })}</span>
-        <span class="group-row-difficulty">${t(`editor.group.diff.${diffIndex}`)}</span>
+        <span class="group-row-label">${t('editor.group.label', { n: tier })}</span>
+        <span class="group-row-difficulty">${t('editor.group.diffTier', { tier, of: currentSize })}</span>
       </div>
       <input type="text" class="input-block group-name" data-i18n-attr="placeholder:editor.group.namePlaceholder" autocomplete="off" maxlength="80" />
-      <input type="text" class="input-block group-words" data-i18n-attr="placeholder:editor.group.wordsPlaceholder" autocomplete="off" maxlength="200" />
-      <p class="group-row-help" data-i18n="editor.group.wordsHelp"></p>
+      <input type="text" class="input-block group-words" placeholder="${escapeHtml(t('editor.group.wordsPlaceholder', { n: currentSize }))}" autocomplete="off" maxlength="240" />
+      <p class="group-row-help">${escapeHtml(t('editor.group.wordsHelp'))}</p>
     `;
     container.appendChild(row);
   }
-  if (prefill && Array.isArray(prefill.groups)) {
+  // Two prefill sources: `snapshot` (from size change — indexed) or `groups`
+  // (from load-existing — proper puzzle shape).
+  if (prefill && Array.isArray(prefill.snapshot)) {
+    const rows = container.querySelectorAll('.group-row');
+    prefill.snapshot.forEach((s, i) => {
+      if (!rows[i]) return;
+      rows[i].querySelector('.group-name').value = s.name || '';
+      rows[i].querySelector('.group-words').value = s.words || '';
+    });
+  } else if (prefill && Array.isArray(prefill.groups)) {
     const rows = container.querySelectorAll('.group-row');
     prefill.groups.forEach((g, i) => {
       if (!rows[i]) return;
@@ -354,6 +424,19 @@ function onGroupWordsChanged() {
   else updateLayoutCount();
 }
 
+// Reveal-on-fail only makes sense when there's a fail state; endless has none.
+// Toggle the wrapper's visibility whenever the mistake mode changes.
+function updateRevealVisibility() {
+  const wrap = document.getElementById('reveal-on-fail-wrap');
+  const mode = document.getElementById('mistake-mode')?.value;
+  if (!wrap) return;
+  wrap.hidden = mode === 'endless';
+}
+
+function onMistakeModeChange() {
+  updateRevealVisibility();
+}
+
 // ============== LAYOUT SECTION ==============
 
 // Read the current typed words for a group from the DOM. Source of truth is
@@ -372,12 +455,13 @@ function isPinned(g, w) {
 // time we render the layout body so stale pins never appear in the UI or
 // leak into the submit payload.
 function reconcilePins() {
-  for (let i = 0; i < 16; i++) {
+  const total = currentSize * currentSize;
+  for (let i = 0; i < total; i++) {
     const p = pinnedLayout[i];
     if (!p) continue;
-    if (!getGroupWords(p.g)[p.w]) pinnedLayout[i] = null;
+    if (p.g >= currentSize || !getGroupWords(p.g)[p.w]) pinnedLayout[i] = null;
   }
-  if (poolSelected && !getGroupWords(poolSelected.g)[poolSelected.w]) {
+  if (poolSelected && (poolSelected.g >= currentSize || !getGroupWords(poolSelected.g)[poolSelected.w])) {
     poolSelected = null;
   }
 }
@@ -422,11 +506,12 @@ function renderLayoutBody() {
   if (!body) return;
   reconcilePins();
 
-  // Which array to render into the 4x4 grid: preview overlay if the editor
+  const total = currentSize * currentSize;
+  // Which array to render into the N×N grid: preview overlay if the editor
   // hit "Preview random fill", else just the pinned tiles.
   const displayGrid = previewFill || pinnedLayout;
   const gridCells = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < total; i++) {
     const slot = displayGrid[i];
     let inner = '';
     let cls = 'layout-slot';
@@ -444,11 +529,11 @@ function renderLayoutBody() {
   }
 
   const poolGroups = [];
-  for (let g = 0; g < 4; g++) {
+  for (let g = 0; g < currentSize; g++) {
     const words = getGroupWords(g);
     if (!words.length) {
       poolGroups.push(
-        `<div class="layout-pool-group diff-${g + 1}"><span class="layout-pool-empty" data-i18n="editor.layout.emptyGroup"></span></div>`
+        `<div class="layout-pool-group diff-${g + 1}"><span class="layout-pool-empty">${escapeHtml(t('editor.layout.emptyGroup', { n: currentSize }))}</span></div>`
       );
       continue;
     }
@@ -471,7 +556,7 @@ function renderLayoutBody() {
       ${previewFill ? `<button type="button" class="btn btn-sm" id="layout-exit-preview" data-i18n="editor.layout.exitPreview"></button>` : ''}
     </div>
     <div class="layout-workspace">
-      <div class="layout-grid" role="grid" aria-label="${t('editor.layout.gridAria')}">${gridCells.join('')}</div>
+      <div class="layout-grid" role="grid" aria-label="${t('editor.layout.gridAria')}" style="--grid-size: ${currentSize}">${gridCells.join('')}</div>
       <div class="layout-pool" role="list" aria-label="${t('editor.layout.poolAria')}">${poolGroups.join('')}</div>
     </div>
   `;
@@ -519,7 +604,7 @@ function onSlotClick(slot) {
 }
 
 function onClearPins() {
-  pinnedLayout = Array(16).fill(null);
+  pinnedLayout = makeEmptyPins(currentSize);
   poolSelected = null;
   previewFill = null;
   renderLayoutBody();
@@ -529,9 +614,10 @@ function onClearPins() {
 // Meant as a sanity check for the editor — not persisted anywhere.
 function onPreviewFill() {
   reconcilePins();
+  const total = currentSize * currentSize;
   const fill = pinnedLayout.slice();
   const remaining = [];
-  for (let g = 0; g < 4; g++) {
+  for (let g = 0; g < currentSize; g++) {
     const words = getGroupWords(g);
     for (let w = 0; w < words.length; w++) {
       if (!isPinned(g, w)) remaining.push({ g, w });
@@ -543,7 +629,7 @@ function onPreviewFill() {
     [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
   }
   let idx = 0;
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < total; i++) {
     if (!fill[i] && idx < remaining.length) fill[i] = remaining[idx++];
   }
   previewFill = fill;
@@ -568,6 +654,8 @@ function wireEditorEvents() {
   document.getElementById('load-id').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); onLoadExisting(); }
   });
+  document.getElementById('puzzle-size').addEventListener('change', onSizeChange);
+  document.getElementById('mistake-mode').addEventListener('change', onMistakeModeChange);
   document.getElementById('puzzle-collection').addEventListener('change', onCollectionChange);
   document.getElementById('new-collection-create').addEventListener('click', onNewCollectionCreate);
   document.getElementById('new-collection-cancel').addEventListener('click', onNewCollectionCancel);
@@ -587,6 +675,16 @@ function parseIdInput(raw) {
   return m ? m[1] : null;
 }
 
+// Read mistakeMode from a loaded puzzle and map to a dropdown value.
+// Legacy 'four' → '4'; missing / unknown → '4'; numeric-in-range → its own string;
+// 'endless' passthrough.
+function mistakeModeToDropdown(mode) {
+  if (mode === 'endless') return 'endless';
+  if (mode === 'four') return '4';
+  if (Number.isInteger(mode) && MISTAKE_INT_OPTIONS.includes(mode)) return String(mode);
+  return '4';
+}
+
 async function onLoadExisting() {
   const input = document.getElementById('load-id');
   const id = parseIdInput(input.value);
@@ -601,22 +699,36 @@ async function onLoadExisting() {
     const { puzzle } = await fetchPuzzle('connections', id);
     editingId = id;
     editingCreatedAt = puzzle.createdAt || null;
-    // Load pinned layout if the puzzle has one; otherwise start empty.
-    if (Array.isArray(puzzle.pinnedLayout) && puzzle.pinnedLayout.length === 16) {
+    // Determine size: explicit field, else infer from first group's word count, else default.
+    let loadedSize = DEFAULT_SIZE;
+    if (Number.isInteger(puzzle.size) && puzzle.size >= MIN_SIZE && puzzle.size <= MAX_SIZE) {
+      loadedSize = puzzle.size;
+    } else if (Array.isArray(puzzle.groups) && puzzle.groups[0] && Array.isArray(puzzle.groups[0].words)) {
+      const inferred = puzzle.groups[0].words.length;
+      if (inferred >= MIN_SIZE && inferred <= MAX_SIZE) loadedSize = inferred;
+    }
+    currentSize = loadedSize;
+    const total = currentSize * currentSize;
+    // Load pinned layout if the puzzle has one matching the loaded size; otherwise start empty.
+    if (Array.isArray(puzzle.pinnedLayout) && puzzle.pinnedLayout.length === total) {
       pinnedLayout = puzzle.pinnedLayout.map((p) =>
         p && Number.isInteger(p.g) && Number.isInteger(p.w) &&
-        p.g >= 0 && p.g <= 3 && p.w >= 0 && p.w <= 3
+        p.g >= 0 && p.g < currentSize && p.w >= 0 && p.w < currentSize
           ? { g: p.g, w: p.w }
           : null
       );
     } else {
-      pinnedLayout = Array(16).fill(null);
+      pinnedLayout = makeEmptyPins(currentSize);
     }
     poolSelected = null;
     previewFill = null;
+    document.getElementById('puzzle-size').value = String(currentSize);
     renderGroupRows(puzzle);
     renderLayoutSection();
-    document.getElementById('mistake-mode').value = puzzle.mistakeMode === 'endless' ? 'endless' : 'four';
+    document.getElementById('mistake-mode').value = mistakeModeToDropdown(puzzle.mistakeMode);
+    // revealOnFail defaults true (matches legacy — old puzzles always revealed).
+    document.getElementById('reveal-on-fail').checked = puzzle.revealOnFail !== false;
+    updateRevealVisibility();
     document.getElementById('default-theme').value = puzzle.defaultTheme || '';
     document.getElementById('default-lang').value = puzzle.defaultLang || '';
     document.getElementById('puzzle-title').value = puzzle.title || '';
@@ -637,13 +749,17 @@ async function onLoadExisting() {
 function onReset() {
   editingId = null;
   editingCreatedAt = null;
-  pinnedLayout = Array(16).fill(null);
+  currentSize = DEFAULT_SIZE;
+  pinnedLayout = makeEmptyPins(currentSize);
   poolSelected = null;
   previewFill = null;
   layoutExpanded = false;
+  document.getElementById('puzzle-size').value = String(currentSize);
   renderGroupRows();
   renderLayoutSection();
-  document.getElementById('mistake-mode').value = 'four';
+  document.getElementById('mistake-mode').value = '4';
+  document.getElementById('reveal-on-fail').checked = true;
+  updateRevealVisibility();
   document.getElementById('default-theme').value = '';
   document.getElementById('default-lang').value = '';
   document.getElementById('puzzle-title').value = '';
@@ -684,7 +800,9 @@ function validateForm() {
     const words = splitWords(rows[i].querySelector('.group-words').value);
 
     if (!name) return t('editor.validation.groupName', { n: i + 1 });
-    if (words.length !== 4) return t('editor.validation.groupWords', { n: i + 1, count: words.length });
+    if (words.length !== currentSize) {
+      return t('editor.validation.groupWords', { n: i + 1, expected: currentSize, count: words.length });
+    }
 
     const nameLower = name.toLowerCase();
     if (seenNames.has(nameLower)) return t('editor.validation.duplicateName', { name });
@@ -696,7 +814,9 @@ function validateForm() {
       seenWords.set(wl, i);
     }
 
-    groups.push({ name, difficulty: DIFFICULTIES[i], words });
+    // Difficulty is now numeric: tier = row index + 1. Row order in the UI is
+    // the source of truth for tier ordering (easiest at top, hardest at bottom).
+    groups.push({ name, difficulty: i + 1, words });
   }
   return { groups };
 }
@@ -723,15 +843,26 @@ async function onEditorSubmit(e) {
     ? rawCollection
     : null;
 
-  // Reconcile any stale pins (e.g. word count dropped below 4 in a group) so
-  // we never send a pin whose {g,w} doesn't resolve to a real word.
+  // Reconcile any stale pins (e.g. word count changed in a group) so we never
+  // send a pin whose {g,w} doesn't resolve to a real word.
   reconcilePins();
   const hasPins = pinnedLayout.some(Boolean);
 
+  // Mistake mode: 'endless' passes through; numeric strings ('3'..'6') → int.
+  const rawMode = document.getElementById('mistake-mode').value;
+  const mistakeMode = rawMode === 'endless' ? 'endless' : parseInt(rawMode, 10);
+  const isEndless = mistakeMode === 'endless';
+  const revealOnFail = document.getElementById('reveal-on-fail').checked;
+
   const puzzle = {
     type: 'connections',
+    size: currentSize,
     groups: validation.groups,
-    mistakeMode: document.getElementById('mistake-mode').value,
+    mistakeMode,
+    // Endless has no fail state — omit the field rather than storing a value
+    // that would confuse a future reader. Defaulting on read is `true`, which
+    // is a no-op for endless anyway.
+    ...(isEndless ? {} : { revealOnFail }),
     defaultTheme: document.getElementById('default-theme').value || null,
     defaultLang: document.getElementById('default-lang').value || null,
     title: rawTitle || null,
@@ -842,13 +973,35 @@ async function copyToClipboard(text) {
 // when the language flips. Typed input values are left untouched.
 function onLangChanged() {
   document.querySelectorAll('.group-row').forEach((row) => {
-    const diffIndex = Number(row.getAttribute('data-difficulty'));
-    if (!diffIndex) return;
+    const tier = Number(row.getAttribute('data-difficulty'));
+    if (!tier) return;
     const label = row.querySelector('.group-row-label');
     const diff = row.querySelector('.group-row-difficulty');
-    if (label) label.textContent = t('editor.group.label', { n: diffIndex });
-    if (diff) diff.textContent = t(`editor.group.diff.${diffIndex}`);
+    const wordsInput = row.querySelector('.group-words');
+    const help = row.querySelector('.group-row-help');
+    if (label) label.textContent = t('editor.group.label', { n: tier });
+    if (diff) diff.textContent = t('editor.group.diffTier', { tier, of: currentSize });
+    if (wordsInput) wordsInput.placeholder = t('editor.group.wordsPlaceholder', { n: currentSize });
+    if (help) help.textContent = t('editor.group.wordsHelp');
   });
+  // Mistake-mode dropdown: the numeric options carry interpolated labels
+  // ("N strikes"), so rebuild their text on language change.
+  const modeSel = document.getElementById('mistake-mode');
+  if (modeSel) {
+    for (const opt of modeSel.options) {
+      if (opt.value === 'endless') continue;
+      const n = parseInt(opt.value, 10);
+      if (Number.isInteger(n)) opt.textContent = t('editor.options.mistakeMode.strikes', { n });
+    }
+  }
+  // Size dropdown: same story.
+  const sizeSel = document.getElementById('puzzle-size');
+  if (sizeSel) {
+    for (const opt of sizeSel.options) {
+      const n = parseInt(opt.value, 10);
+      if (Number.isInteger(n)) opt.textContent = t('editor.options.size.option', { n });
+    }
+  }
   // Submit button label — dataset.i18n was updated by setSubmitMode, but
   // applyTranslations (called from switchLang) already handled the plain text.
   // We call setSubmitMode again to be defensive if something else edited textContent.
