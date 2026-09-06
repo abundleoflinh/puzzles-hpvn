@@ -8,12 +8,12 @@
 
 import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
-import { t } from './lib/i18n.js';
+import { t, switchLang } from './lib/i18n.js';
 import { fetchPuzzle } from './lib/api.js';
 import { getProgress, setProgress, clearProgress, getTheme, getLang } from './lib/storage.js';
-import { switchLang } from './lib/i18n.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
-import { escapeHtml } from './lib/util.js';
+import { escapeHtml, shuffle, copyWithFeedback } from './lib/util.js';
+import { DEFAULT_MISTAKES, coerceDifficulty, inferSize } from './lib/connections.js';
 
 // Share-tile emoji per difficulty tier. Six because a puzzle can be up to 6x6.
 const DIFFICULTY_EMOJI = {
@@ -24,12 +24,6 @@ const DIFFICULTY_EMOJI = {
   5: '🟧',
   6: '🩷',
 };
-// Legacy string difficulties on puzzles saved before the numeric-tier migration.
-const LEGACY_DIFFICULTY_MAP = { yellow: 1, green: 2, blue: 3, red: 4, purple: 4 };
-const MIN_SIZE = 3;
-const MAX_SIZE = 6;
-const DEFAULT_SIZE = 4;
-const DEFAULT_MISTAKES = 4;
 
 let puzzle = null;    // normalized: { groups[{name, words, difficulty:int}], size, mistakeMode, revealOnFail, ... }
 let puzzleId = null;
@@ -48,14 +42,6 @@ function parseUrl() {
 
 // ============== PUZZLE NORMALIZATION ==============
 
-// Coerce a difficulty field to a numeric tier. Numeric passthrough; legacy
-// strings map via LEGACY_DIFFICULTY_MAP; anything else falls back to `fallback`.
-function coerceDifficulty(d, fallback) {
-  if (Number.isInteger(d)) return d;
-  if (typeof d === 'string' && d in LEGACY_DIFFICULTY_MAP) return LEGACY_DIFFICULTY_MAP[d];
-  return fallback;
-}
-
 // Normalize a fetched puzzle so the rest of play.js can assume:
 //  - `size` is an int in [MIN_SIZE, MAX_SIZE]
 //  - each group's `difficulty` is a numeric tier in [1, size]
@@ -67,22 +53,13 @@ function coerceDifficulty(d, fallback) {
 // caller should show the generic load error rather than a broken board.
 function normalizePuzzle(raw) {
   const p = { ...raw };
-  // Size: explicit and in-range, else infer from first group's word count.
-  // If the inferred value is out of range too, the puzzle is corrupt — refuse
-  // rather than silently rendering a mismatched grid.
-  let size;
-  if (Number.isInteger(p.size) && p.size >= MIN_SIZE && p.size <= MAX_SIZE) {
-    size = p.size;
-  } else if (Array.isArray(p.groups) && p.groups[0] && Array.isArray(p.groups[0].words)) {
-    const inferred = p.groups[0].words.length;
-    if (inferred >= MIN_SIZE && inferred <= MAX_SIZE) {
-      size = inferred;
-    } else {
-      console.error(`[connections] puzzle size ${inferred} outside [${MIN_SIZE}, ${MAX_SIZE}]`);
-      return null;
-    }
-  } else {
-    size = DEFAULT_SIZE;
+  // Size: explicit and in-range, else infer from first group's word count,
+  // else default. inferSize returns null when a present-but-out-of-range group
+  // makes the payload corrupt — refuse rather than render a mismatched grid.
+  const size = inferSize(p, DEFAULT_SIZE);
+  if (size === null) {
+    console.error('[connections] puzzle size outside supported range');
+    return null;
   }
   p.size = size;
   p.groups = (p.groups || []).map((g, i) => ({
@@ -601,14 +578,9 @@ function buildShareText() {
 async function onShare() {
   const text = buildShareText();
   const btn = document.getElementById('btn-share');
-  const original = btn.textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    btn.textContent = t('play.result.shareCopied');
-    setTimeout(() => { btn.textContent = original; }, 1500);
-  } catch {
-    window.prompt(t('play.result.share'), text);
-  }
+  await copyWithFeedback(btn, text, t('play.result.shareCopied'), {
+    onFallback: () => window.prompt(t('play.result.share'), text),
+  });
 }
 
 function onReset() {
@@ -672,15 +644,6 @@ function applyPinnedLayout(layout, groups, totalTiles) {
     if (!arr[i]) arr[i] = remaining[idx++];
   }
   return arr;
-}
-
-function shuffle(arr) {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
 }
 
 function sleep(ms) {

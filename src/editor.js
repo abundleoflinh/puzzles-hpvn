@@ -11,13 +11,11 @@ import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t, applyTranslations } from './lib/i18n.js';
 import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollection, verifyPassword } from './lib/api.js';
-import { escapeHtml } from './lib/util.js';
+import { escapeHtml, shuffle, parseShortLink, copyWithFeedback } from './lib/util.js';
+import { MIN_SIZE, MAX_SIZE, DEFAULT_SIZE, inferSize } from './lib/connections.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
 const NEW_COLLECTION_VALUE = '__new__'; // sentinel option in the collection dropdown
-const MIN_SIZE = 3;
-const MAX_SIZE = 6;
-const DEFAULT_SIZE = 4;
 // Numeric mistake-mode options offered in the dropdown. 'endless' handled separately.
 // If this range changes, mirror the change in worker/src/index.js validatePuzzle.
 const MISTAKE_INT_OPTIONS = [3, 4, 5, 6];
@@ -618,18 +616,14 @@ function onPreviewFill() {
   reconcilePins();
   const total = currentSize * currentSize;
   const fill = pinnedLayout.slice();
-  const remaining = [];
+  const unpinned = [];
   for (let g = 0; g < currentSize; g++) {
     const words = getGroupWords(g);
     for (let w = 0; w < words.length; w++) {
-      if (!isPinned(g, w)) remaining.push({ g, w });
+      if (!isPinned(g, w)) unpinned.push({ g, w });
     }
   }
-  // Fisher-Yates
-  for (let i = remaining.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
-  }
+  const remaining = shuffle(unpinned);
   let idx = 0;
   for (let i = 0; i < total; i++) {
     if (!fill[i] && idx < remaining.length) fill[i] = remaining[idx++];
@@ -670,11 +664,11 @@ function wireEditorEvents() {
 
 // ============== LOAD EXISTING ==============
 
+// The editor only loads Connections puzzles, so restrict the accepted forms to
+// the 'c' prefix (a bare id is assumed to be connections too).
 function parseIdInput(raw) {
-  const s = (raw || '').trim();
-  if (/^[A-Za-z0-9]{5}$/.test(s)) return s;
-  const m = s.match(/[/#]c\/([A-Za-z0-9]{5})(?:[/?#&]|$)/);
-  return m ? m[1] : null;
+  const parsed = parseShortLink(raw, { defaultType: 'connections', types: ['c'] });
+  return parsed ? parsed.id : null;
 }
 
 // Read mistakeMode from a loaded puzzle and map to a dropdown value.
@@ -701,15 +695,10 @@ async function onLoadExisting() {
     const { puzzle } = await fetchPuzzle('connections', id);
     editingId = id;
     editingCreatedAt = puzzle.createdAt || null;
-    // Determine size: explicit field, else infer from first group's word count, else default.
-    let loadedSize = DEFAULT_SIZE;
-    if (Number.isInteger(puzzle.size) && puzzle.size >= MIN_SIZE && puzzle.size <= MAX_SIZE) {
-      loadedSize = puzzle.size;
-    } else if (Array.isArray(puzzle.groups) && puzzle.groups[0] && Array.isArray(puzzle.groups[0].words)) {
-      const inferred = puzzle.groups[0].words.length;
-      if (inferred >= MIN_SIZE && inferred <= MAX_SIZE) loadedSize = inferred;
-    }
-    currentSize = loadedSize;
+    // Determine size: explicit field, else infer from first group's word count,
+    // else default. The editor is lenient — a corrupt (out-of-range) group just
+    // falls back to the default size rather than refusing to load.
+    currentSize = inferSize(puzzle, DEFAULT_SIZE) ?? DEFAULT_SIZE;
     const total = currentSize * currentSize;
     // Load pinned layout if the puzzle has one matching the loaded size; otherwise start empty.
     if (Array.isArray(puzzle.pinnedLayout) && puzzle.pinnedLayout.length === total) {
@@ -955,17 +944,16 @@ function showResult({ kind, id, url }) {
 
 async function copyToClipboard(text) {
   const btn = document.getElementById('copy-btn');
-  const original = btn.textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    btn.textContent = t('editor.result.copied');
-    setTimeout(() => { btn.textContent = original; }, 1500);
-  } catch {
-    const range = document.createRange();
-    range.selectNode(document.getElementById('result-url-text'));
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-  }
+  await copyWithFeedback(btn, text, t('editor.result.copied'), {
+    // Fallback for insecure contexts: select the URL text so the user can copy
+    // it manually.
+    onFallback: () => {
+      const range = document.createRange();
+      range.selectNode(document.getElementById('result-url-text'));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    },
+  });
 }
 
 // ============== I18N SYNC ==============
