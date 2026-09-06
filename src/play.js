@@ -13,7 +13,7 @@ import { fetchPuzzle } from './lib/api.js';
 import { getProgress, setProgress, clearProgress, getTheme, getLang } from './lib/storage.js';
 import { getActiveTheme, applyTheme } from './lib/theme.js';
 import { escapeHtml, shuffle, copyWithFeedback } from './lib/util.js';
-import { DEFAULT_MISTAKES, coerceDifficulty, inferSize } from './lib/connections.js';
+import { DEFAULT_SIZE, DEFAULT_MISTAKES, coerceDifficulty, inferSize } from './lib/connections.js';
 
 // Share-tile emoji per difficulty tier. Six because a puzzle can be up to 6x6.
 const DIFFICULTY_EMOJI = {
