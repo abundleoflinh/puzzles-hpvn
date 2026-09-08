@@ -8,3 +8,7 @@ dist/
 
 # Local wrangler config carries the real KV namespace id — see wrangler.toml.example.
 worker/wrangler.toml
+
+# Catfishing scrape intermediates. scrape-raw.json is committed as the source of
+# truth for build-catalog.mjs; scrape-progress.json is a per-run resume file.
+data/scrape-progress.json

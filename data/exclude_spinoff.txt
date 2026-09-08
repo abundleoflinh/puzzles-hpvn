@@ -1,0 +1,203 @@
+# Spinoff-only character exclusion list — dropped by build-catalog.mjs.
+# One canonical or alias name per line, matched case-insensitively against
+# scrape titles and their redirects. Comments start with `#`. Blank lines ok.
+#
+# Scope: entities that appear ONLY in works outside the 7 main HP books
+# (Cursed Child, Hogwarts Legacy, and its sequel/DLC content).
+# Fantastic Beasts / Wizarding World films use a separate Fandom wiki
+# and self-filter — no entries needed here for them.
+#
+# Rule of thumb: if a character is named in the book 7 epilogue (Scorpius,
+# Albus Severus, Rose, James Sirius, Lily Luna), they are book-canon.
+# DO NOT add them here.
+
+# ---------------------------------------------------------------
+# Fantastic Beasts film series (2016-2022)
+# The HP Wiki DOES have stub pages for FB characters — earlier assumption
+# that FB was self-filtered via a separate Fandom wiki was wrong.
+# ---------------------------------------------------------------
+Newton Scamander
+Newt Scamander
+Porpentina Goldstein
+Tina Goldstein
+Queenie Goldstein
+Jacob Kowalski
+Credence Barebone
+Aurelius Dumbledore
+Theseus Scamander
+Leta Lestrange
+Gellert Grindelwald (young)
+Nagini (Maledictus)
+Nicolas Flamel (Fantastic Beasts)
+Yusuf Kama
+Vinda Rosier
+Bunty Broadacre
+Lally Hicks
+Alison Lestrange
+Otto (Fantastic Beasts)
+Percival Graves
+Seraphina Picquery
+Mary Lou Barebone
+Modesty Barebone
+Chastity Barebone
+Rudolph Spielman
+Skender
+Protego Diabolica
+
+# Hogwarts Legacy DLC / late additions
+Kellen Carrion
+Daniel Page
+Verucca Buckthorn-Snyde
+Isolt Sayre
+
+# ---------------------------------------------------------------
+# Harry Potter and the Cursed Child (play, 2016)
+# ---------------------------------------------------------------
+Delphini
+Delphi Diggory
+Delphini Riddle
+Craig Bowker Jr.
+Craig Bowker
+Karl Jenkins
+Yann Fredericks
+Polly Chapman
+
+# ---------------------------------------------------------------
+# Hogwarts Legacy (game, 2023) — main student cast
+# ---------------------------------------------------------------
+Sebastian Sallow
+Anne Sallow
+Solomon Sallow
+Ominis Gaunt
+Poppy Sweeting
+Natsai Onai
+Amit Thakkar
+Imelda Reyes
+Leander Prewett
+Everett Clopton
+Nellie Oggspire
+Cressida Blume
+Duncan Hobhouse
+Adelaide Oakes
+Andrew Larson
+Arthur Plummly
+Constance Hawking
+Dennis Milton
+Dorian Harkiss
+Lenora Everleigh
+Lucan Brattleby
+Louis Grimm
+Zenobia Noke
+Zeb Skully
+Nerida Roshni
+Sirona Ryan
+Samantha Dale
+Highwing
+
+# ---------------------------------------------------------------
+# Hogwarts Legacy — professors and staff
+# ---------------------------------------------------------------
+Eleazar Fig
+Miriam Fig
+Matilda Weasley
+Aesop Sharp
+Dinah Hecat
+Mudiwa Onai
+Abraham Ronen
+Chesterlow
+Satyavati Shah
+Bai Howin
+Justin Pyre
+Deek
+
+# ---------------------------------------------------------------
+# Hogwarts Legacy — antagonists and ancient magic keepers
+# ---------------------------------------------------------------
+Ranrok
+Victor Rookwood
+Theophilus Harlow
+Isidora Morganach
+San Bakar
+Percival Rackham
+Niamh Fitzgerald
+Charles Rookwood
+Rookwood (Legacy)
+Lodgok
+
+# ---------------------------------------------------------------
+# Hogwarts Legacy — misc NPCs / merchants / quest-givers frequently listed
+# ---------------------------------------------------------------
+Ollivander (Legacy)
+Gerbold Ollivander
+J. Pippin
+Augustus Hill
+Cassandra Mason
+Dogweed
+Penny Haywood
+Rowan Khanna
+Chiara Lobosca
+Ismelda Murk
+Merula Snyde
+Talbott Winger
+Tulip Karasu
+Barnaby Lee
+Andre Egwu
+Diego Caplan
+Tonks (Hogwarts Mystery)
+Jae Kim
+Badeea Ali
+Bill Weasley (Hogwarts Mystery)
+
+# ---------------------------------------------------------------
+# Harry Potter: Hogwarts Mystery (mobile game, 2018+) — full known cast
+# ---------------------------------------------------------------
+# Player character and family
+Jacob's sibling
+Jacob's Sibling
+Jacob (Hogwarts expellee)
+Tiburon Merriweather
+Tiburon Merriweather's great-grandchild
+Tulip Karasu's cousin
+
+# Cabal / R organisation
+Patricia Rakepick
+Rakepick
+R (Hogwarts Mystery)
+Erika Rath
+Ariadne Blishwick
+Emily Tyler
+
+# Companions and year-mates
+Ben Copper
+Beatrice Haywood
+Rowan Khanna
+Charli Cardoso
+Corey Hayden
+Ismelda Murk
+Liz Tuttle
+Skye Parkin
+Ivy Warrington
+Andre Egwu
+Talbott Winger
+Tulip Karasu
+Merula Snyde
+Penny Haywood
+Barnaby Lee
+Diego Caplan
+Chiara Lobosca
+Badeea Ali
+Jae Kim
+Kaitlyn Hobbes
+Murphy McNully
+Alanza Alves
+Zenith
+Torvus (centaur)
+Torvus
+Duncan Ashe
+
+# Notes / open items:
+# - Some HL professors share names or families with book characters
+#   (Weasley, Gaunt). Only the specific Legacy character is listed here;
+#   the family-descendant entries in HP Wiki are book-canon and stay.
+# - If a Legacy character surfaces in the scrape and isn't in this list,
+#   add them and re-run `npm run cf:catalog`.
