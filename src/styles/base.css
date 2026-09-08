@@ -1057,19 +1057,16 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* ============== STRANDS ============== */
 
-/* Per-theme accent colours. Theme words = blue, spangram = yellow, matching
-   the share tiles. The default bubble is a soft variant so every letter shows
-   a filled circle from the start (matches NYT Strands presentation). HPVN
-   uses a warm tan default so sky-blue circles don't clash with the amber
-   ground; the "theme-word found" colour stays the same blue as light/dark. */
+/* Per-theme accent colours. Spangram = yellow in all themes. Theme-word
+   colour is the same blue on light + dark, but a warm tan on HPVN so it
+   sits comfortably against the amber ground. Default cells stay transparent
+   — no bubble until the player interacts with a cell. */
 :root, :root[data-theme="light"] {
   --strands-theme: #3a86ff;
   --strands-theme-fg: #ffffff;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #1a1a1a;
-  --strands-default: #bcd8ff;    /* default bubble */
-  --strands-default-fg: #0f2340;
-  --strands-hint: #7fb0ff;
+  --strands-hint: #bcd8ff;
   --strands-path: #3a86ff;
   --strands-path-fg: #ffffff;
 }
@@ -1078,22 +1075,18 @@ input, textarea, select { font: inherit; color: inherit; }
   --strands-theme-fg: #0f0f10;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #0f0f10;
-  --strands-default: #2c4a70;
-  --strands-default-fg: #e6f0ff;
-  --strands-hint: #4a78b0;
+  --strands-hint: #2c4a70;
   --strands-path: #5aa8ff;
   --strands-path-fg: #0f0f10;
 }
 :root[data-theme="hpvn"] {
-  --strands-theme: #5aa8ff;      /* same blue as dark for consistency */
-  --strands-theme-fg: #ffffff;
+  --strands-theme: #c9a475;      /* warm tan matches the amber ground */
+  --strands-theme-fg: #24160d;
   --strands-spangram: #f0c045;
   --strands-spangram-fg: #24160d;
-  --strands-default: #c9a475;    /* warm tan bubble to match the amber ground */
-  --strands-default-fg: #24160d;
   --strands-hint: #e6b871;
-  --strands-path: #5aa8ff;
-  --strands-path-fg: #ffffff;
+  --strands-path: #c9a475;
+  --strands-path-fg: #24160d;
 }
 
 .strands-theme {
@@ -1145,15 +1138,14 @@ input, textarea, select { font: inherit; color: inherit; }
   position: relative;
   z-index: 2;
 }
-/* Every letter sits inside a filled bubble by default. State layers on top:
-   in-path darkens, path-tail is filled with the accent, found cells switch
-   to the theme/spangram colour. */
+/* Letters on background by default (no bubble). A filled circle only appears
+   for state changes: hover, in-path, path-tail, found, hint. */
 .strands-cell {
   aspect-ratio: 1 / 1;
   border: none;
   border-radius: 50%;
-  background: var(--strands-default);
-  color: var(--strands-default-fg);
+  background: transparent;
+  color: var(--fg);
   font-family: inherit;
   font-weight: 700;
   font-size: clamp(16px, 4.5vw, 24px);
@@ -1167,11 +1159,11 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .strands-cell:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .strands-cell:hover:not(:disabled):not(.theme-found):not(.spangram-found) {
-  background: color-mix(in srgb, var(--strands-path) 45%, var(--strands-default));
+  background: color-mix(in srgb, var(--strands-path) 20%, transparent);
 }
 .strands-cell.in-path {
-  background: color-mix(in srgb, var(--strands-path) 60%, var(--strands-default));
-  color: var(--strands-path-fg);
+  background: color-mix(in srgb, var(--strands-path) 45%, transparent);
+  color: var(--fg);
 }
 .strands-cell.path-tail {
   background: var(--strands-path);
@@ -1180,7 +1172,7 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .strands-cell.hinted {
   background: var(--strands-hint);
-  color: var(--strands-default-fg);
+  color: var(--fg);
 }
 .strands-cell.theme-found {
   background: var(--strands-theme);

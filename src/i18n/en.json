@@ -146,6 +146,7 @@
   "strands.controls.clear": "Clear",
   "strands.controls.submit": "Submit",
   "strands.feedback.correct": "Correct: {word}",
+  "strands.feedback.spangramFound": "Spangram: {word}",
   "strands.feedback.notATheme": "Not a theme word.",
   "strands.feedback.hintGiven": "Look for the highlighted letters.",
   "strands.feedback.noHintsLeft": "No more theme words to hint.",

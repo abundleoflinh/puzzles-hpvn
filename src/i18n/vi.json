@@ -146,6 +146,7 @@
   "strands.controls.clear": "Xoá đường",
   "strands.controls.submit": "Nộp",
   "strands.feedback.correct": "Đúng: {word}",
+  "strands.feedback.spangramFound": "Từ khoá: {word}",
   "strands.feedback.notATheme": "Không phải từ chủ đề.",
   "strands.feedback.hintGiven": "Chú ý các chữ cái được làm sáng.",
   "strands.feedback.noHintsLeft": "Không còn từ nào để gợi ý.",

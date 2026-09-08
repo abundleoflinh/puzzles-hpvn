@@ -143,7 +143,10 @@ function renderCurrentWord() {
   if (!el) return;
   el.classList.remove('correct', 'empty');
   if (correctBanner) {
-    el.textContent = t('strands.feedback.correct', { word: correctBanner.word });
+    const key = correctBanner.kind === 'spangram'
+      ? 'strands.feedback.spangramFound'
+      : 'strands.feedback.correct';
+    el.textContent = t(key, { word: correctBanner.word });
     el.classList.add('correct');
     return;
   }
@@ -152,10 +155,10 @@ function renderCurrentWord() {
   if (!letters) el.classList.add('empty');
 }
 
-// Show "Correct: WORD" in the current-word slot for a moment. Any new path
-// input auto-clears the banner (see onCellClick / extendPathTo).
-function showCorrect(word) {
-  correctBanner = { word };
+// Show "Correct: WORD" (or "Spangram: WORD") in the current-word slot for
+// a moment. Any new path input auto-clears the banner.
+function showCorrect(word, kind) {
+  correctBanner = { word, kind };
   if (correctBannerTimer) clearTimeout(correctBannerTimer);
   correctBannerTimer = setTimeout(() => {
     correctBanner = null;
@@ -401,7 +404,7 @@ async function onSubmit() {
       state.spangram = { word: res.word, cells: path };
       state.events.push({ kind: 'spangram' });
       state.path = [];
-      showCorrect(res.word);
+      showCorrect(res.word, 'spangram');
     } else if (res.match === 'theme') {
       state.foundWordIndexes.add(res.wordIndex);
       state.foundWordCells.set(res.wordIndex, path);
@@ -412,7 +415,7 @@ async function onSubmit() {
         state.hintWordIndex = null;
       }
       state.path = [];
-      showCorrect(res.word);
+      showCorrect(res.word, 'theme');
     } else {
       // Not a theme word: clear the path so the player can immediately try
       // another word instead of having to hit Clear first.
