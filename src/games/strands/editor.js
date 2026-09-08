@@ -72,7 +72,7 @@ export async function mountStrandsEditor(onSwitch) {
         <div class="meta-row">
           <div>
             <label class="field-label" for="strands-title">${escapeHtml(t('editor.meta.title.label'))}</label>
-            <input type="text" class="input-block" id="strands-title" maxlength="80" />
+            <input type="text" class="input-block" id="strands-title" placeholder="${escapeHtml(t('editor.meta.title.placeholder'))}" autocomplete="off" maxlength="80" />
           </div>
           <div>
             <label class="field-label" for="strands-collection">${escapeHtml(t('editor.meta.collection.label'))}</label>
@@ -84,6 +84,7 @@ export async function mountStrandsEditor(onSwitch) {
           <button type="button" class="btn btn-sm btn-primary" id="strands-new-collection-create">${escapeHtml(t('editor.meta.collection.createBtn'))}</button>
           <button type="button" class="btn btn-sm" id="strands-new-collection-cancel">${escapeHtml(t('editor.meta.collection.cancelBtn'))}</button>
         </div>
+        <p class="meta-help">${escapeHtml(t('editor.meta.collection.help'))}</p>
       </div>
 
       <div class="editor-section">
