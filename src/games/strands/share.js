@@ -17,18 +17,14 @@ function tileFor(kind) {
   return TILE_THEME;
 }
 
-// Tile-wrap: 5 per line matches the NYT share layout roughly and keeps long
-// lines from wrapping awkwardly in chat clients.
-const WRAP = 5;
-
+// All tiles on one line. NYT-style. Chat clients that collapse newlines
+// won't insert spurious spaces mid-tile-run this way.
 export function buildShareText({ title, theme, events, url }) {
-  const tiles = (events || []).map((e) => tileFor(e.kind));
-  const rows = [];
-  for (let i = 0; i < tiles.length; i += WRAP) rows.push(tiles.slice(i, i + WRAP).join(''));
+  const tiles = (events || []).map((e) => tileFor(e.kind)).join('');
   const lines = [];
   if (title) lines.push(title);
   if (theme) lines.push(`"${theme}"`);
-  lines.push(...rows);
+  if (tiles) lines.push(tiles);
   if (url) lines.push(url);
   return lines.join('\n');
 }
