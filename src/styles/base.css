@@ -1245,28 +1245,22 @@ input, textarea, select { font: inherit; color: inherit; }
   gap: 8px;
   color: var(--fg);
 }
-/* Readability across themes: default browser <select> chrome fights dark
-   themes. Force our tokens. */
-.strands-size-row select,
-#strands-collection,
-#strands-default-theme,
-#strands-default-lang {
-  background: var(--bg-elev);
+/* Rows/cols selects are inline (Rows × Cols on one line), so they can't be
+   `.input-block`. Match .input-block's visual language (padding, radius,
+   border, background) but keep them narrow. */
+.strands-size-row select {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
   color: var(--fg);
-  border: 1px solid var(--border-strong, var(--fg-tiny));
-  border-radius: 6px;
-  padding: 6px 10px;
   font-family: inherit;
   font-size: 14px;
+  min-width: 72px;
 }
-.strands-size-row select { min-width: 72px; }
-.strands-size-row select option,
-#strands-collection option,
-#strands-default-theme option,
-#strands-default-lang option {
-  background: var(--bg-elev);
-  color: var(--fg);
-}
+.strands-size-row select:focus { outline: none; border-color: var(--fg); }
+/* All other Strands editor dropdowns already use `.input-block` in the HTML,
+   so they inherit the site-wide styling — no override here. */
 
 /* Side-by-side grid + paths on desktop; stack on narrow screens. */
 .strands-editor-columns {
@@ -1280,7 +1274,13 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .strands-editor-col-grid,
 .strands-editor-col-paths { min-width: 0; }
-.strands-editor-col-paths .field-help { margin-bottom: 8px; }
+/* Match help-text heights across the two columns so the grid's top edge lines
+   up with the first path row on the right. Sized for two lines of wrapped
+   Vietnamese text; single-line English still slots in cleanly. */
+.strands-editor-columns .field-help {
+  min-height: 2.8em;
+  margin-bottom: 8px;
+}
 .strands-word-row {
   display: flex;
   gap: 8px;
