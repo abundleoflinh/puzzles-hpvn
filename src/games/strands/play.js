@@ -25,6 +25,9 @@ let feedbackTimer = null;
 let drag = { active: false, startIdx: null, moved: false, suppressClick: false };
 let correctBanner = null;   // { word } or null — shown in the current-word slot after a match
 let correctBannerTimer = null;
+// Fires scrollIntoView once when the result card first appears, so mobile
+// users don't have to scroll down past the grid to see it. Reset on onReset.
+let resultDidScroll = false;
 
 // ============== URL PARSE ==============
 
@@ -464,6 +467,10 @@ function renderResult() {
     </div>`;
   document.getElementById('btn-share').addEventListener('click', onShare);
   document.getElementById('btn-reset').addEventListener('click', onReset);
+  if (!resultDidScroll) {
+    resultDidScroll = true;
+    slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 async function onShare() {
@@ -478,6 +485,7 @@ async function onShare() {
 
 function onReset() {
   clearProgress('strands', puzzleId);
+  resultDidScroll = false;
   state = {
     foundWordIndexes: new Set(),
     foundWordCells: new Map(),

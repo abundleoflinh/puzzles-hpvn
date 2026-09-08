@@ -32,6 +32,9 @@ let state = null;     // see main() for shape
 // Module-level timers so we can cancel them across re-renders / resizes.
 let feedbackTimer = null;
 let resizeTimer = null;
+// Fires scrollIntoView once when the result card first appears, so mobile
+// users don't have to scroll down past the grid to see it. Reset on onReset.
+let resultDidScroll = false;
 
 // ============== URL PARSE ==============
 
@@ -562,6 +565,10 @@ function renderResult(won) {
   `;
   document.getElementById('btn-share').addEventListener('click', onShare);
   document.getElementById('btn-reset').addEventListener('click', onReset);
+  if (!resultDidScroll) {
+    resultDidScroll = true;
+    slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
 
 function buildShareText() {
@@ -585,6 +592,7 @@ async function onShare() {
 
 function onReset() {
   clearProgress('connections', puzzleId);
+  resultDidScroll = false;
   const totalTiles = puzzle.size * puzzle.size;
   const allWords = puzzle.groups.flatMap((g) => g.words);
   state = {
