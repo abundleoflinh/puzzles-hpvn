@@ -4,6 +4,19 @@ import { t } from './lib/i18n.js';
 import { listCollections } from './lib/api.js';
 import { escapeHtml, parseShortLink, TYPE_PREFIX } from './lib/util.js';
 
+// Per-game play page path. When adding a new game, add a row here and mirror
+// it in vite.config.js (input) and public/_redirects. Falls back to the
+// Connections page for unknown types so a stale link never 404s outright.
+const PLAY_PAGE = {
+  connections: '/play-connections.html',
+  strands: '/play-strands.html',
+};
+function playHref(type, id) {
+  const page = PLAY_PAGE[type] || PLAY_PAGE.connections;
+  const prefix = TYPE_PREFIX[type] || 'c';
+  return `${page}#${prefix}/${encodeURIComponent(id)}`;
+}
+
 function onSubmit(e) {
   e.preventDefault();
   const input = document.getElementById('puzzle-input');
@@ -16,7 +29,7 @@ function onSubmit(e) {
     return;
   }
   err.hidden = true;
-  window.location.href = `/play.html#${TYPE_PREFIX[parsed.type]}/${parsed.id}`;
+  window.location.href = playHref(parsed.type, parsed.id);
 }
 
 // ============== COLLECTIONS ==============
@@ -24,8 +37,7 @@ function onSubmit(e) {
 // Turn one puzzle entry into an <li> with a numbered link. Title falls back
 // to "Puzzle #{id}" when the editor didn't set one.
 function renderPuzzleLi(puzzle) {
-  const prefix = TYPE_PREFIX[puzzle.type] || 'c';
-  const href = `/play.html#${prefix}/${encodeURIComponent(puzzle.id)}`;
+  const href = playHref(puzzle.type, puzzle.id);
   const label = puzzle.title || t('home.collections.puzzleFallback', { id: puzzle.id });
   return `<li><a href="${href}">${escapeHtml(label)}</a></li>`;
 }

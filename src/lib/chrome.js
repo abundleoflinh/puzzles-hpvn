@@ -83,8 +83,21 @@ const FOCUSABLE_SEL = [
 // don't need to guess (usually the About link).
 let lastFocusedBeforeModal = null;
 
-function renderInfoModal() {
+// Which game sections to render inside the info modal, defaulting to both.
+// Callers narrow this on game pages (e.g. play-strands passes ['strands']).
+const KNOWN_GAMES = ['connections', 'strands'];
+
+function renderInfoModal(games) {
   if (document.getElementById('info-modal')) return;
+  const which = Array.isArray(games) && games.length ? games : KNOWN_GAMES;
+  const sections = which
+    .filter((g) => KNOWN_GAMES.includes(g))
+    .map((g) => `
+      <section>
+        <h3 data-i18n="info.${g}.heading"></h3>
+        <div data-i18n-html="info.${g}.body"></div>
+      </section>
+    `).join('');
   const modal = document.createElement('div');
   modal.id = 'info-modal';
   modal.className = 'modal-backdrop';
@@ -99,10 +112,7 @@ function renderInfoModal() {
         <button type="button" class="icon-btn" data-action="close-info" data-i18n-attr="aria-label:action.close">✕</button>
       </div>
       <div class="modal-body">
-        <section>
-          <h3 data-i18n="info.connections.heading"></h3>
-          <div data-i18n-html="info.connections.body"></div>
-        </section>
+        ${sections}
       </div>
     </div>
   `;
@@ -206,12 +216,12 @@ function wireActions() {
   });
 }
 
-export function initChrome({ puzzleDefaultTheme } = {}) {
+export function initChrome({ puzzleDefaultTheme, games } = {}) {
   initTheme(puzzleDefaultTheme);
   initI18n();
   renderHeader();
   renderFooter();
-  renderInfoModal();
+  renderInfoModal(games);
   applyTranslations(document);
   wireActions();
 

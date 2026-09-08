@@ -12,7 +12,8 @@ import { initChrome } from './lib/chrome.js';
 import { t, applyTranslations } from './lib/i18n.js';
 import { fetchPuzzle, createPuzzle, updatePuzzle, listCollections, createCollection, verifyPassword } from './lib/api.js';
 import { escapeHtml, shuffle, parseShortLink, copyWithFeedback } from './lib/util.js';
-import { MIN_SIZE, MAX_SIZE, DEFAULT_SIZE, inferSize } from './lib/connections.js';
+import { renderEditorTabs, getSelectedTab } from './lib/editor-tabs.js';
+import { MIN_SIZE, MAX_SIZE, DEFAULT_SIZE, inferSize } from './games/connections/constants.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
 const NEW_COLLECTION_VALUE = '__new__'; // sentinel option in the collection dropdown
@@ -110,6 +111,13 @@ async function onGateSubmit(e) {
 // ============== EDITOR FORM ==============
 
 function renderEditor() {
+  // If the user switched to the Strands tab (via prior click) route there
+  // instead. Dynamic import so Strands code isn't pulled into the Connections
+  // bundle on first paint.
+  if (getSelectedTab() === 'strands') {
+    import('./games/strands/editor.js').then((m) => m.mountStrandsEditor());
+    return;
+  }
   const main = document.querySelector('[data-slot="main"]');
   // Build size + mistake-mode option markup once here so the HTML template
   // below stays legible. Both are simple option lists driven by constants.
@@ -125,6 +133,7 @@ function renderEditor() {
   ];
 
   main.innerHTML = `
+    <div id="editor-tabs-slot"></div>
     <div class="editor-header">
       <h1 data-i18n="editor.title"></h1>
       <p data-i18n="editor.lede"></p>
@@ -211,6 +220,7 @@ function renderEditor() {
 
     <div id="result-slot"></div>
   `;
+  renderEditorTabs(document.getElementById('editor-tabs-slot'));
   document.getElementById('puzzle-size').value = String(currentSize);
   renderGroupRows();
   renderLayoutSection();
@@ -880,7 +890,7 @@ async function onEditorSubmit(e) {
     if (editingId) {
       await updatePuzzle('connections', editingId, puzzle, password);
       id = editingId;
-      // Short URL — Cloudflare Pages redirects /c/{id} → /play.html#c/{id}.
+      // Short URL — Cloudflare Pages redirects /c/{id} → /play-connections.html#c/{id}.
       url = `/c/${id}`;
       showResult({ kind: 'updated', id, url });
     } else {

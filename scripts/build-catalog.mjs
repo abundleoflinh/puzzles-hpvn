@@ -52,15 +52,43 @@ const TYPE_MARKER_CATEGORIES = [
 // through a different seed (e.g. an Ilvermorny student who's in Individuals
 // too). Beauxbatons and Durmstrang are NOT here — they're in Goblet of Fire.
 const POTTERMORE_MARKERS = [
+  // Pottermore-era international schools
   'ilvermorny',
   'uagadou',
   'mahoutokoro',
   'castelobruxo',
   'koldovstoretz',
   'no-maj',                       // Pottermore/FB-era term for Muggle in NA
-  'statute of secrecy task force', // Hogwarts Mystery-era category
-  'brilliant event',              // Hogwarts Mystery limited-time event pages
+  // Hogwarts Mystery (mobile game) content markers
+  'statute of secrecy task force',
+  'brilliant event',
+  'cursed vault',
+  "jacob's sibling",
+  'penny haywood',
+  'student club',                 // "Student club challenge programme" etc.
+  'hogwarts mystery',
+  // Hogwarts Legacy (game) content markers
+  'ranrok',
+  'folio bruti',
+  'hogwarts legacy',
+  // Wizards Unite (mobile game) — mechanic tags on non-book entities
+  'wizards unite',
+  // Fantastic Beasts / Secrets of Dumbledore leaks
+  'eulalie hicks',
+  'global wizarding war',        // FB-era umbrella term for the Grindelwald conflict
 ];
+
+// Categories to strip from every entity's raw_categories at build time.
+// These are game-mechanic tags (Wizards Unite gameplay classifiers) that
+// Fandom attaches to book-canon entities but that aren't meaningful puzzle
+// clues — a player never says "oh, Foundable!". Removing them keeps the
+// entity in the catalog but prevents the category from surfacing in clues
+// or in frequency.csv.
+const CATEGORY_STRIP = new Set([
+  'Foundables',
+  'Confoundables',
+  'Foundable statues',
+]);
 
 // Named-individual markers. If any of these appear on an entity, it's a
 // specific person and stays typed 'character' regardless of what the seed
@@ -268,11 +296,15 @@ async function main() {
   const refinedTypeCache = new Map(); // title -> refined type (avoid recompute in pass 2)
   for (const title of titles) {
     const e = raw[title];
+    // Cat counts for ceiling calc use the STRIPPED count so scoring reflects
+    // what actually reaches the catalog. Prevents Foundables-heavy entities
+    // from inflating the type's p99 cat ceiling.
+    const strippedCats = (e.categories || []).filter((c) => !CATEGORY_STRIP.has(c));
     const seedType = e.entity_type || 'other';
-    const refined = refineEntityType(seedType, title, e.categories || [], allCategoryNames);
+    const refined = refineEntityType(seedType, title, strippedCats, allCategoryNames);
     refinedTypeCache.set(title, refined);
     if (!perTypeDist[refined]) perTypeDist[refined] = { cats: [], lens: [], aliases: [] };
-    perTypeDist[refined].cats.push((e.categories || []).length);
+    perTypeDist[refined].cats.push(strippedCats.length);
     perTypeDist[refined].lens.push(e.length || 0);
     perTypeDist[refined].aliases.push((e.redirects || []).length);
   }
@@ -300,7 +332,9 @@ async function main() {
   const slugCollisions = new Map(); // slug -> count, for dedupe suffix
   for (const title of titles) {
     const e = raw[title];
-    const categories = e.categories || [];
+    // Strip game-mechanic tags (Foundables, Confoundables) at the entity level.
+    // Entity survives; the noise category doesn't reach clues or frequency.
+    const categories = (e.categories || []).filter((c) => !CATEGORY_STRIP.has(c));
     const redirects = e.redirects || [];
     const entity_type = refinedTypeCache.get(title) || 'other';
     const aliases_en = aliasesFromRedirects(title, redirects);

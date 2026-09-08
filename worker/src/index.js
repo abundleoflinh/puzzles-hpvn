@@ -1,12 +1,14 @@
 // Cloudflare Worker: puzzle + collection storage API.
 //
 // Routes:
-//   POST   /api/puzzle              — create new puzzle (password required)
-//   PUT    /api/puzzle/:type/:id    — update existing puzzle (password required)
-//   GET    /api/puzzle/:type/:id    — fetch puzzle (public)
-//   POST   /api/collection          — create new collection (password required)
-//   GET    /api/collection/:id      — fetch a single collection (public, metadata only)
-//   GET    /api/collections         — list all collections with their puzzles (public, metadata only)
+//   POST   /api/puzzle                          — create new puzzle (password required)
+//   PUT    /api/puzzle/:type/:id                — update existing puzzle (password required)
+//   GET    /api/puzzle/:type/:id                — fetch puzzle (public, Strands solution masked; full when password header valid)
+//   POST   /api/puzzle/strands/:id/guess        — validate a Strands path guess (public; never leaks unfound answers)
+//   POST   /api/puzzle/strands/:id/hint         — reveal cells of one unfound theme word (public)
+//   POST   /api/collection                      — create new collection (password required)
+//   GET    /api/collection/:id                  — fetch a single collection (public, metadata only)
+//   GET    /api/collections                     — list all collections with their puzzles (public, metadata only)
 //
 // Storage: KV namespace bound as env.PUZZLES.
 //   Puzzles:     `{type}:{id}`     → serialized puzzle JSON (may include title, collectionId)
@@ -65,6 +67,105 @@ function generateId() {
 const CONNECTIONS_MIN_SIZE = 3;
 const CONNECTIONS_MAX_SIZE = 6;
 const LEGACY_DIFFICULTY_MAP = { yellow: 1, green: 2, blue: 3, red: 4, purple: 4 };
+
+// Strands bounds. Rows 4–10, cols 6–8. If changed, mirror in src/games/strands/constants.js.
+const STRANDS_ROW_MIN = 4;
+const STRANDS_ROW_MAX = 10;
+const STRANDS_COL_MIN = 6;
+const STRANDS_COL_MAX = 8;
+const STRANDS_SPANGRAM_MIN = 6;
+const STRANDS_SPANGRAM_MAX = 10;
+const STRANDS_WORD_MIN_LEN = 3;
+const STRANDS_WORD_MIN_COUNT = 3;
+const STRANDS_WORD_MAX_COUNT = 15;
+
+// 8-adjacency check for two 1-D indices on a rows×cols grid.
+function areAdjacent(a, b, cols) {
+  if (a === b) return false;
+  const ra = Math.floor(a / cols), ca = a % cols;
+  const rb = Math.floor(b / cols), cb = b % cols;
+  return Math.abs(ra - rb) <= 1 && Math.abs(ca - cb) <= 1;
+}
+
+// Full Strands puzzle validator. Enforces the invariants the play page relies
+// on so a bad write can't produce an unplayable game. Kept aligned with the
+// client's src/games/strands/model.js — if you change one, mirror the other.
+function validateStrands(puzzle) {
+  const { rows, cols, grid, spangram, words } = puzzle;
+  if (!Number.isInteger(rows) || rows < STRANDS_ROW_MIN || rows > STRANDS_ROW_MAX) {
+    return `rows must be an integer in [${STRANDS_ROW_MIN}, ${STRANDS_ROW_MAX}]`;
+  }
+  if (!Number.isInteger(cols) || cols < STRANDS_COL_MIN || cols > STRANDS_COL_MAX) {
+    return `cols must be an integer in [${STRANDS_COL_MIN}, ${STRANDS_COL_MAX}]`;
+  }
+  const cellCount = rows * cols;
+  if (!Array.isArray(grid) || grid.length !== cellCount) return `grid must be ${cellCount} letters`;
+  for (const ch of grid) {
+    if (typeof ch !== 'string' || !/^[A-Z]$/.test(ch)) return 'grid letters must be single uppercase A–Z';
+  }
+  if (typeof puzzle.theme !== 'string' || !puzzle.theme.trim()) return 'theme is required';
+  if (puzzle.theme.length > 200) return 'theme too long (max 200)';
+  if (puzzle.lang != null && puzzle.lang !== 'en' && puzzle.lang !== 'vi') return `lang must be 'en' or 'vi'`;
+  if (!spangram || typeof spangram !== 'object') return 'spangram required';
+  if (typeof spangram.word !== 'string' || !/^[A-Z]+$/.test(spangram.word)) return 'spangram.word must be uppercase letters';
+  if (spangram.word.length < STRANDS_SPANGRAM_MIN || spangram.word.length > STRANDS_SPANGRAM_MAX) {
+    return `spangram length must be [${STRANDS_SPANGRAM_MIN}, ${STRANDS_SPANGRAM_MAX}]`;
+  }
+  if (!Array.isArray(words) || words.length < STRANDS_WORD_MIN_COUNT || words.length > STRANDS_WORD_MAX_COUNT) {
+    return `words count must be in [${STRANDS_WORD_MIN_COUNT}, ${STRANDS_WORD_MAX_COUNT}]`;
+  }
+
+  // Validate each path: array of unique cell indices, 8-adjacent step to step,
+  // letters spell the word. Collect covered cells to check coverage after.
+  const covered = new Array(cellCount).fill(false);
+  const checkPath = (word, path, label) => {
+    if (!Array.isArray(path)) return `${label} path must be an array`;
+    if (path.length !== word.length) return `${label} path length must equal word length`;
+    const seen = new Set();
+    for (let i = 0; i < path.length; i++) {
+      const idx = path[i];
+      if (!Number.isInteger(idx) || idx < 0 || idx >= cellCount) return `${label} path[${i}] out of range`;
+      if (seen.has(idx)) return `${label} path revisits cell ${idx}`;
+      seen.add(idx);
+      if (grid[idx] !== word[i]) return `${label} letter mismatch at path[${i}]`;
+      if (covered[idx]) return `${label} overlaps another path at cell ${idx}`;
+      if (i > 0 && !areAdjacent(path[i - 1], idx, cols)) return `${label} path not 8-adjacent at step ${i}`;
+    }
+    for (const idx of seen) covered[idx] = true;
+    return null;
+  };
+
+  const spangramErr = checkPath(spangram.word, spangram.path, 'spangram');
+  if (spangramErr) return spangramErr;
+
+  // Spangram must touch two opposite edges (top+bottom OR left+right).
+  let touchesTop = false, touchesBottom = false, touchesLeft = false, touchesRight = false;
+  for (const idx of spangram.path) {
+    const r = Math.floor(idx / cols), c = idx % cols;
+    if (r === 0) touchesTop = true;
+    if (r === rows - 1) touchesBottom = true;
+    if (c === 0) touchesLeft = true;
+    if (c === cols - 1) touchesRight = true;
+  }
+  if (!((touchesTop && touchesBottom) || (touchesLeft && touchesRight))) {
+    return 'spangram must touch two opposite edges';
+  }
+
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    if (!w || typeof w !== 'object') return `words[${i}] must be an object`;
+    if (typeof w.word !== 'string' || !/^[A-Z]+$/.test(w.word)) return `words[${i}].word must be uppercase letters`;
+    if (w.word.length < STRANDS_WORD_MIN_LEN) return `words[${i}] must be at least ${STRANDS_WORD_MIN_LEN} letters`;
+    const err = checkPath(w.word, w.path, `words[${i}]`);
+    if (err) return err;
+  }
+
+  // Full coverage: every cell must be claimed by exactly one path.
+  for (let i = 0; i < cellCount; i++) {
+    if (!covered[i]) return `cell ${i} not covered by any path`;
+  }
+  return null;
+}
 
 function validatePuzzle(puzzle, type) {
   if (!puzzle || typeof puzzle !== 'object') return 'puzzle must be an object';
@@ -149,8 +250,31 @@ function validatePuzzle(puzzle, type) {
       return 'invalid collectionId';
     }
   }
-  // strands validation deferred until that game module lands
+  if (type === 'strands') {
+    const err = validateStrands(puzzle);
+    if (err) return err;
+  }
   return null;
+}
+
+// Produce the player-facing view of a Strands puzzle: everything visible on
+// the board plus counts, but NEVER the theme-word list or spangram paths.
+// Cache-Control on the public GET makes leaking these fields a permanent
+// mistake, so keep this function the single point that shapes the payload.
+function maskStrands(puzzle) {
+  return {
+    type: 'strands',
+    title: puzzle.title ?? null,
+    theme: puzzle.theme,
+    lang: puzzle.lang ?? null,
+    rows: puzzle.rows,
+    cols: puzzle.cols,
+    grid: puzzle.grid,
+    wordCount: Array.isArray(puzzle.words) ? puzzle.words.length : 0,
+    spangramLength: puzzle.spangram?.word?.length ?? 0,
+    defaultTheme: puzzle.defaultTheme ?? null,
+    defaultLang: puzzle.defaultLang ?? null,
+  };
 }
 
 // Parse JSON body or throw a short-circuit Response.
@@ -220,19 +344,88 @@ async function handleUpdatePuzzle(request, env, type, id) {
   return json({ ok: true });
 }
 
-// Public fetch: returns the full puzzle. Answers travel in this response;
-// the client validates guesses locally.
-async function handleFetchPuzzle(env, type, id) {
+// Public fetch. Connections returns the full puzzle (its client validates
+// guesses locally — that's the design). Strands hides the solution: the
+// public payload lets the player see the board but never the theme words or
+// spangram paths. Editors get the full puzzle back by presenting the shared
+// password header; anyone else's Strands GET returns the masked view.
+async function handleFetchPuzzle(request, env, type, id) {
   if (!ALLOWED_TYPES.has(type)) return json({ error: 'unknown game type' }, 400);
   const raw = await env.PUZZLES.get(`${type}:${id}`);
   if (!raw) return json({ error: 'not found' }, 404);
+
+  if (type === 'strands' && !checkPassword(request, env)) {
+    let puzzle;
+    try { puzzle = JSON.parse(raw); } catch { return json({ error: 'corrupt puzzle' }, 500); }
+    return new Response(JSON.stringify({ puzzle: maskStrands(puzzle) }), {
+      headers: {
+        'Content-Type': 'application/json',
+        // No public cache when auth might upgrade the response — keep it simple.
+        'Cache-Control': 'public, max-age=60',
+        ...CORS_HEADERS,
+      },
+    });
+  }
+
   return new Response(`{"puzzle":${raw}}`, {
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=60', // brief edge cache; updates propagate within a minute
+      // Editor GETs shouldn't be cached at the edge (they're authenticated),
+      // so send no-store when password header is present. Public GETs get a
+      // brief cache; updates propagate within a minute.
+      'Cache-Control': checkPassword(request, env) ? 'no-store' : 'public, max-age=60',
       ...CORS_HEADERS,
     },
   });
+}
+
+// Public: validate a Strands path guess against the stored solution. Returns
+// which word (or the spangram) the path matches, or 'none'. Never returns
+// paths or letters for unfound answers — the response shape is fixed.
+async function handleStrandsGuess(request, env, id) {
+  const raw = await env.PUZZLES.get(`strands:${id}`);
+  if (!raw) return json({ error: 'not found' }, 404);
+  let puzzle;
+  try { puzzle = JSON.parse(raw); } catch { return json({ error: 'corrupt puzzle' }, 500); }
+
+  const body = await parseJsonBody(request);
+  const path = body?.path;
+  if (!Array.isArray(path) || path.length === 0) return json({ error: 'path required' }, 400);
+
+  const key = path.join(',');
+  if (key === puzzle.spangram.path.join(',')) {
+    return json({ match: 'spangram', word: puzzle.spangram.word });
+  }
+  for (let i = 0; i < puzzle.words.length; i++) {
+    if (key === puzzle.words[i].path.join(',')) {
+      return json({ match: 'theme', wordIndex: i, word: puzzle.words[i].word });
+    }
+  }
+  return json({ match: 'none' });
+}
+
+// Public: hand back the letter cells of one still-unfound theme word so the
+// play page can highlight them. The path is returned as a shuffled set —
+// order isn't part of the hint (player still has to draw the sequence). The
+// spangram is never a hint target; those must be earned.
+async function handleStrandsHint(request, env, id) {
+  const raw = await env.PUZZLES.get(`strands:${id}`);
+  if (!raw) return json({ error: 'not found' }, 404);
+  let puzzle;
+  try { puzzle = JSON.parse(raw); } catch { return json({ error: 'corrupt puzzle' }, 500); }
+  const body = await parseJsonBody(request);
+  const found = new Set(Array.isArray(body?.found) ? body.found : []);
+  const candidates = [];
+  for (let i = 0; i < puzzle.words.length; i++) if (!found.has(i)) candidates.push(i);
+  if (!candidates.length) return json({ done: true });
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  const cells = [...puzzle.words[pick].path];
+  // Fisher-Yates so the client can't read the sequence off the array order.
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  return json({ wordIndex: pick, cells });
 }
 
 // ============== COLLECTIONS ==============
@@ -391,8 +584,16 @@ export default {
       const puzzleMatch = path.match(/^\/api\/puzzle\/([a-z]+)\/([A-Za-z0-9]+)$/);
       if (puzzleMatch) {
         const [, type, id] = puzzleMatch;
-        if (request.method === 'GET') return await handleFetchPuzzle(env, type, id);
+        if (request.method === 'GET') return await handleFetchPuzzle(request, env, type, id);
         if (request.method === 'PUT') return await handleUpdatePuzzle(request, env, type, id);
+      }
+      const guessMatch = path.match(/^\/api\/puzzle\/strands\/([A-Za-z0-9]+)\/guess$/);
+      if (guessMatch && request.method === 'POST') {
+        return await handleStrandsGuess(request, env, guessMatch[1]);
+      }
+      const hintMatch = path.match(/^\/api\/puzzle\/strands\/([A-Za-z0-9]+)\/hint$/);
+      if (hintMatch && request.method === 'POST') {
+        return await handleStrandsHint(request, env, hintMatch[1]);
       }
 
       // ---------- collections ----------

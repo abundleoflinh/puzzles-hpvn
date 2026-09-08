@@ -29,10 +29,10 @@ Vanilla JavaScript with [Vite](https://vitejs.dev/) as a multi-page bundler — 
  Browser
    │
    ├── Cloudflare Pages (static)          ── serves index/editor/play + built JS/CSS
-   │      index.html   → src/home.js      home: enter a code, browse collections
-   │      editor.html  → src/editor.js    password-gated puzzle authoring
-   │      play.html    → src/play.js      the game
-   │      public/_redirects               /c/:id and /s/:id → /play.html#…
+   │      index.html               → src/home.js                         home: enter a code, browse collections
+   │      editor.html              → src/editor.js                       password-gated puzzle authoring
+   │      play-connections.html    → src/games/connections/play.js       the Connections game
+   │      public/_redirects                                              /c/:id → /play-connections.html#…, /s/:id → /play-strands.html#…
    │
    └── Cloudflare Worker  (/api/*)        ── separate deployment, own URL
           worker/src/index.js
@@ -46,12 +46,12 @@ The frontend and the Worker are **deployed independently**. The frontend calls t
 
 | Path | Purpose |
 |---|---|
-| `index.html`, `editor.html`, `play.html` | The three page entrypoints. Each loads one script from `src/` and provides `data-slot` mount points that JS fills in. |
-| `src/home.js` | Home page: parse a pasted code/link and redirect to play; render the collections list. |
-| `src/play.js` | The Connections game: fetch → normalize → render grid → gameplay loop → win/lose + share. |
+| `index.html`, `editor.html`, `play-connections.html` | Page entrypoints. Each loads one script from `src/` and provides `data-slot` mount points that JS fills in. Add one `play-<name>.html` per new game type. |
+| `src/home.js` | Home page: parse a pasted code/link and redirect to play; render the collections list. Maps game type → play page. |
+| `src/games/connections/play.js` | The Connections game: fetch → normalize → render grid → gameplay loop → win/lose + share. |
+| `src/games/connections/constants.js` | Connections constants (size bounds, mistakes) + `coerceDifficulty` / `inferSize`, shared by play + editor. |
 | `src/editor.js` | Authoring UI: password gate, load/edit existing, size & options, pinned-tile layout, submit. |
 | `src/lib/api.js` | Thin `fetch` wrapper around the Worker. Holds `API_BASE`. |
-| `src/lib/connections.js` | Connections constants (size bounds, mistakes) + `coerceDifficulty` / `inferSize`, shared by play + editor. |
 | `src/lib/util.js` | Cross-page helpers: `escapeHtml`, `shuffle`, short-link parsing (`parseShortLink`, `SHORT_ID_RE`, `TYPE_PREFIX`), `copyWithFeedback`. |
 | `src/lib/theme.js` | Three-theme system (`light` / `dark` / `hpvn`) via `data-theme` on `<html>`. |
 | `src/lib/i18n.js` | Dictionary-based i18n (`t(key)`), language detection, DOM translation via `data-i18n*` attributes. |
@@ -119,8 +119,8 @@ All routes live under `/api`. Answers travel to the client in the puzzle GET res
 Puzzles share as short paths — `/c/{id}` (Connections), `/s/{id}` (Strands). `public/_redirects` 302s these to the hash route the play page reads:
 
 ```
-/c/:id  /play.html#c/:id  302
-/s/:id  /play.html#s/:id  302
+/c/:id  /play-connections.html#c/:id  302
+/s/:id  /play-strands.html#s/:id      302
 ```
 
 Cloudflare Pages preserves the URL fragment in the redirect, so `play.js` picks the id up from `location.hash`.
@@ -185,7 +185,7 @@ This section rebuilds the site as a **Connections-only** deployment on your own 
 | Keep | Drop / simplify |
 |---|---|
 | All of `src/` and the three HTML entrypoints | In `worker/src/index.js`: set `ALLOWED_TYPES = new Set(['connections'])` |
-| `src/lib/connections.js`, `src/lib/util.js` (helpers) | In `src/lib/util.js`: `TYPE_PREFIX`/`PREFIX_TYPE` can collapse to just `c`/`connections` |
+| `src/games/connections/constants.js`, `src/lib/util.js` (helpers) | In `src/lib/util.js`: `TYPE_PREFIX`/`PREFIX_TYPE` can collapse to just `c`/`connections` |
 | Theming, i18n, storage libs unchanged | `public/_redirects`: keep only the `/c/:id` rule; drop `/s/:id` |
 | KV schema and puzzle body shape | i18n keys `home.collections.type.strands` and any `strands` branch |
 
@@ -210,7 +210,7 @@ None of the Connections gameplay depends on the scaffolding, so dropping it is p
 6. **Point the frontend at your Worker.** Edit `API_BASE` in `src/lib/api.js` to your Worker URL.
 7. **Trim to Connections-only** (see the table above) — optional but recommended.
 8. **Deploy the frontend.** Connect the repo to Cloudflare Pages (build command `npm run build`, output `dist`), or run `npm run build` and upload `dist/` to your static host.
-9. **Wire short links.** Ensure `public/_redirects` ships with the build so `/c/:id` rewrites to `/play.html#c/:id`.
+9. **Wire short links.** Ensure `public/_redirects` ships with the build so `/c/:id` rewrites to `/play-connections.html#c/:id`.
 10. **Smoke test:** open the site → *Create* → enter the password → author a puzzle → open its `/c/{id}` link and play it.
 
 ### Adapting to non-Cloudflare hosting

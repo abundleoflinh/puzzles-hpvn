@@ -1,19 +1,19 @@
 // Play page: Connections game.
-// URL: /play.html#c/{id}
+// URL: /play-connections.html#c/{id}
 // Flow: fetch puzzle → apply theme → render grid → gameplay loop → win/lose result.
 //
 // The full puzzle (including group answers) travels in the initial GET response;
 // the client validates guesses locally against puzzle.groups. This keeps the
 // game snappy and works offline once loaded.
 
-import './styles/base.css';
-import { initChrome } from './lib/chrome.js';
-import { t, switchLang } from './lib/i18n.js';
-import { fetchPuzzle } from './lib/api.js';
-import { getProgress, setProgress, clearProgress, getTheme, getLang } from './lib/storage.js';
-import { getActiveTheme, applyTheme } from './lib/theme.js';
-import { escapeHtml, shuffle, copyWithFeedback } from './lib/util.js';
-import { DEFAULT_SIZE, DEFAULT_MISTAKES, coerceDifficulty, inferSize } from './lib/connections.js';
+import '../../styles/base.css';
+import { initChrome } from '../../lib/chrome.js';
+import { t, switchLang } from '../../lib/i18n.js';
+import { fetchPuzzle } from '../../lib/api.js';
+import { getProgress, setProgress, clearProgress, getTheme, getLang } from '../../lib/storage.js';
+import { getActiveTheme, applyTheme } from '../../lib/theme.js';
+import { escapeHtml, shuffle, copyWithFeedback } from '../../lib/util.js';
+import { DEFAULT_SIZE, DEFAULT_MISTAKES, coerceDifficulty, inferSize } from './constants.js';
 
 // Share-tile emoji per difficulty tier. Six because a puzzle can be up to 6x6.
 const DIFFICULTY_EMOJI = {
@@ -565,7 +565,7 @@ function renderResult(won) {
 }
 
 function buildShareText() {
-  const url = `${window.location.origin}/play.html#c/${puzzleId}`;
+  const url = `${window.location.origin}/play-connections.html#c/${puzzleId}`;
   const title = puzzle?.title?.trim() || t('home.collections.puzzleFallback', { id: puzzleId });
   const lines = [title];
   for (const g of state.guessHistory) {
@@ -656,7 +656,7 @@ function cssEscape(s) {
 
 // ============== BOOT ==============
 
-initChrome();
+initChrome({ games: ['connections'] });
 main();
 
 // Re-render mistake indicator when user cycles theme (dots ↔ wands/skulls)
