@@ -1062,31 +1062,36 @@ input, textarea, select { font: inherit; color: inherit; }
    sits comfortably against the amber ground. Default cells stay transparent
    — no bubble until the player interacts with a cell. */
 :root, :root[data-theme="light"] {
-  --strands-theme: #3a86ff;
-  --strands-theme-fg: #ffffff;
+  /* Option A — NYT-aligned. Chalky cyan for theme, gold for spangram,
+     neutral gray for the active drag path (color reserved for confirmed words). */
+  --strands-theme: #aedcec;
+  --strands-theme-fg: #0a2a3a;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #1a1a1a;
-  --strands-hint: #bcd8ff;
-  --strands-path: #3a86ff;
-  --strands-path-fg: #ffffff;
+  --strands-hint: #dfeef5;
+  --strands-path: #c4c4c4;
+  --strands-path-fg: #1a1a1a;
 }
 :root[data-theme="dark"] {
-  --strands-theme: #5aa8ff;
-  --strands-theme-fg: #0f0f10;
+  /* Option A — NYT-aligned. Muted teal-blue for theme, gold for spangram. */
+  --strands-theme: #6ba9c4;
+  --strands-theme-fg: #0f1c22;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #0f0f10;
-  --strands-hint: #2c4a70;
-  --strands-path: #5aa8ff;
-  --strands-path-fg: #0f0f10;
+  --strands-hint: #3a5f75;
+  --strands-path: #6e6e75;
+  --strands-path-fg: #f0f0f0;
 }
 :root[data-theme="hpvn"] {
+  /* Option B — warm-only. Theme tan + spangram red-orange for hue separation
+     without breaking the amber-forest feel. Path is a soft brown neutral. */
   --strands-theme: #c9a475;      /* warm tan matches the amber ground */
   --strands-theme-fg: #24160d;
-  --strands-spangram: #f0c045;
+  --strands-spangram: #d97742;   /* red-orange — separates cleanly from tan */
   --strands-spangram-fg: #24160d;
-  --strands-hint: #e6b871;
-  --strands-path: #c9a475;
-  --strands-path-fg: #24160d;
+  --strands-hint: #a88960;       /* darker tan, reads as "leaning theme" */
+  --strands-path: #8a6848;
+  --strands-path-fg: #e9d8c7;
 }
 
 .strands-theme {
@@ -1137,9 +1142,15 @@ input, textarea, select { font: inherit; color: inherit; }
   gap: 4px;
   position: relative;
   z-index: 2;
+  /* Prevent text-selection on desktop while dragging/tapping across cells. */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 /* Letters on background by default (no bubble). A filled circle only appears
-   for state changes: hover, in-path, path-tail, found, hint. */
+   for state changes: hover, in-path, path-tail, found, hint. The bubble is
+   drawn via radial-gradient at ~84% diameter so the SVG path lines between
+   cell centers remain visible around the circles. */
 .strands-cell {
   aspect-ratio: 1 / 1;
   border: none;
@@ -1156,31 +1167,45 @@ input, textarea, select { font: inherit; color: inherit; }
   transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .strands-cell:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .strands-cell:hover:not(:disabled):not(.theme-found):not(.spangram-found) {
-  background: color-mix(in srgb, var(--strands-path) 20%, transparent);
+  background: radial-gradient(circle at center,
+    color-mix(in srgb, var(--strands-path) 20%, transparent) 0 42%,
+    transparent 43%);
 }
 .strands-cell.in-path {
-  background: color-mix(in srgb, var(--strands-path) 45%, transparent);
+  background: radial-gradient(circle at center,
+    color-mix(in srgb, var(--strands-path) 45%, transparent) 0 42%,
+    transparent 43%);
   color: var(--fg);
 }
 .strands-cell.path-tail {
-  background: var(--strands-path);
+  background: radial-gradient(circle at center,
+    var(--strands-path) 0 42%,
+    transparent 43%);
   color: var(--strands-path-fg);
   transform: scale(1.06);
 }
 .strands-cell.hinted {
-  background: var(--strands-hint);
+  background: radial-gradient(circle at center,
+    var(--strands-hint) 0 42%,
+    transparent 43%);
   color: var(--fg);
 }
 .strands-cell.theme-found {
-  background: var(--strands-theme);
+  background: radial-gradient(circle at center,
+    var(--strands-theme) 0 42%,
+    transparent 43%);
   color: var(--strands-theme-fg);
   cursor: default;
 }
 .strands-cell.spangram-found {
-  background: var(--strands-spangram);
+  background: radial-gradient(circle at center,
+    var(--strands-spangram) 0 42%,
+    transparent 43%);
   color: var(--strands-spangram-fg);
   cursor: default;
 }

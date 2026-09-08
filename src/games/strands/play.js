@@ -288,9 +288,10 @@ function restoreFeedback() {
 
 // ============== INPUT ==============
 
-// Tap-mode: click one cell at a time to build a path, double-tap the last
-// cell to submit. Drag-mode (below) supplements this by handling pointer
-// movement; it does not replace tap.
+// Tap-mode: click one cell at a time to build a path. Submission is Submit-only
+// for tap (drag auto-submits on pointerup, handled below). Previously a click
+// on the tail auto-submitted, but pointerdown seeds the path and the trailing
+// click then matched last===idx, causing a spurious submit on the 3rd tap.
 function onCellClick(idx) {
   if (drag.suppressClick) { drag.suppressClick = false; return; }
   const found = foundCellSet();
@@ -299,7 +300,7 @@ function onCellClick(idx) {
   const p = state.path;
   if (p.length === 0) { state.path = [idx]; render(); return; }
   const last = p[p.length - 1];
-  if (last === idx) { onSubmit(); return; }         // double-tap tail = submit
+  if (last === idx) return;                          // tap on tail = no-op (use Submit button)
   const existingPos = p.indexOf(idx);
   if (existingPos !== -1) {                          // clicked a cell already in path = truncate to it
     state.path = p.slice(0, existingPos + 1);
