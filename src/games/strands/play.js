@@ -23,6 +23,8 @@ let state = null;    // see main() for shape
 let feedbackTimer = null;
 // Drag input transient state. Lives outside `state` because it never persists.
 let drag = { active: false, startIdx: null, moved: false, suppressClick: false };
+let correctBanner = null;   // { word } or null — shown in the current-word slot after a match
+let correctBannerTimer = null;
 
 // ============== URL PARSE ==============
 
@@ -133,13 +135,38 @@ function render() {
 }
 
 // Current in-progress word (letters as they're chosen). Shown under the grid
-// so the player can see what they're spelling.
+// so the player can see what they're spelling. Also carries the transient
+// "Correct: WORD" celebration in the same slot — overwrites the letters
+// briefly on match, then clears.
 function renderCurrentWord() {
   const el = document.getElementById('strands-current-word');
   if (!el) return;
+  el.classList.remove('correct', 'empty');
+  if (correctBanner) {
+    el.textContent = t('strands.feedback.correct', { word: correctBanner.word });
+    el.classList.add('correct');
+    return;
+  }
   const letters = state.path.map((idx) => puzzle.grid[idx]).join('');
   el.textContent = letters;
-  el.classList.toggle('empty', !letters);
+  if (!letters) el.classList.add('empty');
+}
+
+// Show "Correct: WORD" in the current-word slot for a moment. Any new path
+// input auto-clears the banner (see onCellClick / extendPathTo).
+function showCorrect(word) {
+  correctBanner = { word };
+  if (correctBannerTimer) clearTimeout(correctBannerTimer);
+  correctBannerTimer = setTimeout(() => {
+    correctBanner = null;
+    correctBannerTimer = null;
+    renderCurrentWord();
+  }, 2500);
+}
+function clearCorrectBanner() {
+  if (!correctBanner) return;
+  correctBanner = null;
+  if (correctBannerTimer) { clearTimeout(correctBannerTimer); correctBannerTimer = null; }
 }
 
 function renderProgress() {
@@ -262,6 +289,7 @@ function onCellClick(idx) {
   if (drag.suppressClick) { drag.suppressClick = false; return; }
   const found = foundCellSet();
   if (found.has(idx)) return; // already claimed by a solved word
+  clearCorrectBanner();
   const p = state.path;
   if (p.length === 0) { state.path = [idx]; render(); return; }
   const last = p[p.length - 1];
@@ -285,6 +313,7 @@ function onCellClick(idx) {
 // not-already-in-path (or backtrack to it). Returns true if the path changed.
 function extendPathTo(idx) {
   if (foundCellSet().has(idx)) return false;
+  clearCorrectBanner();
   const p = state.path;
   if (p.length === 0) { state.path = [idx]; return true; }
   const last = p[p.length - 1];
@@ -372,7 +401,7 @@ async function onSubmit() {
       state.spangram = { word: res.word, cells: path };
       state.events.push({ kind: 'spangram' });
       state.path = [];
-      setFeedback(t('strands.feedback.spangram'), 'good');
+      showCorrect(res.word);
     } else if (res.match === 'theme') {
       state.foundWordIndexes.add(res.wordIndex);
       state.foundWordCells.set(res.wordIndex, path);
@@ -383,7 +412,7 @@ async function onSubmit() {
         state.hintWordIndex = null;
       }
       state.path = [];
-      setFeedback(t('strands.feedback.themeFound', { word: res.word }), 'good');
+      showCorrect(res.word);
     } else {
       // Not a theme word: clear the path so the player can immediately try
       // another word instead of having to hit Clear first.

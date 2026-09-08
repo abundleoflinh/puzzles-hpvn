@@ -1057,34 +1057,43 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* ============== STRANDS ============== */
 
-/* Per-theme accent colors. Theme words = blue, spangram = yellow, matching the
-   share tiles. Hues shift per theme so contrast stays readable on all three
-   backgrounds. */
+/* Per-theme accent colours. Theme words = blue, spangram = yellow, matching
+   the share tiles. The default bubble is a soft variant so every letter shows
+   a filled circle from the start (matches NYT Strands presentation). HPVN
+   uses a warm tan default so sky-blue circles don't clash with the amber
+   ground; the "theme-word found" colour stays the same blue as light/dark. */
 :root, :root[data-theme="light"] {
   --strands-theme: #3a86ff;
   --strands-theme-fg: #ffffff;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #1a1a1a;
-  --strands-hint: #b0cfff;
+  --strands-default: #bcd8ff;    /* default bubble */
+  --strands-default-fg: #0f2340;
+  --strands-hint: #7fb0ff;
   --strands-path: #3a86ff;
+  --strands-path-fg: #ffffff;
 }
 :root[data-theme="dark"] {
   --strands-theme: #5aa8ff;
   --strands-theme-fg: #0f0f10;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #0f0f10;
-  --strands-hint: #3a5a80;
+  --strands-default: #2c4a70;
+  --strands-default-fg: #e6f0ff;
+  --strands-hint: #4a78b0;
   --strands-path: #5aa8ff;
+  --strands-path-fg: #0f0f10;
 }
 :root[data-theme="hpvn"] {
-  /* Same blue as the dark theme so the "theme word" colour is consistent
-     across all three themes. Spangram stays yellow. */
-  --strands-theme: #5aa8ff;
+  --strands-theme: #5aa8ff;      /* same blue as dark for consistency */
   --strands-theme-fg: #ffffff;
   --strands-spangram: #f0c045;
   --strands-spangram-fg: #24160d;
-  --strands-hint: #3a5a80;
+  --strands-default: #c9a475;    /* warm tan bubble to match the amber ground */
+  --strands-default-fg: #24160d;
+  --strands-hint: #e6b871;
   --strands-path: #5aa8ff;
+  --strands-path-fg: #ffffff;
 }
 
 .strands-theme {
@@ -1136,14 +1145,15 @@ input, textarea, select { font: inherit; color: inherit; }
   position: relative;
   z-index: 2;
 }
-/* Text-on-background by default: no tile, just the letter. State markers
-   (in-path, found, hint) add a filled circle. */
+/* Every letter sits inside a filled bubble by default. State layers on top:
+   in-path darkens, path-tail is filled with the accent, found cells switch
+   to the theme/spangram colour. */
 .strands-cell {
   aspect-ratio: 1 / 1;
   border: none;
   border-radius: 50%;
-  background: transparent;
-  color: var(--fg);
+  background: var(--strands-default);
+  color: var(--strands-default-fg);
   font-family: inherit;
   font-weight: 700;
   font-size: clamp(16px, 4.5vw, 24px);
@@ -1157,17 +1167,20 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .strands-cell:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .strands-cell:hover:not(:disabled):not(.theme-found):not(.spangram-found) {
-  background: color-mix(in srgb, var(--strands-path) 15%, transparent);
+  background: color-mix(in srgb, var(--strands-path) 45%, var(--strands-default));
 }
 .strands-cell.in-path {
-  background: color-mix(in srgb, var(--strands-path) 30%, transparent);
+  background: color-mix(in srgb, var(--strands-path) 60%, var(--strands-default));
+  color: var(--strands-path-fg);
 }
 .strands-cell.path-tail {
-  background: color-mix(in srgb, var(--strands-path) 55%, transparent);
+  background: var(--strands-path);
+  color: var(--strands-path-fg);
   transform: scale(1.06);
 }
 .strands-cell.hinted {
-  background: color-mix(in srgb, var(--strands-hint) 55%, transparent);
+  background: var(--strands-hint);
+  color: var(--strands-default-fg);
 }
 .strands-cell.theme-found {
   background: var(--strands-theme);
@@ -1193,6 +1206,12 @@ input, textarea, select { font: inherit; color: inherit; }
 .strands-current-word.empty::before {
   content: '·';
   color: var(--fg-tiny);
+}
+/* Success message overwrites the current-word line on match. Yellow so it
+   reads as celebratory, matching the spangram tile colour. */
+.strands-current-word.correct {
+  color: var(--strands-spangram);
+  letter-spacing: 0.08em;
 }
 
 /* ---- Editor tabs ---- */
