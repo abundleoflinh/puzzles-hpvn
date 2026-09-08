@@ -21,6 +21,8 @@ let puzzle = null;   // masked: { rows, cols, grid, theme, title, wordCount, spa
 let puzzleId = null;
 let state = null;    // see main() for shape
 let feedbackTimer = null;
+// Drag input transient state. Lives outside `state` because it never persists.
+let drag = { active: false, startIdx: null, moved: false, suppressClick: false };
 
 // ============== URL PARSE ==============
 
@@ -109,10 +111,12 @@ function render() {
         <svg class="strands-lines" id="strands-lines" aria-hidden="true"></svg>
         <div class="strands-grid" id="strands-grid" style="--rows:${puzzle.rows};--cols:${puzzle.cols}"></div>
       </div>
+      <div class="strands-current-word" id="strands-current-word" aria-live="polite"></div>
       <div class="feedback" id="feedback"></div>
       <div class="play-controls" id="controls"></div>
       <div id="result-slot"></div>
     `;
+    wireDrag();
   } else {
     const h1 = main.querySelector('.play-header h1');
     if (h1) h1.textContent = title;
@@ -121,10 +125,21 @@ function render() {
   }
   renderProgress();
   renderGrid();
+  renderCurrentWord();
   renderControls(done);
   restoreFeedback();
   drawLines();
   if (done) renderResult();
+}
+
+// Current in-progress word (letters as they're chosen). Shown under the grid
+// so the player can see what they're spelling.
+function renderCurrentWord() {
+  const el = document.getElementById('strands-current-word');
+  if (!el) return;
+  const letters = state.path.map((idx) => puzzle.grid[idx]).join('');
+  el.textContent = letters;
+  el.classList.toggle('empty', !letters);
 }
 
 function renderProgress() {
@@ -158,32 +173,43 @@ function renderGrid() {
   }
 }
 
-// Draw connecting lines between consecutive path cells so the player can see
-// their path. Uses an SVG overlay sized to the grid.
+// Convert an ordered list of cell indexes into an SVG path centred on each
+// cell's midpoint. Returns null when a cell can't be found (mid-transition).
+function pathFromCells(cells, grid, gridRect) {
+  const centers = cells.map((idx) => {
+    const cell = grid.querySelector(`.strands-cell[data-idx="${idx}"]`);
+    if (!cell) return null;
+    const r = cell.getBoundingClientRect();
+    return { x: r.left - gridRect.left + r.width / 2, y: r.top - gridRect.top + r.height / 2 };
+  }).filter(Boolean);
+  if (centers.length < 2) return null;
+  return centers.map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`)).join(' ');
+}
+
+// Draws every visible path onto the SVG overlay: one line per found theme
+// word (blue), one for the spangram (yellow), and the in-progress path on top.
 function drawLines() {
   const svg = document.getElementById('strands-lines');
   const grid = document.getElementById('strands-grid');
   if (!svg || !grid) return;
   svg.innerHTML = '';
-  if (state.path.length < 2) return;
   const gridRect = grid.getBoundingClientRect();
   svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
   svg.setAttribute('width', String(gridRect.width));
   svg.setAttribute('height', String(gridRect.height));
-  const centers = state.path.map((idx) => {
-    const cell = grid.querySelector(`.strands-cell[data-idx="${idx}"]`);
-    if (!cell) return null;
-    const r = cell.getBoundingClientRect();
-    return {
-      x: r.left - gridRect.left + r.width / 2,
-      y: r.top - gridRect.top + r.height / 2,
-    };
-  }).filter(Boolean);
-  const d = centers.map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`)).join(' ');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', d);
-  path.setAttribute('class', 'strands-line');
-  svg.appendChild(path);
+
+  const addLine = (cells, cls) => {
+    const d = pathFromCells(cells, grid, gridRect);
+    if (!d) return;
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('class', cls);
+    svg.appendChild(p);
+  };
+
+  for (const cells of state.foundWordCells.values()) addLine(cells, 'strands-line found theme');
+  if (state.spangram) addLine(state.spangram.cells, 'strands-line found spangram');
+  addLine(state.path, 'strands-line active');
 }
 
 function renderControls(done) {
@@ -229,26 +255,110 @@ function restoreFeedback() {
 
 // ============== INPUT ==============
 
+// Tap-mode: click one cell at a time to build a path, double-tap the last
+// cell to submit. Drag-mode (below) supplements this by handling pointer
+// movement; it does not replace tap.
 function onCellClick(idx) {
+  if (drag.suppressClick) { drag.suppressClick = false; return; }
   const found = foundCellSet();
   if (found.has(idx)) return; // already claimed by a solved word
   const p = state.path;
   if (p.length === 0) { state.path = [idx]; render(); return; }
   const last = p[p.length - 1];
-  if (last === idx) { onSubmit(); return; }         // double-tap tail → submit
+  if (last === idx) { onSubmit(); return; }         // double-tap tail = submit
   const existingPos = p.indexOf(idx);
-  if (existingPos !== -1) {                          // clicked a cell already in path → truncate to it
+  if (existingPos !== -1) {                          // clicked a cell already in path = truncate to it
     state.path = p.slice(0, existingPos + 1);
     render();
     return;
   }
-  if (!areAdjacent(last, idx, puzzle.cols)) {        // non-adjacent → start over from this cell
+  if (!areAdjacent(last, idx, puzzle.cols)) {        // non-adjacent = start over from this cell
     state.path = [idx];
     render();
     return;
   }
   state.path = [...p, idx];
   render();
+}
+
+// Try to extend the path to `idx` under drag rules: adjacent, unclaimed,
+// not-already-in-path (or backtrack to it). Returns true if the path changed.
+function extendPathTo(idx) {
+  if (foundCellSet().has(idx)) return false;
+  const p = state.path;
+  if (p.length === 0) { state.path = [idx]; return true; }
+  const last = p[p.length - 1];
+  if (last === idx) return false;
+  const existingPos = p.indexOf(idx);
+  if (existingPos !== -1) {
+    // Backtrack.
+    state.path = p.slice(0, existingPos + 1);
+    return true;
+  }
+  if (!areAdjacent(last, idx, puzzle.cols)) return false;
+  state.path = [...p, idx];
+  return true;
+}
+
+// Locate a Strands cell by pointer coordinates. Uses elementFromPoint so
+// pointermove works across cells even when the pointerdown target is stale.
+function cellIdxFromPoint(x, y) {
+  const el = document.elementFromPoint(x, y);
+  if (!el) return null;
+  const cell = el.closest('.strands-cell');
+  if (!cell) return null;
+  const idx = parseInt(cell.dataset.idx, 10);
+  return Number.isInteger(idx) ? idx : null;
+}
+
+// One-time drag wiring on the grid element. `wireDrag` runs after the shell
+// mounts; pointerdown starts a drag session, pointermove extends the path,
+// pointerup auto-submits when the drag actually moved.
+function wireDrag() {
+  const grid = document.getElementById('strands-grid');
+  if (!grid) return;
+  grid.addEventListener('pointerdown', (e) => {
+    const idx = cellIdxFromPoint(e.clientX, e.clientY);
+    if (idx == null) return;
+    if (foundCellSet().has(idx)) return;
+    drag.active = true;
+    drag.startIdx = idx;
+    drag.moved = false;
+    // If the drag starts on a fresh cell, seed the path so the player sees
+    // feedback immediately. Tap-only clicks still route through onCellClick
+    // (below) because pointerup with moved=false suppresses nothing.
+    if (state.path.length === 0 || !areAdjacent(state.path[state.path.length - 1], idx, puzzle.cols)) {
+      state.path = [idx];
+      render();
+    } else if (state.path[state.path.length - 1] !== idx) {
+      extendPathTo(idx);
+      render();
+    }
+    // Prevent text selection while dragging.
+    try { grid.setPointerCapture(e.pointerId); } catch {}
+  });
+  grid.addEventListener('pointermove', (e) => {
+    if (!drag.active) return;
+    const idx = cellIdxFromPoint(e.clientX, e.clientY);
+    if (idx == null) return;
+    if (idx !== drag.startIdx) drag.moved = true;
+    if (extendPathTo(idx)) render();
+  });
+  const end = (e) => {
+    if (!drag.active) return;
+    drag.active = false;
+    try { grid.releasePointerCapture(e.pointerId); } catch {}
+    if (drag.moved) {
+      // A real drag happened → auto-submit. Suppress the trailing click so it
+      // doesn't run onCellClick (which would double-submit or truncate).
+      drag.suppressClick = true;
+      if (state.path.length >= 3) onSubmit();
+    }
+    drag.moved = false;
+    drag.startIdx = null;
+  };
+  grid.addEventListener('pointerup', end);
+  grid.addEventListener('pointercancel', end);
 }
 
 function onClear() { state.path = []; render(); }

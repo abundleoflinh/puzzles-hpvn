@@ -14,9 +14,10 @@ export function setSelectedTab(tab) {
   try { sessionStorage.setItem(TAB_KEY, tab); } catch {}
 }
 
-// Renders the strip into a caller-provided container. On click, persist the
-// choice and reload so the parent shell re-dispatches to the right editor.
-export function renderEditorTabs(container) {
+// Renders the strip into a caller-provided container. Optional `onSwitch`
+// callback is invoked after the selection is persisted — pass the parent
+// dispatcher here so the tab switch swaps in-place instead of reloading.
+export function renderEditorTabs(container, onSwitch) {
   if (!container) return;
   const active = getSelectedTab();
   container.innerHTML = `
@@ -30,7 +31,8 @@ export function renderEditorTabs(container) {
       const next = btn.dataset.tab;
       if (next === getSelectedTab()) return;
       setSelectedTab(next);
-      window.location.reload();
+      if (typeof onSwitch === 'function') onSwitch(next);
+      else window.location.reload();
     });
   });
 }

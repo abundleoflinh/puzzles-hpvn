@@ -110,12 +110,16 @@ async function onGateSubmit(e) {
 
 // ============== EDITOR FORM ==============
 
+// Central dispatch — renders whichever editor the current tab points at.
+// Used as the boot entry after gate success AND as the onSwitch callback the
+// tab strip fires when the user clicks the other tab. Idempotent: safe to
+// call any time.
 function renderEditor() {
   // If the user switched to the Strands tab (via prior click) route there
   // instead. Dynamic import so Strands code isn't pulled into the Connections
   // bundle on first paint.
   if (getSelectedTab() === 'strands') {
-    import('./games/strands/editor.js').then((m) => m.mountStrandsEditor());
+    import('./games/strands/editor.js').then((m) => m.mountStrandsEditor(renderEditor));
     return;
   }
   const main = document.querySelector('[data-slot="main"]');
@@ -220,7 +224,7 @@ function renderEditor() {
 
     <div id="result-slot"></div>
   `;
-  renderEditorTabs(document.getElementById('editor-tabs-slot'));
+  renderEditorTabs(document.getElementById('editor-tabs-slot'), renderEditor);
   document.getElementById('puzzle-size').value = String(currentSize);
   renderGroupRows();
   renderLayoutSection();

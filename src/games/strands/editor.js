@@ -50,7 +50,9 @@ let collectionsCache = [];
 
 // ============== MOUNT ==============
 
-export async function mountStrandsEditor() {
+// `onSwitch` is passed by the parent shell (src/editor.js) so tab clicks can
+// swap editors without reloading the page.
+export async function mountStrandsEditor(onSwitch) {
   const main = document.querySelector('[data-slot="main"]');
   main.innerHTML = `
     <div id="editor-tabs-slot"></div>
@@ -115,18 +117,19 @@ export async function mountStrandsEditor() {
         <p class="field-help" id="strands-letter-count"></p>
       </div>
 
-      <div class="editor-section">
-        <div class="editor-section-title">${escapeHtml(t('strands.editor.grid.heading'))}</div>
-        <p class="field-help">${escapeHtml(t('strands.editor.grid.help'))}</p>
-        <div class="strands-editor-board">
-          <div class="strands-grid" id="strands-editor-grid"></div>
+      <div class="editor-section strands-editor-columns">
+        <div class="strands-editor-col-grid">
+          <div class="editor-section-title">${escapeHtml(t('strands.editor.grid.heading'))}</div>
+          <p class="field-help">${escapeHtml(t('strands.editor.grid.help'))}</p>
+          <div class="strands-editor-board">
+            <div class="strands-grid" id="strands-editor-grid"></div>
+          </div>
         </div>
-      </div>
-
-      <div class="editor-section">
-        <div class="editor-section-title">${escapeHtml(t('strands.editor.paths.heading'))}</div>
-        <p class="field-help" id="strands-drawing-help">${escapeHtml(t('strands.editor.paths.help'))}</p>
-        <div id="strands-paths-list"></div>
+        <div class="strands-editor-col-paths">
+          <div class="editor-section-title">${escapeHtml(t('strands.editor.paths.heading'))}</div>
+          <p class="field-help" id="strands-drawing-help">${escapeHtml(t('strands.editor.paths.help'))}</p>
+          <div id="strands-paths-list"></div>
+        </div>
       </div>
 
       <div class="options-row">
@@ -159,17 +162,47 @@ export async function mountStrandsEditor() {
 
     <div id="strands-result-slot"></div>
   `;
-  renderEditorTabs(document.getElementById('editor-tabs-slot'));
+  renderEditorTabs(document.getElementById('editor-tabs-slot'), onSwitch);
 
   fillSizeSelects();
-  addWordRow(); addWordRow(); addWordRow();      // start with 3 blank word slots
+  // Seed the word list on the first mount only. Language-flip re-mounts keep
+  // the existing state so the author doesn't lose work.
+  if (!state.words.length) { addWordRow(); addWordRow(); addWordRow(); }
+  renderWordList();
+  hydrateInputs();
   renderGrid();
   renderPathsList();
   renderLetterCount();
   wireEvents();
   applyTranslations(main);
-  loadCollections();
+  loadCollections(state.collectionId || undefined);
+  lastOnSwitch = onSwitch;
 }
+
+// Push current state values back into the form inputs. Called on mount and
+// after language flips so the form isn't wiped when the DOM rebuilds.
+function hydrateInputs() {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ''; };
+  set('strands-title', state.title);
+  set('strands-theme', state.theme);
+  set('strands-spangram', state.spangramWord);
+  set('strands-rows', String(state.rows));
+  set('strands-cols', String(state.cols));
+  set('strands-default-theme', state.defaultTheme);
+  set('strands-default-lang', state.defaultLang);
+  const submitBtn = document.getElementById('strands-submit-btn');
+  if (submitBtn) submitBtn.textContent = t(state.editingId ? 'editor.actions.update' : 'editor.actions.create');
+}
+
+let lastOnSwitch = null;
+// Language flip: re-render the whole editor DOM using the current state so
+// every label refreshes. Preserves state (module-level) so nothing is lost.
+window.addEventListener('lang-changed', () => {
+  // Only re-render if a Strands editor is currently mounted; otherwise this
+  // listener has been registered but Connections is on screen.
+  if (!document.getElementById('strands-form')) return;
+  mountStrandsEditor(lastOnSwitch);
+});
 
 function fillSizeSelects() {
   const rows = document.getElementById('strands-rows');

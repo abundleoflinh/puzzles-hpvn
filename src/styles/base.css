@@ -1054,36 +1054,34 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* ============== STRANDS ============== */
 
-/* Per-theme accent colors for Strands. Blue = theme word found; yellow = spangram; soft = hint. */
+/* Per-theme accent colors. Theme words = blue, spangram = yellow, matching the
+   share tiles. Hues shift per theme so contrast stays readable on all three
+   backgrounds. */
 :root, :root[data-theme="light"] {
-  --strands-theme: #4a9eff;
-  --strands-theme-fg: #fff;
+  --strands-theme: #3a86ff;
+  --strands-theme-fg: #ffffff;
   --strands-spangram: #f5c518;
   --strands-spangram-fg: #1a1a1a;
-  --strands-hint: rgba(74, 158, 255, 0.22);
-  --strands-path: #4a9eff;
-  --strands-path-fg: #fff;
-}
-:root:not([data-theme="light"]) {
-  --strands-theme: #5aa8ff;
-  --strands-spangram: #f5c518;
-  --strands-spangram-fg: #1a1a1a;
-  --strands-hint: rgba(90, 168, 255, 0.28);
-  --strands-path: #5aa8ff;
-  --strands-path-fg: #fff;
+  --strands-hint: #b0cfff;
+  --strands-path: #3a86ff;
 }
 :root[data-theme="dark"] {
   --strands-theme: #5aa8ff;
-  --strands-hint: rgba(90, 168, 255, 0.28);
+  --strands-theme-fg: #0f0f10;
+  --strands-spangram: #f5c518;
+  --strands-spangram-fg: #0f0f10;
+  --strands-hint: #3a5a80;
+  --strands-path: #5aa8ff;
 }
 :root[data-theme="hpvn"] {
-  --strands-theme: #d4a017;
-  --strands-theme-fg: #1a0f08;
-  --strands-spangram: #e9d8c7;
+  /* HPVN theme: keep the yellow spangram consistent, shift theme-word color
+     to a warm teal so it reads against the amber ground. */
+  --strands-theme: #4fb8b0;
+  --strands-theme-fg: #0f2320;
+  --strands-spangram: #f0c045;
   --strands-spangram-fg: #24160d;
-  --strands-hint: rgba(212, 160, 23, 0.28);
-  --strands-path: #d4a017;
-  --strands-path-fg: #1a0f08;
+  --strands-hint: #6a8a86;
+  --strands-path: #4fb8b0;
 }
 
 .strands-theme {
@@ -1103,6 +1101,7 @@ input, textarea, select { font: inherit; color: inherit; }
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  touch-action: none; /* let pointermove work smoothly on touch devices */
 }
 .strands-lines {
   position: absolute;
@@ -1110,49 +1109,59 @@ input, textarea, select { font: inherit; color: inherit; }
   pointer-events: none;
   z-index: 1;
 }
-.strands-line {
-  fill: none;
+.strands-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.strands-line.active {
   stroke: var(--strands-path);
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  stroke-width: 10;
+  opacity: 0.35;
+}
+.strands-line.found.theme {
+  stroke: var(--strands-theme);
+  stroke-width: 10;
   opacity: 0.55;
+}
+.strands-line.found.spangram {
+  stroke: var(--strands-spangram);
+  stroke-width: 12;
+  opacity: 0.65;
 }
 .strands-grid {
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-template-rows: repeat(var(--rows), 1fr);
-  gap: 6px;
+  gap: 4px;
   position: relative;
   z-index: 2;
 }
+/* Text-on-background by default: no tile, just the letter. State markers
+   (in-path, found, hint) add a filled circle. */
 .strands-cell {
   aspect-ratio: 1 / 1;
   border: none;
   border-radius: 50%;
-  background: var(--tile-bg);
-  color: var(--tile-fg);
+  background: transparent;
+  color: var(--fg);
   font-family: inherit;
   font-weight: 700;
-  font-size: clamp(14px, 4vw, 22px);
+  font-size: clamp(16px, 4.5vw, 24px);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
-  position: relative;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
-.strands-cell:hover:not(:disabled) { transform: scale(1.05); }
 .strands-cell:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .strands-cell.in-path {
-  background: var(--strands-path);
-  color: var(--strands-path-fg);
+  background: color-mix(in srgb, var(--strands-path) 30%, transparent);
 }
 .strands-cell.path-tail {
-  box-shadow: 0 0 0 3px var(--strands-path);
+  background: color-mix(in srgb, var(--strands-path) 55%, transparent);
+  transform: scale(1.06);
 }
 .strands-cell.hinted {
-  background: var(--strands-hint);
+  background: color-mix(in srgb, var(--strands-hint) 55%, transparent);
 }
 .strands-cell.theme-found {
   background: var(--strands-theme);
@@ -1163,6 +1172,21 @@ input, textarea, select { font: inherit; color: inherit; }
   background: var(--strands-spangram);
   color: var(--strands-spangram-fg);
   cursor: default;
+}
+
+.strands-current-word {
+  min-height: 28px;
+  text-align: center;
+  margin: 12px 0 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+}
+.strands-current-word.empty::before {
+  content: '·';
+  color: var(--fg-tiny);
 }
 
 /* ---- Editor tabs ---- */
@@ -1198,11 +1222,48 @@ input, textarea, select { font: inherit; color: inherit; }
   flex-direction: column;
   gap: 4px;
 }
-.strands-size-row select {
-  padding: 4px 8px;
+.strands-size-row > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg);
+}
+/* Readability across themes: default browser <select> chrome fights dark
+   themes. Force our tokens. */
+.strands-size-row select,
+#strands-collection,
+#strands-default-theme,
+#strands-default-lang {
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border-strong, var(--fg-tiny));
+  border-radius: 6px;
+  padding: 6px 10px;
   font-family: inherit;
   font-size: 14px;
 }
+.strands-size-row select { min-width: 72px; }
+.strands-size-row select option,
+#strands-collection option,
+#strands-default-theme option,
+#strands-default-lang option {
+  background: var(--bg-elev);
+  color: var(--fg);
+}
+
+/* Side-by-side grid + paths on desktop; stack on narrow screens. */
+.strands-editor-columns {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .strands-editor-columns { grid-template-columns: 1fr; }
+}
+.strands-editor-col-grid,
+.strands-editor-col-paths { min-width: 0; }
+.strands-editor-col-paths .field-help { margin-bottom: 8px; }
 .strands-word-row {
   display: flex;
   gap: 8px;
