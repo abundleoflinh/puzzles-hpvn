@@ -1089,7 +1089,7 @@ input, textarea, select { font: inherit; color: inherit; }
   --strands-theme-fg: #24160d;
   --strands-spangram: #d97742;   /* red-orange — separates cleanly from tan */
   --strands-spangram-fg: #24160d;
-  --strands-hint: #a88960;       /* darker tan, reads as "leaning theme" */
+  --strands-hint: rgba(233, 216, 199, 0.15);  /* pale cream wash — mirrors the light theme's subtle #dfeef5 */
   --strands-path: #8a6848;
   --strands-path-fg: #e9d8c7;
 }
