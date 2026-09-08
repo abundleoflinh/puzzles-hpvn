@@ -1299,10 +1299,13 @@ input, textarea, select { font: inherit; color: inherit; }
 
 /* Extra breathing room inside the words section: give the theme-clue row,
    spangram, and word list some rhythm so labels aren't jammed against inputs
-   above them. `.field-label` already has the right margin-bottom globally. */
+   above them. `.field-label` already has the right margin-bottom globally.
+   Excludes `.new-collection-row` and `.meta-help` so the Puzzle-info section
+   keeps its own tighter rhythm (matches the Connections editor exactly). */
 #strands-form .editor-section > .meta-row + .meta-row,
-#strands-form .editor-section > .meta-row + div,
+#strands-form .editor-section > .meta-row + div:not(.new-collection-row),
 #strands-form .editor-section > div + p.field-help { margin-top: 16px; }
+#strands-form .editor-section > .new-collection-row + .meta-help { margin-top: 8px; }
 #strands-form #strands-add-word { margin-top: 4px; }
 
 /* Letter-count colour cue: green when exact, red when off in either direction. */
