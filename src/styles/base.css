@@ -1234,11 +1234,10 @@ input, textarea, select { font: inherit; color: inherit; }
 .editor-tab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
 /* ---- Strands editor ---- */
-.strands-size-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+/* Label + inline dropdowns. No flex-column wrapper: the label uses the same
+   `#strands-form .field-label { margin-bottom: 6px }` rule as every other
+   field, so the two grid cells in a .meta-row align at both the label and
+   the input line. */
 .strands-size-row > span {
   display: inline-flex;
   align-items: center;
