@@ -741,6 +741,7 @@ input, textarea, select { font: inherit; color: inherit; }
   line-height: 1.25;
 }
 .tile:hover { transform: translateY(-1px); }
+.tile:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .tile.selected {
   background: var(--fg);
   color: var(--bg);
@@ -781,6 +782,8 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .feedback.visible { opacity: 1; }
 .feedback[data-tone="hint"] { color: var(--accent); }
+/* Positive confirmation — Strands uses this for "theme found" / "spangram!" */
+.feedback[data-tone="good"] { color: var(--strands-theme, var(--accent)); }
 
 .mistakes {
   display: flex;
@@ -1074,14 +1077,14 @@ input, textarea, select { font: inherit; color: inherit; }
   --strands-path: #5aa8ff;
 }
 :root[data-theme="hpvn"] {
-  /* HPVN theme: keep the yellow spangram consistent, shift theme-word color
-     to a warm teal so it reads against the amber ground. */
-  --strands-theme: #4fb8b0;
-  --strands-theme-fg: #0f2320;
+  /* Same blue as the dark theme so the "theme word" colour is consistent
+     across all three themes. Spangram stays yellow. */
+  --strands-theme: #5aa8ff;
+  --strands-theme-fg: #ffffff;
   --strands-spangram: #f0c045;
   --strands-spangram-fg: #24160d;
-  --strands-hint: #6a8a86;
-  --strands-path: #4fb8b0;
+  --strands-hint: #3a5a80;
+  --strands-path: #5aa8ff;
 }
 
 .strands-theme {
@@ -1153,6 +1156,9 @@ input, textarea, select { font: inherit; color: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 .strands-cell:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.strands-cell:hover:not(:disabled):not(.theme-found):not(.spangram-found) {
+  background: color-mix(in srgb, var(--strands-path) 15%, transparent);
+}
 .strands-cell.in-path {
   background: color-mix(in srgb, var(--strands-path) 30%, transparent);
 }
@@ -1175,13 +1181,13 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 
 .strands-current-word {
-  min-height: 28px;
+  min-height: 32px;
   text-align: center;
-  margin: 12px 0 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 20px;
+  margin: 28px 0 8px;
+  font-family: inherit;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: var(--fg);
 }
 .strands-current-word.empty::before {
@@ -1267,19 +1273,37 @@ input, textarea, select { font: inherit; color: inherit; }
 .strands-word-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   align-items: center;
 }
 .strands-word-input {
   flex: 1;
   text-transform: uppercase;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: 0.05em;
+  font-family: inherit;
+  letter-spacing: 0.03em;
 }
 .strands-word-remove {
   padding: 4px 10px;
   min-width: 32px;
 }
+
+/* Extra breathing room inside the words section: give the theme-clue row,
+   spangram, and word list some rhythm so labels aren't jammed against inputs
+   above them. */
+#strands-form .editor-section > .meta-row + .meta-row,
+#strands-form .editor-section > .meta-row + div,
+#strands-form .editor-section > div + p.field-help { margin-top: 16px; }
+#strands-form .field-label { margin-bottom: 6px; }
+#strands-form #strands-add-word { margin-top: 4px; }
+
+/* Letter-count colour cue: green when exact, red when off in either direction. */
+#strands-letter-count { font-weight: 600; margin-top: 12px; }
+#strands-letter-count[data-tone="good"] { color: #2e8540; }
+#strands-letter-count[data-tone="bad"] { color: #d64545; }
+:root[data-theme="dark"] #strands-letter-count[data-tone="good"] { color: #4ad06a; }
+:root[data-theme="dark"] #strands-letter-count[data-tone="bad"] { color: #ff6f6f; }
+:root[data-theme="hpvn"] #strands-letter-count[data-tone="good"] { color: #6bd18c; }
+:root[data-theme="hpvn"] #strands-letter-count[data-tone="bad"] { color: #ff8a6b; }
 .strands-editor-board {
   max-width: 420px;
   margin: 12px 0;
@@ -1287,12 +1311,14 @@ input, textarea, select { font: inherit; color: inherit; }
 .strands-editor-board .strands-grid { gap: 4px; }
 .strands-editor-cell {
   aspect-ratio: 1 / 1;
-  background: var(--bg-elev);
+  /* Match the play page's tile colour so the editor preview reads as the
+     final board. `--tile-bg` is defined per theme. */
+  background: var(--tile-bg);
   border-radius: 8px;
   padding: 2px;
   transition: background 0.12s ease, box-shadow 0.12s ease;
 }
-.strands-editor-cell.claimed { background: color-mix(in srgb, var(--strands-theme) 25%, var(--bg-elev)); }
+.strands-editor-cell.claimed { background: color-mix(in srgb, var(--strands-theme) 30%, var(--tile-bg)); }
 .strands-editor-cell.drawing { box-shadow: inset 0 0 0 2px var(--accent); }
 .strands-editor-cell.drawing-last { box-shadow: inset 0 0 0 3px var(--strands-spangram); }
 .strands-editor-cell input {

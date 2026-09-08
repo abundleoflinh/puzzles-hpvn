@@ -1,8 +1,8 @@
 import './styles/base.css';
 import { initChrome } from './lib/chrome.js';
 import { t } from './lib/i18n.js';
-import { listCollections } from './lib/api.js';
-import { escapeHtml, parseShortLink, TYPE_PREFIX } from './lib/util.js';
+import { listCollections, fetchPuzzle } from './lib/api.js';
+import { escapeHtml, parseShortLink, SHORT_ID_RE, TYPE_PREFIX } from './lib/util.js';
 
 // Per-game play page path. When adding a new game, add a row here and mirror
 // it in vite.config.js (input) and public/_redirects. Falls back to the
@@ -17,18 +17,41 @@ function playHref(type, id) {
   return `${page}#${prefix}/${encodeURIComponent(id)}`;
 }
 
-function onSubmit(e) {
+async function onSubmit(e) {
   e.preventDefault();
   const input = document.getElementById('puzzle-input');
   const err = document.getElementById('puzzle-error');
-  // Accept a bare 5-char id, "/c/abc12", "/s/abc12", "#c/abc12", or a full URL.
-  const parsed = parseShortLink(input.value);
+  const raw = input.value.trim();
+  const parsed = parseShortLink(raw);
   if (!parsed) {
     err.textContent = t('home.input.invalid');
     err.hidden = false;
     return;
   }
   err.hidden = true;
+  // A bare 5-char id doesn't tell us the game type; parseShortLink defaults
+  // to Connections. Probe both endpoints so a Strands id pasted directly
+  // still resolves. URL-prefixed inputs (/c/, /s/, #c/, #s/) skip the probe.
+  if (SHORT_ID_RE.test(raw)) {
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+    try {
+      for (const type of ['connections', 'strands']) {
+        try {
+          await fetchPuzzle(type, raw);
+          window.location.href = playHref(type, raw);
+          return;
+        } catch (e2) {
+          if (e2.status !== 404) throw e2;
+        }
+      }
+      err.textContent = t('home.input.invalid');
+      err.hidden = false;
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+    return;
+  }
   window.location.href = playHref(parsed.type, parsed.id);
 }
 

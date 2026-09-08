@@ -34,7 +34,6 @@ const state = {
   editingCreatedAt: null,
   title: '',
   theme: '',
-  lang: '',            // '' | 'en' | 'vi'
   collectionId: '',
   rows: ROW_DEFAULT,
   cols: COL_DEFAULT,
@@ -266,7 +265,8 @@ function renderLetterCount() {
   else if (diff > 0) msg = t('strands.editor.letterCount.need', { n, more: diff });
   else msg = t('strands.editor.letterCount.over', { n, over: -diff });
   el.textContent = msg;
-  el.dataset.tone = diff === 0 ? 'good' : 'warn';
+  // Colour-cue: green when exact match, red when off in either direction.
+  el.dataset.tone = diff === 0 ? 'good' : 'bad';
 }
 
 // ============== GRID ==============
@@ -405,7 +405,7 @@ function pathRowHtml(target, label, word, path) {
     : path
     ? `<span class="tag good">${escapeHtml(t('strands.editor.paths.set'))}</span>`
     : `<span class="tag warn">${escapeHtml(t('strands.editor.paths.notSet'))}</span>`;
-  const wordDisplay = word ? escapeHtml(word) : '—';
+  const wordDisplay = word ? escapeHtml(word) : '·';
   const isDrawing = state.drawing && state.drawing.target === target;
   const drawLabel = isDrawing ? t('strands.editor.paths.cancel') : t('strands.editor.paths.draw');
   return `
@@ -491,6 +491,7 @@ function updateDrawingHelp() {
   });
 }
 
+// Transient error toast — used for path-drawing errors that should self-hide.
 function flashError(msg) {
   const el = document.getElementById('strands-error');
   if (!el) return;
@@ -498,6 +499,18 @@ function flashError(msg) {
   el.hidden = false;
   clearTimeout(flashError._t);
   flashError._t = setTimeout(() => { el.hidden = true; }, 3000);
+}
+
+// Persistent error surface — for validation and API errors that should stay
+// visible until the user acts. Cleared on next submit or reset. Cancels any
+// pending flash timer so the two don't fight.
+function showError(msg) {
+  const el = document.getElementById('strands-error');
+  if (!el) return;
+  clearTimeout(flashError._t);
+  if (!msg) { el.textContent = ''; el.hidden = true; return; }
+  el.textContent = msg;
+  el.hidden = false;
 }
 
 // ============== COLLECTIONS ==============
@@ -603,6 +616,7 @@ async function onLoadExisting() {
 }
 
 function hydrateFromPuzzle(id, p) {
+  showError('');
   state.editingId = id;
   state.editingCreatedAt = p.createdAt || null;
   state.title = p.title || '';
@@ -629,6 +643,9 @@ function hydrateFromPuzzle(id, p) {
   renderLetterCount();
   renderCollectionOptions(state.collectionId);
   document.getElementById('strands-submit-btn').textContent = t('editor.actions.update');
+  // Match the Connections editor: after a successful load, show a "loaded"
+  // result card so the user has a shareable link and a way to play.
+  showResult({ kind: 'loaded', id, url: `/s/${id}` });
 }
 
 // ============== SUBMIT ==============
@@ -659,18 +676,17 @@ function buildPuzzle() {
 
 async function onSubmit(e) {
   e.preventDefault();
-  const errEl = document.getElementById('strands-error');
-  errEl.hidden = true;
+  showError('');
   const puzzle = buildPuzzle();
-  if (!puzzle.theme) { flashError(t('strands.editor.err.themeRequired')); return; }
-  if (!puzzle.spangram) { flashError(t('strands.editor.err.spangramRequired')); return; }
-  if (puzzle.words.length < WORD_MIN_COUNT) { flashError(t('strands.editor.err.tooFewWords', { min: WORD_MIN_COUNT })); return; }
-  if (puzzle.words.some((w) => !w.path)) { flashError(t('strands.editor.err.wordPathMissing')); return; }
+  if (!puzzle.theme) { showError(t('strands.editor.err.themeRequired')); return; }
+  if (!puzzle.spangram) { showError(t('strands.editor.err.spangramRequired')); return; }
+  if (puzzle.words.length < WORD_MIN_COUNT) { showError(t('strands.editor.err.tooFewWords', { min: WORD_MIN_COUNT })); return; }
+  if (puzzle.words.some((w) => !w.path)) { showError(t('strands.editor.err.wordPathMissing')); return; }
   const err = validatePuzzle(puzzle);
-  if (err) { flashError(err); return; }
+  if (err) { showError(err); return; }
   const submitBtn = document.getElementById('strands-submit-btn');
-  submitBtn.disabled = true;
   const originalLabel = submitBtn.textContent;
+  submitBtn.disabled = true;
   submitBtn.textContent = t('editor.actions.submitting');
   try {
     let id, url;
@@ -687,25 +703,38 @@ async function onSubmit(e) {
       showResult({ kind: 'created', id, url });
     }
   } catch (err) {
-    flashError(err.message || t('editor.error.generic'));
-    submitBtn.textContent = originalLabel;
+    // 401: cached password is stale or wrong. Match Connections editor —
+    // wipe the cache and bounce to the gate.
+    if (err.status === 401) {
+      try { sessionStorage.removeItem(PASSWORD_KEY); } catch {}
+      window.location.reload();
+      return;
+    }
+    showError(err.message || t('editor.error.generic'));
   } finally {
     submitBtn.disabled = false;
+    // Restore label on both success and failure so the button doesn't get
+    // stuck reading "Saving…" after a successful submit.
+    submitBtn.textContent = state.editingId ? t('editor.actions.update') : originalLabel;
   }
 }
 
+// Result card — uses the same class names as the Connections editor
+// (.result-card / .result-url / .result-actions) so both games share styling.
 function showResult({ kind, id, url }) {
   const slot = document.getElementById('strands-result-slot');
   if (!slot) return;
   const title = t(`editor.result.${kind}.title`);
-  const body = t(`editor.result.${kind}.body`);
+  const body = kind === 'loaded'
+    ? t('editor.result.loaded.body', { id })
+    : t(`editor.result.${kind}.body`);
   const full = `${window.location.origin}${url}`;
   slot.innerHTML = `
-    <div class="editor-result">
+    <div class="result-card">
       <h2>${escapeHtml(title)}</h2>
       <p>${escapeHtml(body)}</p>
-      <div class="editor-result-link"><code>${escapeHtml(full)}</code></div>
-      <div class="editor-result-actions">
+      <div class="result-url" id="strands-result-url-text">${escapeHtml(full)}</div>
+      <div class="result-actions">
         <button type="button" class="btn btn-primary" id="strands-copy-btn">${escapeHtml(t('editor.result.copy'))}</button>
         <a class="btn" href="${escapeHtml(url)}">${escapeHtml(t('editor.result.playNow'))}</a>
       </div>
@@ -720,7 +749,7 @@ function showResult({ kind, id, url }) {
 function onReset() {
   Object.assign(state, {
     editingId: null, editingCreatedAt: null,
-    title: '', theme: '', lang: '', collectionId: '',
+    title: '', theme: '', collectionId: '',
     rows: ROW_DEFAULT, cols: COL_DEFAULT,
     grid: Array(ROW_DEFAULT * COL_DEFAULT).fill(''),
     spangramWord: '', spangramPath: null,
@@ -737,10 +766,12 @@ function onReset() {
   document.getElementById('strands-default-lang').value = '';
   document.getElementById('strands-result-slot').innerHTML = '';
   document.getElementById('strands-submit-btn').textContent = t('editor.actions.create');
+  showError('');
   renderCollectionOptions('');
   renderGrid();
   renderPathsList();
   renderLetterCount();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Currently unused but kept to sanity-check module structure.

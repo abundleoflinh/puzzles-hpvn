@@ -241,7 +241,7 @@ function setFeedback(message, tone = '') {
     el.classList.remove('visible');
     setTimeout(() => { state.feedback = null; const still = document.getElementById('feedback'); if (still) still.textContent = ''; }, 400);
     feedbackTimer = null;
-  }, 2200);
+  }, 2500);
 }
 
 function restoreFeedback() {
@@ -385,6 +385,9 @@ async function onSubmit() {
       state.path = [];
       setFeedback(t('strands.feedback.themeFound', { word: res.word }), 'good');
     } else {
+      // Not a theme word: clear the path so the player can immediately try
+      // another word instead of having to hit Clear first.
+      state.path = [];
       setFeedback(t('strands.feedback.notATheme'), 'hint');
     }
   } catch {
