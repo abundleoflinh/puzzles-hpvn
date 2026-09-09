@@ -1,67 +1,65 @@
 count,category
-732,Wizards
-494,Males
-447,Spells of unknown incantation
-353,British or Irish individuals
+728,Wizards
+490,Males
+442,Spells of unknown incantation
+352,British or Irish individuals
 344,Potion ingredients
-340,Females
+339,Females
 324,Creatures existing in the non-magic world
-287,Magical objects
-274,Charms
-261,Spells with a light
-231,Parents
-226,Unidentified spells
+278,Magical objects
+270,Charms
+259,Spells with a light
+228,Parents
+224,Unidentified spells
 220,Cities and towns
-209,British individuals
-201,Married individuals
-201,Shops
-166,20th century births
+208,British individuals
+198,Married individuals
 165,London
+164,20th century births
 156,Pure-bloods
-154,Spells with incantations of Latin origin
+155,Shops
+153,Spells with incantations of Latin origin
 143,Plants
 139,Transforming spells
-138,Harry Potter's possessions
-135,Potions
+137,Harry Potter's possessions
 134,Brown-eyed individuals
 134,England
-132,Hogwarts
+133,Potions
+131,Hogwarts
 131,Patronus forms
-130,New York
+129,New York
 122,Diagon Alley
 111,Defence Against the Dark Arts
 105,Hogwarts locations
 97,Unknown House
 96,Objects held by the Hogwarts Library
-94,Place Cachée
-91,Unnamed family members
 90,English individuals
 90,Healing magic
-90,Hogsmeade
 90,Wizarding locations
+89,Hogsmeade
 89,Scotland
+88,Unnamed family members
 85,Slytherins
 83,Blue-eyed individuals
 82,Herbology
-82,Houses
-82,Poisons
 82,Portraits
 82,Transfiguration spells
+81,Poisons
+80,Houses
 80,Spells of known incantation
-79,Battle of Hogwarts participants
+78,Battle of Hogwarts participants
 77,Muggle-familiar creatures
-77,Rooms
 76,Gryffindors
 75,Conjurations
-74,Buildings
 74,Creature products
-74,Wands
+74,Rooms
+72,Wands
+71,Buildings
 70,Medications
 70,Murder victims
 70,Paris
 69,United States of America
 67,Green-eyed individuals
-65,Streets
 63,Fire-based magic
 62,Protective spells
 61,Deceased individuals
@@ -70,54 +68,53 @@ count,category
 60,Knockturn Alley
 59,Hermione Granger's possessions
 58,Sorted in the 1990s
-57,Documents
 57,Flint family descendants
-57,Jinxes
-57,Non-magic people
 57,Ravenclaws
 56,French individuals
+56,Jinxes
+56,Non-magic people
 55,Ronald Weasley's possessions
-54,Businesses
-54,Gold objects
-53,Sweets
+53,Gold objects
+53,Streets
 52,Birds
+52,Sweets
 52,Water-based magic
 52,Weasleys' Wizard Wheezes
-50,Protective objects
 50,Pure-blood supremacists
+49,Businesses
+49,Protective objects
 48,Bertie Bott's Every Flavour Beans flavours
 48,Spellbooks
 47,Blood traitors
+47,Documents
 47,Hufflepuffs
 47,Magizoology books
 47,Spells with modifiers
-46,Concealment
 46,Curses
 45,1994 Quidditch World Cup attendees
+45,Concealment
 45,Cups
-45,Offices
 44,1970s births
 44,Fruits and vegetables
-44,Light-based magic
 43,Christmas presents
+43,Light-based magic
 43,National Quidditch teams
 42,Authors
-42,Divination
 42,Hogwarts dungeons
 42,Hogwarts grounds
 42,Hogwarts secrets
-41,Dark Arts
+41,Divination
 41,Grey-eyed individuals
-41,Hogwarts prefects
+41,Offices
 41,Uncertain classification
-40,Muggle Studies
-40,Sentient objects
+40,Dark Arts
+40,Hogwarts prefects
 40,Triwizard Tournament
-39,British Ministry of Magic
 39,Chasers
 39,Mammals
-38,Cosmetics
-38,Half-bloods
+39,Sentient objects
+38,British Ministry of Magic
+38,Muggle Studies
 38,Non-canonical articles
 37,Care of Magical Creatures
 37,Cursed objects
@@ -129,38 +126,38 @@ count,category
 36,Albus Dumbledore's possessions
 36,Bronze Chocolate Frog Cards
 36,Cats
+36,Cosmetics
+36,Half-bloods
 36,Killed by Tom Riddle
 36,Levitation
-36,Mental magic
 36,Sorted in the 20th century
 36,Unforgivable Curse users
 35,France
 35,Hogwarts textbooks
-35,Magical Congress of the United States of America
+35,Mental magic
 35,Second Wizarding War casualties
 34,Beasts
-34,Books
-34,Events
 34,Hogwarts classrooms
 34,Organisations
-34,Quidditch
 34,Wizard of the Month
 33,Boggart forms
-33,Dumbledore's Army
+33,Events
 33,Invisibility
 33,Shop owners
 33,Silver objects
 32,Antidotes
 32,Charms books
+32,Dumbledore's Army
 32,House of Black
 32,Leaky Cauldron
 32,Pets
 32,Prank devices
-32,Statues
+32,Quidditch
 32,Trans-species Transformations
-31,Aurors
 31,Lestrange family
+31,Statues
 31,Toys
+30,Books
 30,Capitals
 30,Dark charms
 30,Dark Magic artefacts
@@ -172,21 +169,18 @@ count,category
 29,Christmas
 29,Countries
 29,Courses
-29,History books
 29,Order of the Phoenix allies
 29,Quidditch teams
-29,Ranks and titles
 29,Snakes
-28,Astronomy
 28,Bedrooms
 28,Chocolate Frog Cards
 28,Death Eater allies
 28,Dragon heartstring wands
-28,Unidentified potions
+28,History books
 28,Wand woods
 28,Weather magic
 28,Yaxley family descendants
-27,2014 Quidditch World Cup attendees
+27,Aurors
 27,Centenarians
 27,Competitions
 27,Department for the Regulation and Control of Magical Creatures
@@ -194,32 +188,32 @@ count,category
 27,Hogwarts corridors and passages
 27,Insects
 27,Mental spells
+27,Ranks and titles
 27,Silver Chocolate Frog Cards
+27,Unidentified potions
+26,2014 Quidditch World Cup attendees
+26,Astronomy
 26,British Isles
 26,George Weasley's possessions
-26,Gringotts
-26,Portkeys
 26,Siege of Hogwarts participants
 26,Wands crafted by Garrick Ollivander
-25,Alchemy
-25,American individuals
 25,Animagus forms
 25,Battle of the Department of Mysteries participants
 25,Chocolate
 25,Counties
 25,Defence Against the Dark Arts books
 25,Fred Weasley's possessions
+25,Gringotts
 25,Impersonated individuals
-25,Magizoology
 25,Murderers
 25,Neighbourhoods
 25,Only children
+25,Portkeys
 25,Rubeus Hagrid's possessions
 25,Scottish individuals
-25,The New York Ghost
-25,Wizard secrecy
+24,Alchemy
+24,American individuals
 24,Auror Office personnel
-24,British Ministry of Magic positions
 24,Deaths by Killing Curse
 24,Europe
 24,Imperius Curse victims
@@ -235,10 +229,8 @@ count,category
 23,Explosives
 23,First Wizarding War casualties
 23,Hair
-23,Hexes
-23,Newspaper segments
+23,Magizoology
 23,Plant-based magic
-23,Pubs
 23,Weasley family
 23,Zonko's Joke Shop
 22,Battles and skirmishes
@@ -248,31 +240,26 @@ count,category
 22,First Order of the Phoenix
 22,Ginevra Weasley's possessions
 22,Hats
+22,Hexes
 22,Islands
 22,Personal possessions
 22,Potioneers
 21,Battle of the Astronomy Tower participants
+21,British Ministry of Magic positions
 21,Cauldrons
 21,Death Eaters
 21,Dragon parts
 21,Godric's Hollow
-21,Objects
-21,Security
 21,Wand cores
 20,1990s births
-20,20th century deaths
-20,Crime
 20,Cruciatus Curse victims
 20,Eggs
-20,Flight
 20,Healers
 20,Magical powers
 20,Muggle-baiting
-20,Music
 20,Prewett family descendants
-20,Restaurants
+20,Pubs
 20,Speaking objects
-20,Theatres
 20,Widowed individuals
 19,Awards
 19,Battle of Hogwarts
@@ -281,31 +268,35 @@ count,category
 19,Caves
 19,Communication
 19,Creatures affiliated with water
+19,Crime
 19,Draco Malfoy's possessions
 19,Gobstones players
 19,Hogwarts Headmasters and Headmistresses
 19,Individual plants
 19,Living books
 19,Minerva McGonagall's possessions
+19,Objects
 19,Potter family
 19,Rivers
 19,Severus Snape's possessions
+19,Theatres
 19,Wales
 19,Water
+19,Wizard secrecy
 18,10-inch wands
+18,20th century deaths
 18,Ailments
-18,Apothecaries
 18,Award recipients
 18,Bartemius Crouch Junior's possessions
-18,Clothes shops
 18,Dark Arts books
 18,Destroyed wands
 18,Emigrants
+18,Flight
 18,Fungi
 18,Garrick Ollivander's possessions
 18,Gringotts employees
-18,Love magic
 18,Luna Lovegood's possessions
+18,Music
 18,Passwords
 18,Resting places
 18,Rosier family descendants
@@ -331,17 +322,15 @@ count,category
 17,Healing spells
 17,Humans
 17,Individuals with shortened names
-17,Kowalski Quality Baked Goods
+17,Love magic
 17,Mountains
 17,Neville Longbottom's possessions
 17,Powders (substance)
-17,Study of Ancient Runes
+17,Restaurants
 17,Transfiguration books
 16,Beaters
 16,Beauxbatons
 16,Brazil
-16,Cakes
-16,Carkitt Market
 16,China
 16,Gardens
 16,Goblin-made objects
@@ -358,18 +347,18 @@ count,category
 16,Rats
 16,Spell inventors
 16,Spiders
+16,Study of Ancient Runes
 16,Transportation
 16,Vanishments
 16,Weasley family possessions
 16,Wizard's Chess players
 15,1997 deaths
+15,Apothecaries
 15,Beaufort family descendants
-15,Black-eyed individuals
 15,British Ministry of Magic employees
-15,Broomology
 15,Celebrations
+15,Clothes shops
 15,Creatures found worldwide
-15,Death-related magic
 15,Department of Mysteries
 15,Discipline at Hogwarts
 15,Ghosts
@@ -377,11 +366,11 @@ count,category
 15,Hogwarts storerooms
 15,Mental potions
 15,Muggle government of the United Kingdom
-15,Musical instruments
 15,Pumpkins
 15,Quidditch equipment
 15,Quidditch players
 15,Return of Lord Voldemort
+15,Security
 15,Skirmish at Malfoy Manor participants
 15,Sleep
 15,Sparks
@@ -390,11 +379,12 @@ count,category
 14,1870s births
 14,1994 Quidditch World Cup
 14,9-inch wands
-14,Apparition
+14,Black-eyed individuals
 14,British and Irish Quidditch League Quidditch teams
 14,Broomsticks
 14,Busts
 14,Creatures from the United States of America
+14,Death-related magic
 14,Duels
 14,European individuals
 14,Germany
@@ -408,14 +398,13 @@ count,category
 14,Italy
 14,Journalists
 14,Locations used by the Death Eaters
+14,Musical instruments
 14,Plot to open the Chamber of Secrets
-14,Roads
 14,Slytherin House
 14,Soups
 14,Spain
 13,11-inch wands
 13,Butterflies
-13,Counter-curses
 13,Examinations and tests
 13,Exploding Snap players
 13,Furniture
@@ -424,11 +413,9 @@ count,category
 13,House of Black descendants
 13,Inventors
 13,Japan
-13,Letters
-13,Magical self-help books
-13,Maps and charts
 13,Mirrors
 13,Plot to murder Peter Pettigrew
+13,Roads
 13,Rosaceae
 13,The Tale of the Three Brothers
 13,Twins
@@ -436,14 +423,11 @@ count,category
 13,Unidentified Slytherins
 13,Yellow-eyed individuals
 12,Accidental deaths
+12,Apparition
 12,Artists
 12,Battle of Hogwarts fatalities
-12,Bookshops
-12,Cafés
+12,Counter-curses
 12,Crabbe family descendants
-12,Cuisine
-12,Daily Prophet
-12,Daily Prophet staff
 12,Goblins
 12,Head Boys and Girls
 12,Herbology books
@@ -457,11 +441,12 @@ count,category
 12,Jobs
 12,Lakes
 12,Languages
+12,Letters
+12,Magical self-help books
 12,Mascots
 12,Newton Scamander's suitcase
 12,Order of Merlin recipients
 12,Phoenix feather wands
-12,Prisons
 12,Quidditch in England
 12,Ravenclaw House
 12,Surrey
@@ -491,16 +476,17 @@ count,category
 11,Conferences
 11,Creatures affiliated with fire
 11,Creatures from Europe
+11,Daily Prophet staff
 11,Dolores Umbridge's possessions
-11,Dursley family possessions
-11,Electronics
 11,Explosive Enterprises
 11,Forests
 11,Frogs
 11,Gold Chocolate Frog Cards
 11,Keys
 11,LGBT individuals
+11,Maps and charts
 11,Murder
+11,Prisons
 11,Room of Requirement
 11,Second Wizarding War
 11,Sirius Black's possessions
@@ -516,16 +502,19 @@ count,category
 10,Activists
 10,Argus Filch's possessions
 10,Body fluids
+10,Cafés
+10,Cakes
 10,Creatures from Ireland
 10,Cupboards
 10,Dementor victims
 10,Duelling
 10,Durmstrang
+10,Dursley family possessions
 10,Earth magic
+10,Electronics
 10,Exploding Snap Tournament contenders
 10,Fictional entities
 10,Filius Flitwick's possessions
-10,Fountains
 10,Gellert Grindelwald's possessions
 10,Gobstones
 10,Herbologists
@@ -536,17 +525,12 @@ count,category
 10,Infiltration of the British Ministry of Magic (1997)
 10,Irish individuals
 10,Keepers
-10,Law enforcement agencies
-10,Lists
-10,Magical education
-10,Magizoologists
 10,Ministries of Magic
 10,Molly Weasley's possessions
 10,Nobility
 10,Orphans
 10,Parselmouths
 10,Pet food
-10,Pet shops
 10,Rabbits
 10,Restricted Section books
 10,Return of Lord Voldemort participants
@@ -555,7 +539,6 @@ count,category
 10,Seers
 10,Sorted in the 19th century
 10,Spell types
-10,Sweet shops
 10,Tom Riddle's possessions
 10,Types of horses
 10,Wands by Baguettes Magiques de Cosme Acajor
@@ -564,17 +547,18 @@ count,category
 9,Arts
 9,B.C. era births
 9,Black family possessions
+9,Bookshops
 9,Broomstick accessories
 9,Churches
 9,Cleaning spells
 9,Cornwall
-9,Creature-related laws
 9,Creatures from Great Britain
+9,Cuisine
 9,Defence Against the Dark Arts Professors at Hogwarts
 9,"Diaries, notebooks, and journals"
 9,Drinks
+9,Fountains
 9,Gringotts vaults
-9,Hogwarts subjects
 9,Horace Slughorn's possessions
 9,Horns
 9,House-elves
@@ -582,15 +566,13 @@ count,category
 9,Individuals of unknown gender
 9,Invertebrates
 9,Ireland
+9,Lists
 9,Longbottom family
 9,Love potions
 9,Lucius Malfoy's possessions
-9,Magical Congress of the United States of America departments
-9,Magical Congress of the United States of America locations
-9,Magical Congress of the United States of America positions
+9,Magical education
+9,Magizoologists
 9,Minister for Magic's Support Staff
-9,Music shops
-9,Necromancy
 9,Non-graduate Hogwarts students
 9,Pigs
 9,Plot to kill Harry Potter participants
@@ -600,10 +582,10 @@ count,category
 9,Runic number symbols
 9,Saints
 9,Spies
+9,Sweet shops
 9,Tiburon Merriweather's great-grandchild's possessions
 9,Wizard's Chess sets
 8,Anti-werewolf campaign
-8,Archives
 8,Attack at Godric's Hollow (1981) participants
 8,Badges
 8,Beast Chocolate Frog Cards
@@ -620,13 +602,12 @@ count,category
 8,Creatures from North America
 8,Creatures from Scotland
 8,Criminals
-8,Desserts
+8,Daily Prophet
 8,Duelling Club locations
 8,Electricity
 8,Executed individuals
 8,Feldcroft
 8,Fireproof objects
-8,Foods
 8,Gilderoy Lockhart's possessions
 8,Godric's Hollow residents
 8,Greece
@@ -634,6 +615,7 @@ count,category
 8,Hallowe'en
 8,Hogwarts dormitories
 8,Hogwarts dropouts
+8,Hogwarts subjects
 8,Hogwarts uniform
 8,Hospital Wing
 8,Inquisitorial Squad
@@ -642,14 +624,14 @@ count,category
 8,Knights
 8,Lestrange family possessions
 8,Libraries
-8,Magical schools
 8,Malfoy family
 8,Medicine
 8,Merpeople
+8,Necromancy
 8,Objects stored in Gringotts Wizarding Bank
 8,Occlumens
 8,Oceans and seas
-8,Pamphlets
+8,Pet shops
 8,Peverell family descendants
 8,Pomona Sprout's possessions
 8,Produce shops
@@ -686,13 +668,12 @@ count,category
 7,Alcohol
 7,Amputations
 7,Amputees
+7,Archives
 7,Ash wands
 7,Attack at Godric's Hollow (1981)
 7,Auror Office
-7,Auror services
 7,Austria
 7,Banks
-7,Bathilda Bagshot's possessions
 7,Bats
 7,Battles of the Second Wizarding War
 7,Brass objects
@@ -703,16 +684,15 @@ count,category
 7,Circle of Khanna
 7,Cleaning products
 7,Conspiracy theorists
+7,Creature-related laws
 7,Creatures with multiple heads
 7,Crouch family
 7,Crustaceans
-7,Crystal balls
 7,Dance
 7,Dances
 7,Death
 7,Death Eater defectors
 7,Deathly Hallows
-7,Deaths from Dragon Pox
 7,Department of Magical Law Enforcement
 7,Devon
 7,Disowned members of the House of Black
@@ -722,6 +702,7 @@ count,category
 7,Feathers
 7,Fleamont family descendants
 7,Food additives
+7,Foods
 7,French Ministry of Magic
 7,Gamp family descendants
 7,Gargoyles
@@ -731,16 +712,14 @@ count,category
 7,Hogwarts courtyards
 7,Horcrux destroyers
 7,Horcrux hunt
-7,Hotels
 7,House mascots
-7,House-elf rights
 7,Individuals affected by the Mysterious Malady
 7,Inks
 7,Jewellery
 7,Kits
 7,Knitters
+7,Law enforcement agencies
 7,Laws of magic
-7,Legilimency
 7,Legislators
 7,Leroy family descendants
 7,Little Whinging
@@ -749,15 +728,15 @@ count,category
 7,Magical contracts
 7,Masks
 7,Members of the Alliance
+7,Music shops
 7,Necklaces
 7,Needlework
 7,Non-human magic
-7,Oliver Wood's possessions
 7,Owls
+7,Pamphlets
 7,Part-Veela
 7,Photographs
 7,Plot to assassinate Albus Dumbledore participants
-7,Porpentina Goldstein's possessions
 7,Professors
 7,Prophecies
 7,Protectors of the Philosopher's Stone
@@ -777,7 +756,6 @@ count,category
 7,William Weasley's possessions
 7,Wizard Skittles players
 7,Wizarding currency
-7,Works of art
 7,Wrongfully convicted individuals
 6,12 Grimmauld Place
 6,1950s births
@@ -791,6 +769,7 @@ count,category
 6,Arthur Weasley's Muggle artefacts
 6,Astrid Cole's possessions
 6,Auror training
+6,Bathilda Bagshot's possessions
 6,Battle of the Seven Potters
 6,Bears
 6,Beetles
@@ -800,7 +779,6 @@ count,category
 6,Blood
 6,Bones family
 6,Boot family
-6,Bread
 6,Break-ins and infiltrations
 6,Breeders
 6,Campaign to discredit Albus Dumbledore and Harry Potter
@@ -810,12 +788,12 @@ count,category
 6,Chamber of Secrets
 6,Clocks
 6,Conspiracy theories
+6,Crystal balls
 6,Death of Albus Dumbledore
 6,Deaths by fire
 6,Deaths by poisoning
 6,Deaths by stabbing
 6,Department for the Regulation and Control of Magical Creatures personnel
-6,Desks
 6,Disciplinary hearing of Harry Potter participants
 6,Elder Wand masters
 6,Faeces
@@ -832,19 +810,19 @@ count,category
 6,Horizont Alley
 6,James Potter (I)'s possessions
 6,Lee family
+6,Legilimency
 6,Legilimens
 6,Lestrange family descendants
 6,Locations used by the Order of the Phoenix
 6,Lockets
 6,Magical Law books
 6,Mandrakes
-6,Meat dishes
 6,Merlin's possessions
 6,Missing individuals
 6,Muggle schools
 6,Muggle-Born Registration Commission
-6,Museums
 6,Nonsense incantations
+6,Oliver Wood's possessions
 6,Opening magic
 6,Palaces
 6,Percy Weasley's possessions
@@ -857,7 +835,6 @@ count,category
 6,Plot to steal the Philosopher's Stone participants
 6,Plots to kill Harry Potter
 6,Poachers
-6,Poland
 6,Prophesied individuals
 6,Publishers
 6,Puffskeins
@@ -880,10 +857,10 @@ count,category
 6,Unplottable locations
 6,Unspeakables
 6,Vincent Crabbe's possessions
-6,Wand shops
 6,Wizard-bred creatures
 6,Wizard's Chess
 6,Wizengamot members
+6,Works of art
 5,10th century births
 5,13-inch wands
 5,1890s deaths
@@ -899,7 +876,6 @@ count,category
 5,Astronomers
 5,Astronomy Tower
 5,Attack at Godric's Hollow (1997) participants
-5,Baked goods
 5,Balls
 5,Beauxbatons locations
 5,Biblical figures
@@ -924,11 +900,13 @@ count,category
 5,Dark Detectors
 5,Death Eater enemies
 5,Deaths by decapitation
+5,Deaths from Dragon Pox
 5,Dementor attacks
 5,Department of Magical Accidents and Catastrophes
 5,Department of Magical Law Enforcement personnel
 5,Department of Magical Transportation
 5,Deserts
+5,Desks
 5,Divorced individuals
 5,Dragon Chocolate Frog Cards
 5,Dragon Club members
@@ -957,6 +935,7 @@ count,category
 5,Hogwarts Quidditch teams
 5,Holidays
 5,Horcrux hunters
+5,Hotels
 5,Howlers
 5,Imaginary creatures
 5,India
@@ -969,23 +948,23 @@ count,category
 5,Locations used by Gellert Grindelwald
 5,Lupin family
 5,Magical Creatures Reserve
+5,Magical schools
 5,Marble
 5,Massacres
 5,Mazes
 5,McGonagall family
+5,Meat dishes
 5,Mice
 5,Moors
 5,Mundungus Fletcher's possessions
+5,Museums
 5,Musical groups
 5,Musicians
-5,Newspapers
 5,Newts
 5,Nicolas Flamel's possessions
 5,North America
-5,Occlumency
 5,Peverell family
 5,Phoenix products
-5,Photography
 5,Plimpies
 5,Plot to assassinate Albus Dumbledore
 5,Plot to open the Chamber of Secrets participants
@@ -1013,7 +992,6 @@ count,category
 5,Spirits
 5,St Mungo's permanent patients
 5,Sweeteners
-5,Teaware
 5,The Fountain of Fair Fortune
 5,The Quibbler
 5,Toffee
@@ -1023,10 +1001,8 @@ count,category
 5,Valleys
 5,Vampires
 5,Volcanoes
-5,Wand-related laws
+5,Wand shops
 5,Whisky
-5,Wizarding laws
-5,Workshops
 4,11th century deaths
 4,1926 deaths
 4,1970s deaths
@@ -1040,7 +1016,6 @@ count,category
 4,Alleyways
 4,Anti-werewolf campaigners
 4,Arthur Weasley's possessions
-4,Astrology
 4,Bankers
 4,Basilisk products
 4,Battle of the Astronomy Tower
@@ -1060,14 +1035,12 @@ count,category
 4,Bulgaria
 4,Bulgarian individuals
 4,Buried at Père Lachaise Cemetery
-4,Capital punishment
 4,Cheese
 4,Chickens
 4,Cho Chang's possessions
 4,Christianity
 4,Cliques
 4,Cloaks
-4,Clock companies
 4,Coin-operated machines
 4,Cokeworth
 4,Combat-related laws
@@ -1082,6 +1055,7 @@ count,category
 4,Department of International Magical Co-operation personnel
 4,Department of Magical Transportation personnel
 4,Department stores
+4,Desserts
 4,Diggory family
 4,Dinah Hecat's possessions
 4,Disowned individuals
@@ -1092,13 +1066,11 @@ count,category
 4,Duelling Trophy recipients
 4,Duellists
 4,Dumbledore family
-4,Economics
 4,Erumpent products
 4,Ethnic groups
 4,Evans family
 4,Fastidio's possessions
 4,Ferrets
-4,Fire-based potions
 4,First World War
 4,Flobberworm products
 4,French Ministry of Magic locations
@@ -1126,6 +1098,7 @@ count,category
 4,Horcrux victims
 4,Horses
 4,Hospitals
+4,House-elf rights
 4,Hufflepuffs Sorted in 1991
 4,Immortality
 4,Improper Use of Magic Office personnel
@@ -1142,7 +1115,6 @@ count,category
 4,Locations
 4,Luxembourg
 4,Macmillan family descendants
-4,Magazines
 4,Magical Theory
 4,Malfoy family possessions
 4,Malfoy Manor
@@ -1155,9 +1127,10 @@ count,category
 4,Mokes
 4,Muggle experts
 4,Muggle wars
-4,Newspaper articles
+4,Newspapers
 4,Norway
 4,Numerology
+4,Occlumency
 4,Ollivander family
 4,Omens
 4,Ottery St Catchpole
@@ -1178,13 +1151,10 @@ count,category
 4,Privet Drive
 4,Pub landlords and landladies
 4,Purple-eyed individuals
-4,Queenie Goldstein's possessions
 4,Quidditch badges
 4,Quidditch in Ireland
 4,Quidditch positions
-4,Quidditch shops
 4,R members
-4,Ravenclaws Sorted in 1991
 4,Reptiles
 4,Rocks
 4,Rowan Khanna's possessions
@@ -1217,6 +1187,7 @@ count,category
 4,Suitcases
 4,Supreme Mugwumps
 4,Tapestries
+4,Teaware
 4,The Quibbler readers
 4,The Standard Book of Spells series
 4,The Warlock's Hairy Heart
@@ -1242,6 +1213,7 @@ count,category
 4,Wandmakers
 4,Weird Sisters
 4,Winged horses
+4,Wizarding laws
 4,Wizarding supremacists
 4,Wizards' Council
 4,XXXX Creatures
@@ -1264,6 +1236,8 @@ count,category
 3,Arithmancy
 3,Arthropods
 3,Articles to be split
+3,Astrology
+3,Auror services
 3,Avery family
 3,Balloons
 3,Barnaby Lee's possessions
@@ -1290,6 +1264,7 @@ count,category
 3,Christian literature
 3,Christmas songs
 3,Circus performers
+3,Clock companies
 3,Clubs
 3,Conspiracy against Slytherin
 3,Cookbooks
@@ -1322,6 +1297,7 @@ count,category
 3,Duels with the Elder Wand
 3,Dumbledore's first army allies
 3,Dursley family
+3,Economics
 3,Elm wands
 3,English oak wands
 3,Escapes
@@ -1329,11 +1305,11 @@ count,category
 3,Fairies
 3,Famous Vampires Chocolate Frog Cards
 3,Farrell family
-3,Fashion
 3,Feldcroft residents
 3,Fiji
 3,Finnigan family
 3,Fire Crabs
+3,Fire-based potions
 3,Fireworks
 3,Flume family
 3,Football teams
@@ -1349,10 +1325,8 @@ count,category
 3,Giant Squids
 3,Ginny Weasley's romantic relationships
 3,Goblin families
-3,Gobstones organisations
 3,Golden Snidgets
 3,Golding family
-3,Goldstein family
 3,Grand Sorcerers and Sorceresses
 3,Graphorns
 3,Grey family
@@ -1369,7 +1343,6 @@ count,category
 3,Hornbeam wands
 3,Horned Serpent horn wands
 3,Horned Serpent products
-3,Hygiene
 3,Individuals with disabilities
 3,Inferi attacks
 3,Items bequeathed in The Last Will and Testament of Albus Percival Wulfric Brian Dumbledore
@@ -1396,6 +1369,7 @@ count,category
 3,Lou Ferme's possessions
 3,Lovegood family
 3,Macmillan family
+3,Magazines
 3,Marvolo Gaunt's possessions
 3,Mathematics
 3,Matilda Weasley's possessions
@@ -1414,6 +1388,7 @@ count,category
 3,Necromancy practitioners
 3,Netherlands
 3,New Zealand
+3,Newspaper articles
 3,Nifflers
 3,Nott family
 3,Nymphadora Tonks's possessions
@@ -1427,9 +1402,9 @@ count,category
 3,Patil family
 3,Pellets
 3,Penelope Fawley's possessions
-3,Perfume shops
 3,Philosophers
 3,Phineas Nigellus Black's possessions
+3,Photography
 3,Phyllida Spore's possessions
 3,Physicians
 3,Pies
@@ -1439,13 +1414,13 @@ count,category
 3,Poetry books
 3,Police officers
 3,Political parties
-3,Post offices
 3,Potions Masters
 3,Qilins
 3,Quidditch in Germany
 3,Quidditch in Poland
 3,Quidditch in Wales
 3,Quidditch matches
+3,Ravenclaws Sorted in 1991
 3,Renka Rabblehauser's possessions
 3,Reverends
 3,Rings
@@ -1487,7 +1462,6 @@ count,category
 3,Tortoises
 3,Transformations
 3,Translators
-3,Travel agencies
 3,Tremblay family
 3,Triwizard schools
 3,Tudor dynasty
@@ -1510,6 +1484,7 @@ count,category
 3,Werewolf victims
 3,Wineries
 3,Wizard secrecy laws
+3,Workshops
 3,Yew wands
 3,Yubert Thorne's possessions
 3,Zonko's Joke Shop employees
@@ -1605,8 +1580,8 @@ count,category
 2,Books mentioning Horcruxes
 2,Books on Muggles
 2,Borgin and Burkes employees
-2,Bracelets
 2,Branches of magic
+2,Bread
 2,British Ministry of Magic courtrooms
 2,Broom fliers
 2,Broom games
@@ -1616,6 +1591,7 @@ count,category
 2,Cadmus Peverell's possessions
 2,Calderon family
 2,Candidates for renaming
+2,Capital punishment
 2,Captains
 2,Care of Magical Creatures Professors at Hogwarts
 2,Cattermole family
@@ -1635,7 +1611,6 @@ count,category
 2,Coins
 2,Cole family
 2,Colin Creevey's possessions
-2,Committee for the Disposal of Dangerous Creatures members
 2,Composers
 2,Constance Pickering's possessions
 2,Cooks
@@ -1667,7 +1642,6 @@ count,category
 2,Deaths by werewolf
 2,Deaths in childbirth
 2,Dedalus Diggle's possessions
-2,Defence against the Dark Arts organisations
 2,Dementors
 2,Demiguise products
 2,Demiguises
@@ -1698,10 +1672,10 @@ count,category
 2,Erkstag
 2,Erkstag residents
 2,Ethiopia
-2,Executioners
 2,Extinct creatures
 2,Fairling family
 2,Fairy products
+2,Fashion
 2,Fear-based magic
 2,Fenwick family
 2,Fir wands
@@ -1717,7 +1691,6 @@ count,category
 2,Fowler family
 2,Foxes
 2,Fred and George Weasley's inventions
-2,French Ministry of Magic positions
 2,Frey family
 2,Frog Choir
 2,Garlick family
@@ -1730,6 +1703,7 @@ count,category
 2,Gnarlak's possessions
 2,Goats
 2,Gobstones competitions
+2,Gobstones organisations
 2,Godric Gryffindor's possessions
 2,Goyle family
 2,Granger family
@@ -1773,6 +1747,7 @@ count,category
 2,House of Rossignol descendants
 2,Howell family descendants
 2,Hungary
+2,Hygiene
 2,Ice cream
 2,Icelandic individuals
 2,Ideologies
@@ -1830,7 +1805,6 @@ count,category
 2,McClintock family
 2,McCormack family
 2,McGregor family
-2,Medical facilities
 2,Merriweather family
 2,Metals
 2,Michael Corner's romantic relationships
@@ -1860,8 +1834,6 @@ count,category
 2,Non-notable articles
 2,North American individuals
 2,Nurmengard
-2,Object-related laws
-2,Obliviators
 2,Obscurials
 2,Occamies
 2,Oceania
@@ -1873,8 +1845,8 @@ count,category
 2,Part-vampires
 2,Peakes family
 2,Peeves's possessions
-2,Percival Graves's possessions
 2,Peregrine's possessions
+2,Perfume shops
 2,Peru
 2,Peter Pettigrew's possessions
 2,Philosopher's Stone
@@ -1883,9 +1855,11 @@ count,category
 2,Poacher Pack
 2,Pocket watches
 2,Podmore family
+2,Poland
 2,Politicians
 2,Poltergeists
 2,Portugal
+2,Post offices
 2,Posters
 2,Potions Championship schools
 2,Potions Club members
@@ -1897,6 +1871,7 @@ count,category
 2,Quidditch in Peru
 2,Quidditch in Portugal
 2,Quidditch in Spain
+2,Quidditch shops
 2,Quidditch tactics
 2,Quidditch World Cup
 2,Radio
@@ -1923,7 +1898,6 @@ count,category
 2,Sallow family possessions
 2,Sauces
 2,Sayre family
-2,Scamander family
 2,Scandinavian individuals
 2,Scarves
 2,Scrimgeour family
@@ -1974,7 +1948,7 @@ count,category
 2,Tottenham Court Road
 2,Trains
 2,Transfiguration Professors at Hogwarts
-2,Transportation laws
+2,Travel agencies
 2,Trelawney family
 2,Trials
 2,Trouche family
@@ -2153,7 +2127,6 @@ count,category
 1,1906 births
 1,1908 deaths
 1,1910s births
-1,1910s deaths
 1,1918 births
 1,1919 births
 1,1920 births
@@ -2214,7 +2187,6 @@ count,category
 1,Activism
 1,Actors
 1,Advice columnists
-1,Advocacy groups
 1,African individuals
 1,Aircraft
 1,Albino bloodhounds
@@ -2236,6 +2208,7 @@ count,category
 1,Bagman family
 1,Bagshot family
 1,Bainburgh family
+1,Baked goods
 1,Banks family
 1,Banshees
 1,Batworthy family
@@ -2280,7 +2253,6 @@ count,category
 1,Cadogan's possessions
 1,Cameras
 1,Campaigns
-1,Captains of Aurors
 1,Carneirus family
 1,Carter family
 1,Cattermole family possessions
@@ -2303,6 +2275,7 @@ count,category
 1,Columbia
 1,Comedians
 1,Comics
+1,Committee for the Disposal of Dangerous Creatures members
 1,Committee on Experimental Charms personnel
 1,Concerts
 1,Conductors
@@ -2343,6 +2316,7 @@ count,category
 1,Deaths by troll
 1,Decrees
 1,Deer
+1,Defence against the Dark Arts organisations
 1,Deities
 1,Delacour family possessions
 1,Department of International Magical Co-operation
@@ -2370,13 +2344,13 @@ count,category
 1,Eras
 1,Ernest Macmillan's possessions
 1,Erumpents
+1,Executioners
 1,Fairy wing wands
 1,Faiths
 1,Families
 1,Famous Giants Chocolate Frog Cards
 1,Famous Goblins Chocolate Frog Cards
 1,Famous Hags Chocolate Frog Cards
-1,Fan clubs
 1,Farley family
 1,Fashion designers
 1,Fashion shows
@@ -2387,8 +2361,6 @@ count,category
 1,Field Studies Professors at Hogwarts
 1,Finch-Fletchley family
 1,Finland
-1,First World War casualties
-1,First World War veterans
 1,Fischer family
 1,Flack family
 1,Fleamont family
@@ -2401,6 +2373,7 @@ count,category
 1,Followers of Gellert Grindelwald
 1,Founder Duels
 1,Fragrances
+1,French Ministry of Magic positions
 1,Frost Salamanders
 1,Fudge family
 1,Gagwilde family
@@ -2417,7 +2390,6 @@ count,category
 1,Gladrags Wizardwear employees
 1,Glow Bugs
 1,Goblin Liaison Office personnel
-1,Goldstein family descendants
 1,Gore family
 1,Gormlaith Gaunt's possessions
 1,Goshawk family
@@ -2504,7 +2476,6 @@ count,category
 1,King family
 1,Koralle wands
 1,Korean individuals
-1,Kowalski family
 1,Krum family
 1,Late-bloomers
 1,Lavender Brown's romantic relationships
@@ -2518,10 +2489,8 @@ count,category
 1,Leucrottas
 1,Levski family
 1,Liquorice
-1,Literature
 1,London Five
 1,London Zoo
-1,Luna Lovegood's romantic relationships
 1,MacBoon family
 1,MacDuff family
 1,Mackled Malaclaws
@@ -2562,6 +2531,7 @@ count,category
 1,Neville Longbottom's romantic relationships
 1,New York (state)
 1,New Zealand individuals
+1,Newspaper segments
 1,Newton Scamander's pets
 1,Nigel Wolpert's possessions
 1,Nigeria
@@ -2575,7 +2545,9 @@ count,category
 1,Nurmengard convicts
 1,O'Brien family
 1,O'Flaherty family
+1,Object-related laws
 1,Objects made by Ragnuk
+1,Obliviators
 1,Office for the Detection and Confiscation of Counterfeit Defensive Spells and Protective Objects personnel
 1,Ollerton family
 1,Ollivander family possessions
@@ -2593,6 +2565,7 @@ count,category
 1,Pasta
 1,Patricia Rakepick's possessions
 1,Peacocks
+1,Percival Graves's possessions
 1,Percival Shacklehorn's possessions
 1,Percy Weasley's romantic relationships
 1,Pettigrew family
@@ -2600,7 +2573,6 @@ count,category
 1,Pewter objects
 1,Pinch-Smedley family
 1,Pippin family
-1,Place Cachée Jazz Band
 1,Planets
 1,Plunkett family
 1,Poetry
@@ -2660,6 +2632,7 @@ count,category
 1,Sandwiches
 1,Santos family
 1,Scabior's possessions
+1,Scamander family
 1,Scars
 1,Science
 1,Scorpius Malfoy's possessions
@@ -2752,6 +2725,7 @@ count,category
 1,Timepieces
 1,Toad products
 1,Trading laws
+1,Transportation laws
 1,Travers family
 1,Tremlett family
 1,Troll whisker wands
@@ -2774,13 +2748,13 @@ count,category
 1,Wampus cat victims
 1,Wampus cats
 1,Wampuses
+1,Wand-related laws
 1,Wands by Ollivanders
 1,Wands crafted by Shikoba Wolfe
 1,Wands crafted by Violetta Beauvais
 1,Warren family
 1,Water demons
 1,Websites
-1,Weddings
 1,Weholt family
 1,Wénshī Scrivenshaft's possessions
 1,Werewolf offspring

@@ -11,6 +11,12 @@
 // Also emits data/frequency_templates.csv — same list filtered/formatted to
 // surface likely template-shaped categories ("{X} participants", "Members of
 // {X}", etc.), for seeding data/csv/dict_templates.csv patterns.
+//
+// CLI flags:
+//   --canon-only         count categories only on entities with book_canon=true.
+//                        DEFAULT ON — keeps Fantastic Beasts / theme-park /
+//                        companion-book contamination out of the seed.
+//   --include-noncanon   count every entity in the catalog (audit / override).
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -42,14 +48,37 @@ function csvField(s) {
   return str;
 }
 
+function parseArgs(argv) {
+  const out = {};
+  for (const a of argv.slice(2)) {
+    if (!a.startsWith('--')) continue;
+    const [k, v] = a.slice(2).split('=');
+    out[k] = v === undefined ? true : v;
+  }
+  return out;
+}
+
 async function main() {
+  const args = parseArgs(process.argv);
+  // Default: canon-only. --include-noncanon flips the filter off.
+  const canonOnly = !args['include-noncanon'];
   const catalog = JSON.parse(await readFile(CATALOG_PATH, 'utf8'));
   const counts = new Map(); // category -> count
 
+  let entityTotal = 0;
+  let entityCounted = 0;
   for (const key of Object.keys(catalog)) {
-    const cats = catalog[key]?.raw_categories || [];
+    entityTotal++;
+    const entry = catalog[key];
+    if (canonOnly && entry?.book_canon !== true) continue;
+    entityCounted++;
+    const cats = entry?.raw_categories || [];
     for (const c of cats) counts.set(c, (counts.get(c) || 0) + 1);
   }
+  console.log(
+    `entities counted: ${entityCounted}/${entityTotal} ` +
+    `(${canonOnly ? 'canon-only' : 'include-noncanon'})`
+  );
 
   // Sort by count desc, then category asc for stable output.
   const rows = [...counts.entries()].sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));

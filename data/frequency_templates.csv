@@ -1,6 +1,6 @@
 count,category,likely_pattern,slot_value
-91,Unnamed family members,{X} members,Unnamed family
-79,Battle of Hogwarts participants,{X} participants,Battle of Hogwarts
+88,Unnamed family members,{X} members,Unnamed family
+78,Battle of Hogwarts participants,{X} participants,Battle of Hogwarts
 27,Hogsmeade residents,{X} residents,Hogsmeade
 26,Siege of Hogwarts participants,{X} participants,Siege of Hogwarts
 25,Battle of the Department of Mysteries participants,{X} participants,Battle of the Department of Mysteries
@@ -10,7 +10,7 @@ count,category,likely_pattern,slot_value
 17,Individuals with shortened names,Individuals with {X},shortened names
 16,Meeting at Malfoy Manor participants,{X} participants,Meeting at Malfoy Manor
 15,Skirmish at Malfoy Manor participants,{X} participants,Skirmish at Malfoy Manor
-12,Daily Prophet staff,{X} staff,Daily Prophet
+11,Daily Prophet staff,{X} staff,Daily Prophet
 10,Return of Lord Voldemort participants,{X} participants,Return of Lord Voldemort
 9,Minister for Magic's Support Staff,{X} Staff,Minister for Magic's Support
 9,Non-graduate Hogwarts students,{X} students,Non-graduate Hogwarts
@@ -45,7 +45,6 @@ count,category,likely_pattern,slot_value
 3,Feldcroft residents,{X} residents,Feldcroft
 3,Individuals with disabilities,Individuals with {X},disabilities
 2,Beauxbatons staff,{X} staff,Beauxbatons
-2,Committee for the Disposal of Dangerous Creatures members,{X} members,Committee for the Disposal of Dangerous Creatures
 2,Diagon Alley residents,{X} residents,Diagon Alley
 2,Erkstag residents,{X} residents,Erkstag
 2,Hogwarts exchange and transfer students,{X} students,Hogwarts exchange and transfer
@@ -56,6 +55,7 @@ count,category,likely_pattern,slot_value
 2,St Oswald's residents,{X} residents,St Oswald's
 2,Wizard's Chess Club members,{X} members,Wizard's Chess Club
 1,Club D'Échecs members,{X} members,Club D'Échecs
+1,Committee for the Disposal of Dangerous Creatures members,{X} members,Committee for the Disposal of Dangerous Creatures
 1,Dark Force Defence League members,{X} members,Dark Force Defence League
 1,Dumbledore's first army members,{X} members,Dumbledore's first army
 1,Individuals who knew about Horcruxes,Individuals who {X},knew about Horcruxes

@@ -10,6 +10,12 @@
 //                            (weights 0.5 / 0.4 / 0.1), normalized against per-type p99
 //   suggested_difficulty   — easy | medium | hard, from score cutoffs (defaults
 //                            easy>=0.65 medium>=0.35, override with --easy=N --medium=N)
+//   source_bucket          — books | companion_books | fantastic_beasts |
+//                            cursed_child | pottermore | theme_park
+//                            (from raw_categories substring markers; default 'books')
+//   book_canon             — boolean, true iff source_bucket === 'books'.
+//                            Companion books (Broomology, Beedle etc.) count FALSE
+//                            per Linh's dict REVIEW notes ("không có trong 7 sách chính").
 //
 // The editor pre-fills the difficulty dropdown from suggested_difficulty; editor
 // override wins at author time. This file is committed and read by the editor build,
@@ -99,6 +105,81 @@ const NAMED_INDIVIDUAL_MARKERS = new Set([
   'Half-bloods', 'Pure-bloods', 'Muggle-borns', 'Blood traitors', 'Squibs',
   'Impersonated individuals', 'Orphans', 'Adoptees',
 ]);
+
+// Canonicity classifier.
+//
+// Entities are tagged with source_bucket + a derived book_canon boolean so
+// downstream tools (frequency, dict fill) can filter for the 7 core novels
+// only. Non-canon entities STAY in the catalog (audit trail; puzzle authors
+// can override), but book_canon=false lets us keep them out of the default
+// puzzle pool and dict seed.
+//
+// Companion books (Quidditch Through the Ages, Beedle the Bard, Fantastic
+// Beasts textbook) are classed book_canon=FALSE — Linh's dict REVIEW notes
+// have consistently said "không có trong 7 sách chính" for content sourced
+// only from them (Broomology is the flagged case).
+//
+// Classifier is category-string substring matching, case-insensitive.
+// Priority order below is first-match-wins so the most specific bucket wins
+// ambiguous entities (e.g. "Fantastic Beasts (theme-park version)" → theme_park).
+//
+// NOTE this classifier is deliberately blind to fandom_url — every url points
+// to harrypotter.fandom.com, so it's not discriminating on this wiki.
+const NON_BOOK_MARKERS = [
+  // Order matters: theme_park before fantastic_beasts (the WWoHP FB areas
+  // carry both markers and we want theme_park to win); cursed_child specific
+  // enough to be safe anywhere; companion_books last of the certain ones.
+  { bucket: 'theme_park', markers: [
+    'wizarding world theme park', 'wizarding world of harry potter',
+    'universal orlando', 'universal studios',
+    'carkitt market', 'diagon alley (theme park)', 'hogsmeade (universal',
+  ]},
+  { bucket: 'cursed_child', markers: [
+    'cursed child',
+  ]},
+  { bucket: 'fantastic_beasts', markers: [
+    'fantastic beasts',                  // film-series category variants
+    'crimes of grindelwald',
+    'secrets of dumbledore',
+    'macusa',
+    'place cachée', 'place cachee',
+    'rue cachée', 'rue cachee',
+    'kowalski',
+    'new york ghost',
+    'goldstein',
+    'salemer',                           // Salemers, Second Salemer
+    'circus arcanus',
+    'magical congress',                  // "Magical Congress of the USA" = MACUSA
+  ]},
+  { bucket: 'pottermore', markers: [
+    'pottermore',
+    'wizardingworld.com',
+    'wizarding world website',
+    "j. k. rowling's website", "jk rowling's website",
+  ]},
+  { bucket: 'companion_books', markers: [
+    'quidditch through the ages',
+    'tales of beedle the bard', 'beedle the bard',
+    'broomology',                        // Quidditch Through the Ages content
+    'hogwarts: an incomplete and unreliable guide',
+    'short stories from hogwarts',
+    'harry potter: a history of magic',  // exhibition book
+  ]},
+];
+
+// Classify an entity by scanning its category strings. Returns source_bucket
+// ('books' if nothing matches, i.e. default trust — most contamination has
+// been caught upstream by POTTERMORE_MARKERS and exclude_spinoff.txt, so a
+// clean entity is very likely book canon).
+function classifyCanonicity(categories) {
+  const lowered = categories.map((c) => c.toLowerCase());
+  for (const { bucket, markers } of NON_BOOK_MARKERS) {
+    for (const m of markers) {
+      if (lowered.some((c) => c.includes(m))) return bucket;
+    }
+  }
+  return 'books';
+}
 
 function slugify(name) {
   return String(name)
@@ -405,6 +486,9 @@ async function main() {
       key = `${key}_${n}`;
     }
 
+    const source_bucket = classifyCanonicity(categories);
+    const book_canon = source_bucket === 'books';
+
     catalog[key] = {
       canonical_en: title,
       aliases_en,
@@ -413,6 +497,8 @@ async function main() {
       fandom_url: `https://harrypotter.fandom.com/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
       prominence_score,
       suggested_difficulty,
+      source_bucket,
+      book_canon,
     };
   }
 
@@ -445,6 +531,22 @@ async function main() {
     const tot = d.easy + d.medium + d.hard;
     console.log(`  ${t.padEnd(10)}  ${String(d.easy).padStart(5)}  ${String(d.medium).padStart(5)}  ${String(d.hard).padStart(5)}   ${String(tot).padStart(5)}`);
   }
+
+  // Canonicity breakdown — audit trail for the non-book buckets. book_canon=true
+  // is what --canon-only downstream tools filter to; the rest stays in the
+  // catalog for editor override but is kept out of the default dict seed.
+  const bySource = {};
+  for (const e of Object.values(catalog)) {
+    bySource[e.source_bucket] = (bySource[e.source_bucket] || 0) + 1;
+  }
+  const bookCount = bySource.books || 0;
+  console.log(`\ncanonicity mix:`);
+  console.log(`  ${'source_bucket'.padEnd(18)}  count   share`);
+  for (const s of Object.keys(bySource).sort((a, b) => bySource[b] - bySource[a])) {
+    const n = bySource[s];
+    console.log(`  ${s.padEnd(18)}  ${String(n).padStart(5)}  ${pct(n)}`);
+  }
+  console.log(`  → book_canon=true: ${bookCount}  (${pct(bookCount)})`);
 
   // Top 20 by prominence — sanity check for calibration.
   const ranked = Object.values(catalog)

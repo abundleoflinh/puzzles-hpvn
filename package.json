@@ -13,7 +13,8 @@
     "cf:catalog": "node scripts/build-catalog.mjs",
     "cf:frequency": "node scripts/build-frequency.mjs",
     "cf:audit": "node scripts/audit-catalog.mjs",
-    "cf:show-easy": "node scripts/show-easy.mjs"
+    "cf:show-easy": "node scripts/show-easy.mjs",
+    "cf:dict-append": "node scripts/append-dict-terms.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.10",

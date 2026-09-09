@@ -73,21 +73,21 @@ function renderCollection(collection) {
   const nonEmpty = groups.filter((g) => Array.isArray(g.puzzles) && g.puzzles.length > 0);
   if (!nonEmpty.length) return '';
 
-  const isMixed = nonEmpty.length > 1;
+  // One column per game type, always with a heading — even when only one
+  // type is present — so the game-type structure is visible at a glance.
+  // Empty type groups are filtered above, so they won't render.
   const groupsHtml = nonEmpty
     .map((g) => {
-      const heading = isMixed
-        ? `<h4 class="collection-type-heading">${escapeHtml(t(`home.collections.type.${g.type}`))}</h4>`
-        : '';
+      const heading = `<h4 class="collection-type-heading">${escapeHtml(t(`home.collections.type.${g.type}`))}</h4>`;
       const items = g.puzzles.map(renderPuzzleLi).join('');
-      return `${heading}<ol class="collection-list">${items}</ol>`;
+      return `<div class="collection-group">${heading}<ol class="collection-list">${items}</ol></div>`;
     })
     .join('');
 
   return `
     <article class="collection">
       <h3 class="collection-name">${escapeHtml(collection.name)}</h3>
-      ${groupsHtml}
+      <div class="collection-groups">${groupsHtml}</div>
     </article>
   `;
 }
