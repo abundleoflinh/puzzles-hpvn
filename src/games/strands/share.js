@@ -26,5 +26,7 @@ export function buildShareText({ title, theme, events, url }) {
   if (theme) lines.push(`"${theme}"`);
   if (tiles) lines.push(tiles);
   if (url) lines.push(url);
-  return lines.join('\n');
+  // Blank line between blocks. Single \n gets collapsed by some chat inputs;
+  // \n\n survives as visible separation in Slack/WhatsApp/etc.
+  return lines.join('\n\n');
 }
