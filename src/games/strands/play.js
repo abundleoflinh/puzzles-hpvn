@@ -459,7 +459,12 @@ function renderResult() {
   slot.innerHTML = `
     <div class="play-result">
       <h2>${t('strands.result.won.title')}</h2>
-      <p>${t('strands.result.won.body', { hints: state.hintsUsed })}</p>
+      <p>${t(
+        state.hintsUsed === 0 ? 'strands.result.won.body.zero'
+          : state.hintsUsed === 1 ? 'strands.result.won.body.one'
+          : 'strands.result.won.body',
+        { hints: state.hintsUsed }
+      )}</p>
       <div class="play-result-actions">
         <button type="button" class="btn btn-primary" id="btn-share">${t('play.result.share')}</button>
         <button type="button" class="btn" id="btn-reset">${t('play.result.reset')}</button>

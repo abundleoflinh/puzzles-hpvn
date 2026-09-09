@@ -152,6 +152,8 @@
   "strands.feedback.noHintsLeft": "No more theme words to hint.",
   "strands.result.won.title": "Complete!",
   "strands.result.won.body": "All words found · {hints} hints used.",
+  "strands.result.won.body.zero": "All words found · no hints used.",
+  "strands.result.won.body.one": "All words found · 1 hint used.",
 
   "strands.editor.title": "Editor",
   "strands.editor.lede": "Create a new Strands puzzle or edit an existing one.",

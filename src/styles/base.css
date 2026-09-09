@@ -1091,14 +1091,14 @@ input, textarea, select { font: inherit; color: inherit; }
   --strands-path-fg: #f0f0f0;
 }
 :root[data-theme="hpvn"] {
-  /* Option B — warm-only. Theme tan + spangram red-orange for hue separation
-     without breaking the amber-forest feel. Path is a soft brown neutral. */
-  --strands-theme: #c9a475;      /* warm tan matches the amber ground */
-  --strands-theme-fg: #24160d;
-  --strands-spangram: #d97742;   /* red-orange — separates cleanly from tan */
+  /* Option A — cool slate theme to differentiate from the yellow spangram
+     against the warm amber ground. */
+  --strands-theme: #8a9db0;
+  --strands-theme-fg: #0f1a22;
+  --strands-spangram: #f0c045;
   --strands-spangram-fg: #24160d;
-  --strands-hint: rgba(233, 216, 199, 0.15);  /* pale cream wash — mirrors the light theme's subtle #dfeef5 */
-  --strands-path: #8a6848;
+  --strands-hint: rgba(233, 216, 199, 0.12);  /* very translucent cream wash */
+  --strands-path: #6a5240;
   --strands-path-fg: #e9d8c7;
 }
 

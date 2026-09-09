@@ -151,7 +151,9 @@
   "strands.feedback.hintGiven": "Chú ý các chữ cái được làm sáng.",
   "strands.feedback.noHintsLeft": "Không còn từ nào để gợi ý.",
   "strands.result.won.title": "Hoàn thành!",
-  "strands.result.won.body": "Đã tìm hết · dùng {hints} gợi ý.",
+  "strands.result.won.body": "Đã tìm hết · Dùng {hints} gợi ý.",
+  "strands.result.won.body.zero": "Đã tìm hết · Không dùng gợi ý nào.",
+  "strands.result.won.body.one": "Đã tìm hết · Dùng 1 gợi ý.",
 
   "strands.editor.title": "Soạn đề",
   "strands.editor.lede": "Tạo một bộ đề Strands mới hoặc chỉnh sửa bộ đề có sẵn.",
