@@ -9,10 +9,17 @@
 //   POST   /api/collection                      — create new collection (password required)
 //   GET    /api/collection/:id                  — fetch a single collection (public, metadata only)
 //   GET    /api/collections                     — list all collections with their puzzles (public, metadata only)
+//   POST   /api/admin/backfill-metadata          — one-shot: attach KV metadata to legacy rows (password required, idempotent)
 //
 // Storage: KV namespace bound as env.PUZZLES.
 //   Puzzles:     `{type}:{id}`     → serialized puzzle JSON (may include title, collectionId)
+//                                     metadata: { collectionId?, title?, createdAt? }
 //   Collections: `collection:{id}` → { name, createdAt }
+//                                     metadata: { name, createdAt }
+// Metadata mirrors the fields needed by the collections listing so that endpoint
+// can be answered from list() calls alone — no per-key gets. Legacy rows written
+// before this scheme have no metadata and fall back to a body fetch; the
+// /api/admin/backfill-metadata endpoint (password-gated) upgrades them in place.
 // Auth: shared password sent in X-Editor-Password header, compared to env.EDITOR_PASSWORD.
 
 const ALLOWED_TYPES = new Set(['connections', 'strands']);
@@ -295,6 +302,17 @@ function validateAndSerialize(puzzle, type) {
   return serialized;
 }
 
+// Extract just the fields the collections listing needs, keyed for KV metadata.
+// Keeping this tiny (well under KV's 1024-byte metadata cap) means list() can
+// answer the /api/collections endpoint without any per-key gets.
+function puzzleMetadata(puzzle) {
+  const m = {};
+  if (typeof puzzle.title === 'string' && puzzle.title.trim()) m.title = puzzle.title.trim();
+  if (puzzle.collectionId) m.collectionId = puzzle.collectionId;
+  if (puzzle.createdAt) m.createdAt = puzzle.createdAt;
+  return m;
+}
+
 // If a puzzle references a collectionId, make sure the collection exists.
 // Prevents orphan references from typos or races.
 async function assertCollectionExists(env, collectionId) {
@@ -323,7 +341,7 @@ async function handleCreatePuzzle(request, env) {
   }
   if (!id) return json({ error: 'could not generate unique id' }, 500);
 
-  await env.PUZZLES.put(`${type}:${id}`, serialized);
+  await env.PUZZLES.put(`${type}:${id}`, serialized, { metadata: puzzleMetadata(puzzle) });
   const prefix = type === 'connections' ? '/c/' : '/s/';
   return json({ id, url: `${prefix}${id}` }, 201);
 }
@@ -340,7 +358,7 @@ async function handleUpdatePuzzle(request, env, type, id) {
   const serialized = validateAndSerialize(puzzle, type);
   await assertCollectionExists(env, puzzle.collectionId);
 
-  await env.PUZZLES.put(`${type}:${id}`, serialized);
+  await env.PUZZLES.put(`${type}:${id}`, serialized, { metadata: puzzleMetadata(puzzle) });
   return json({ ok: true });
 }
 
@@ -463,7 +481,9 @@ async function handleCreateCollection(request, env) {
   }
   if (!id) return json({ error: 'could not generate unique id' }, 500);
 
-  await env.PUZZLES.put(`${COLLECTION_PREFIX}${id}`, serialized);
+  await env.PUZZLES.put(`${COLLECTION_PREFIX}${id}`, serialized, {
+    metadata: { name, createdAt: record.createdAt },
+  });
   return json({ id, name, createdAt: record.createdAt }, 201);
 }
 
@@ -474,70 +494,113 @@ async function handleFetchCollection(env, id) {
   return json({ id, ...record });
 }
 
-// List every key with a given prefix. KV list() is paginated; we walk cursors
-// until list_complete. At personal scale this is a handful of RTs at most.
-async function listAllKeys(env, prefix) {
-  const keys = [];
+// List every key with a given prefix, keeping the KV list-entry object
+// (name + inline metadata). Paginated: we walk cursors until list_complete.
+// At personal scale this is a handful of RTs at most.
+async function listAllEntries(env, prefix) {
+  const entries = [];
   let cursor;
   do {
     const page = await env.PUZZLES.list({ prefix, cursor });
-    for (const k of page.keys) keys.push(k.name);
+    for (const k of page.keys) entries.push(k);
     cursor = page.list_complete ? null : page.cursor;
   } while (cursor);
-  return keys;
+  return entries;
+}
+
+// Insert one puzzle into its collection bucket. Shared between the fast path
+// (data came from KV metadata) and the legacy fallback (data came from a body
+// fetch), so the entry shape stays in one place.
+function pushPuzzleEntry(collections, type, id, collectionId, rawTitle, createdAt) {
+  const bucket = collections.get(collectionId);
+  if (!bucket) return; // orphan ref — collection was deleted
+  const title = typeof rawTitle === 'string' && rawTitle.trim() ? rawTitle.trim() : null;
+  const entry = { type, id, title, createdAt: createdAt || null };
+  const list = bucket.puzzlesByType.get(type) || [];
+  list.push(entry);
+  bucket.puzzlesByType.set(type, list);
 }
 
 // Public: all collections, each with the puzzles that reference it.
 // Returns metadata only — no groups, no words, no answers. Order:
 // collections alphabetical by name; within a collection, puzzles grouped
 // by type (alphabetical) then ordered by createdAt (oldest first).
+//
+// Fast path: every list() entry already carries the name/title/collectionId/
+// createdAt we need in `metadata` (populated by the create/update handlers), so
+// we can answer the whole endpoint from list() calls alone. Legacy rows written
+// before metadata was in the schema fall back to a parallel Promise.all of
+// gets — only for the rows that need it. As backfill runs (or those rows get
+// re-saved by the editor), the fallback list shrinks toward zero.
 async function handleListCollections(env) {
   // 1. Load all collections.
-  const collectionKeys = await listAllKeys(env, COLLECTION_PREFIX);
+  const collectionEntries = await listAllEntries(env, COLLECTION_PREFIX);
   const collections = new Map(); // id → {id, name, createdAt, puzzlesByType}
-  for (const key of collectionKeys) {
-    const id = key.slice(COLLECTION_PREFIX.length);
-    const raw = await env.PUZZLES.get(key);
-    if (!raw) continue; // deleted mid-list — skip
-    try {
-      const rec = JSON.parse(raw);
+  const collectionsLegacy = []; // rows without metadata — fetched below
+
+  for (const entry of collectionEntries) {
+    const id = entry.name.slice(COLLECTION_PREFIX.length);
+    const meta = entry.metadata;
+    if (meta && typeof meta.name === 'string') {
       collections.set(id, {
         id,
-        name: rec.name,
-        createdAt: rec.createdAt,
+        name: meta.name,
+        createdAt: meta.createdAt || null,
         puzzlesByType: new Map(),
       });
-    } catch { /* skip corrupt row */ }
+    } else {
+      collectionsLegacy.push({ id, key: entry.name });
+    }
+  }
+  if (collectionsLegacy.length) {
+    const raws = await Promise.all(collectionsLegacy.map(({ key }) => env.PUZZLES.get(key)));
+    for (let i = 0; i < raws.length; i++) {
+      const raw = raws[i];
+      if (!raw) continue; // deleted mid-list
+      try {
+        const rec = JSON.parse(raw);
+        const { id } = collectionsLegacy[i];
+        collections.set(id, {
+          id,
+          name: rec.name,
+          createdAt: rec.createdAt || null,
+          puzzlesByType: new Map(),
+        });
+      } catch { /* skip corrupt row */ }
+    }
   }
 
-  // 2. Walk each puzzle type, bucket puzzles by their collectionId.
-  //    We fetch full bodies to read collectionId + title, then discard
-  //    anything answer-shaped from the response.
-  for (const type of ALLOWED_TYPES) {
-    const keys = await listAllKeys(env, `${type}:`);
-    for (const key of keys) {
-      const id = key.slice(type.length + 1);
-      const raw = await env.PUZZLES.get(key);
+  // 2. Walk each puzzle type in parallel, bucketing puzzles by collectionId.
+  //    Metadata gives us collectionId/title/createdAt without a body fetch;
+  //    a puzzle is legacy-fetched only if its list entry has no metadata at
+  //    all (metadata present but no collectionId means "not in a collection").
+  await Promise.all([...ALLOWED_TYPES].map(async (type) => {
+    const entries = await listAllEntries(env, `${type}:`);
+    const legacy = [];
+    for (const entry of entries) {
+      const id = entry.name.slice(type.length + 1);
+      const meta = entry.metadata;
+      if (meta) {
+        if (meta.collectionId) {
+          pushPuzzleEntry(collections, type, id, meta.collectionId, meta.title, meta.createdAt);
+        }
+        // else: known not to be in a collection — skip cheaply.
+      } else {
+        legacy.push({ id, key: entry.name });
+      }
+    }
+    if (!legacy.length) return;
+    const raws = await Promise.all(legacy.map(({ key }) => env.PUZZLES.get(key)));
+    for (let i = 0; i < raws.length; i++) {
+      const raw = raws[i];
       if (!raw) continue;
       let puzzle;
       try { puzzle = JSON.parse(raw); } catch { continue; }
-      const collectionId = puzzle.collectionId;
-      if (!collectionId) continue;
-      const bucket = collections.get(collectionId);
-      if (!bucket) continue; // orphan ref — collection was deleted
-      const entry = {
-        type,
-        id,
-        title: typeof puzzle.title === 'string' && puzzle.title.trim()
-          ? puzzle.title.trim()
-          : null,
-        createdAt: puzzle.createdAt || null,
-      };
-      const list = bucket.puzzlesByType.get(type) || [];
-      list.push(entry);
-      bucket.puzzlesByType.set(type, list);
+      if (!puzzle.collectionId) continue;
+      const { id } = legacy[i];
+      pushPuzzleEntry(collections, type, id, puzzle.collectionId, puzzle.title, puzzle.createdAt);
     }
-  }
+  }));
 
   // 3. Sort and shape output.
   const out = [];
@@ -566,6 +629,59 @@ async function handleListCollections(env) {
       'Cache-Control': 'public, max-age=30', // short cache — new puzzles show up quickly
       ...CORS_HEADERS,
     },
+  });
+}
+
+// One-shot: walk every collection + puzzle key and, for any row without
+// metadata, re-put it with metadata attached. Idempotent — rows that already
+// carry metadata are skipped, so re-runs are cheap. Password-gated because it
+// rewrites data and can burn KV write units on a large namespace. Safe to
+// leave deployed; delete when no legacy rows remain if you want.
+async function handleBackfillMetadata(request, env) {
+  if (!checkPassword(request, env)) return json({ error: 'unauthorized' }, 401);
+
+  let collectionsScanned = 0, collectionsBackfilled = 0;
+  let puzzlesScanned = 0, puzzlesBackfilled = 0, puzzlesSkippedCorrupt = 0;
+
+  // Collections
+  const cEntries = await listAllEntries(env, COLLECTION_PREFIX);
+  const cLegacy = cEntries.filter((e) => !e.metadata || typeof e.metadata.name !== 'string');
+  collectionsScanned = cEntries.length;
+  const cRaws = await Promise.all(cLegacy.map((e) => env.PUZZLES.get(e.name)));
+  await Promise.all(cLegacy.map(async (entry, i) => {
+    const raw = cRaws[i];
+    if (!raw) return;
+    let rec;
+    try { rec = JSON.parse(raw); } catch { return; }
+    await env.PUZZLES.put(entry.name, raw, {
+      metadata: { name: rec.name, createdAt: rec.createdAt || null },
+    });
+    collectionsBackfilled++;
+  }));
+
+  // Puzzles (per type, in parallel)
+  await Promise.all([...ALLOWED_TYPES].map(async (type) => {
+    const entries = await listAllEntries(env, `${type}:`);
+    puzzlesScanned += entries.length;
+    const legacy = entries.filter((e) => !e.metadata);
+    const raws = await Promise.all(legacy.map((e) => env.PUZZLES.get(e.name)));
+    await Promise.all(legacy.map(async (entry, i) => {
+      const raw = raws[i];
+      if (!raw) return;
+      let puzzle;
+      try { puzzle = JSON.parse(raw); } catch { puzzlesSkippedCorrupt++; return; }
+      await env.PUZZLES.put(entry.name, raw, { metadata: puzzleMetadata(puzzle) });
+      puzzlesBackfilled++;
+    }));
+  }));
+
+  return json({
+    ok: true,
+    collectionsScanned,
+    collectionsBackfilled,
+    puzzlesScanned,
+    puzzlesBackfilled,
+    puzzlesSkippedCorrupt,
   });
 }
 
@@ -614,6 +730,12 @@ export default {
       if (path === '/api/auth/check' && request.method === 'GET') {
         if (!checkPassword(request, env)) return json({ error: 'unauthorized' }, 401);
         return json({ ok: true });
+      }
+
+      // ---------- admin ----------
+      // One-shot metadata backfill for legacy rows (see handler). Idempotent.
+      if (path === '/api/admin/backfill-metadata' && request.method === 'POST') {
+        return await handleBackfillMetadata(request, env);
       }
 
       // ---------- misc ----------
