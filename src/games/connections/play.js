@@ -81,14 +81,29 @@ function normalizePuzzle(raw) {
 // saves (strings) don't mix with numeric tiers in the same UI state.
 function normalizeSavedSolvedGroups(saved, groups) {
   if (!Array.isArray(saved)) return [];
-  return saved.map((g) => {
-    // Try to match by name against the current puzzle groups so we can pick up
-    // the puzzle's authoritative difficulty tier. Falls back to coercing what
-    // the save had, then to a null-safe default.
-    const canonical = groups.find((cg) => cg.name === g.name);
-    if (canonical) return { ...g, difficulty: canonical.difficulty };
-    return { ...g, difficulty: coerceDifficulty(g.difficulty, 1) };
-  });
+  // A solved group's identity is its exact word set (order-independent). Match
+  // saved solves to current groups by that set — not by name — and adopt the
+  // current group's name/words/difficulty. A saved solve whose word set no
+  // longer matches any current group is STALE (the puzzle was edited after it
+  // was solved), so drop it: the player re-solves it against the current board.
+  // This keeps solvedGroups' words a strict subset of the live tiles. Without
+  // it, an edited puzzle shows a group as solved while its re-worded tiles
+  // strand on the grid — the stale words were never in solvedWords, so nothing
+  // ever filtered the new tiles out. (coerceDifficulty stays imported; it's
+  // still used by normalizePuzzle above.)
+  // JSON.stringify of the sorted words is a collision-proof key even for
+  // multi-word tiles like "Fleur Delacour".
+  const wordSetKey = (words) => JSON.stringify([...(words || [])].map(String).sort());
+  const byWordSet = new Map(groups.map((g) => [wordSetKey(g.words), g]));
+  const result = [];
+  const claimedTiers = new Set(); // guard against duplicate saves claiming one tier
+  for (const g of saved) {
+    const canonical = byWordSet.get(wordSetKey(g.words));
+    if (!canonical || claimedTiers.has(canonical.difficulty)) continue;
+    claimedTiers.add(canonical.difficulty);
+    result.push({ name: canonical.name, words: canonical.words, difficulty: canonical.difficulty });
+  }
+  return result;
 }
 
 // ============== INIT ==============
@@ -228,6 +243,15 @@ function render() {
     // Shell already mounted; keep the h1 in sync with current language.
     const h1 = main.querySelector('.play-header h1');
     if (h1) h1.textContent = headerTitle;
+  }
+
+  // Belt-and-suspenders: once every group is solved, the board must be empty.
+  // Normally the per-guess filter clears the last tiles, but if any ever remain
+  // (corrupt data, or saved progress fix-1 couldn't reconcile), drop them here
+  // so stray tiles can't render beside the completed solution. Safe because the
+  // player has, by definition, solved every group — there's nothing left to guess.
+  if (state.solvedGroups.length === puzzle.size && state.remainingWords.length) {
+    state.remainingWords = [];
   }
 
   renderSolvedRows();
@@ -682,10 +706,4 @@ window.addEventListener('lang-changed', () => {
   // labels, etc.) gets rebuilt in the new language.
   invalidateShell();
   render();
-});
-
-// Debounced font-fit on resize.
-window.addEventListener('resize', () => {
-  if (resizeTimer) clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => { fitAllTiles(); }, 120);
 });
