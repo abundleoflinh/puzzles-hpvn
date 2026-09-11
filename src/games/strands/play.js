@@ -480,7 +480,8 @@ function renderResult() {
 }
 
 async function onShare() {
-  const url = `${window.location.origin}/play-strands.html#s/${puzzleId}`;
+  // Short link (/s/:id) — _redirects maps it to the hash-based play page.
+  const url = `${window.location.origin}/s/${puzzleId}`;
   const title = puzzle.title?.trim() || t('home.collections.puzzleFallback', { id: puzzleId });
   const text = buildShareText({ title, theme: puzzle.theme, events: state.events, url });
   const btn = document.getElementById('btn-share');

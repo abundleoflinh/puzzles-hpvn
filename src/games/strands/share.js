@@ -21,12 +21,11 @@ function tileFor(kind) {
 // won't insert spurious spaces mid-tile-run this way.
 export function buildShareText({ title, theme, events, url }) {
   const tiles = (events || []).map((e) => tileFor(e.kind)).join('');
+  // Every block on its own line, no blank lines — title, theme, tiles, link.
   const lines = [];
   if (title) lines.push(title);
   if (theme) lines.push(`"${theme}"`);
   if (tiles) lines.push(tiles);
   if (url) lines.push(url);
-  // Blank line between blocks. Single \n gets collapsed by some chat inputs;
-  // \n\n survives as visible separation in Slack/WhatsApp/etc.
-  return lines.join('\n\n');
+  return lines.join('\n');
 }
