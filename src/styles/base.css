@@ -45,6 +45,14 @@ input, textarea, select { font: inherit; color: inherit; }
   --tile-bg: #efefef;
   --tile-fg: #111;
   --danger: #d33;
+  /* Catfishing (editor): internal difficulty chips + clue-resolution badges. */
+  --cf-easy: #2e7d32;
+  --cf-medium: #b7791f;
+  --cf-hard: #c62828;
+  --cf-status-direct: #2e7d32;   /* dictionary hit  (green) */
+  --cf-status-template: #3a7bd5; /* template hit    (blue)  */
+  --cf-status-warn: #b7791f;     /* template, slot needs VI (amber) */
+  --cf-status-bad: #c62828;      /* unresolved      (red)   */
 }
 
 :root[data-theme="dark"] {
@@ -70,6 +78,13 @@ input, textarea, select { font: inherit; color: inherit; }
   --tile-bg: #2a2a2e;
   --tile-fg: #f0f0f0;
   --danger: #ff8080;
+  --cf-easy: #66bb6a;
+  --cf-medium: #e0b84c;
+  --cf-hard: #ef6a6a;
+  --cf-status-direct: #66bb6a;
+  --cf-status-template: #6c9fe6;
+  --cf-status-warn: #e0b84c;
+  --cf-status-bad: #ef6a6a;
 }
 
 :root[data-theme="hpvn"] {
@@ -90,6 +105,14 @@ input, textarea, select { font: inherit; color: inherit; }
   --tile-bg: #3a2214;
   --tile-fg: #e9d8c7;
   --danger: #ff8080;
+  /* HPVN is first-class: warm-leaning status hues that sit on the parchment bg. */
+  --cf-easy: #7bc67f;
+  --cf-medium: #e0b84c;
+  --cf-hard: #ef8a6b;
+  --cf-status-direct: #7bc67f;
+  --cf-status-template: #e8c080;
+  --cf-status-warn: #e0b84c;
+  --cf-status-bad: #ef8a6b;
 }
 
 /* ============== LAYOUT ============== */
@@ -1398,3 +1421,156 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .tag.good { background: color-mix(in srgb, var(--strands-theme) 25%, transparent); color: var(--fg); }
 .tag.warn { background: color-mix(in srgb, var(--strands-spangram) 30%, transparent); color: var(--fg); }
+
+/* ---- Catfishing editor ---- */
+
+/* Difficulty chips (internal tag; never shown to players). */
+.cf-q-diff {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1.5px solid currentColor;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.diff-easy { color: var(--cf-easy); }
+.diff-medium { color: var(--cf-medium); }
+.diff-hard { color: var(--cf-hard); }
+
+/* Question accordion */
+.cf-question {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: var(--bg-elev);
+}
+.cf-question.open { border-color: var(--border-strong); }
+.cf-q-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--fg);
+  text-align: left;
+}
+.cf-q-head:hover { background: var(--bg-elev-2); }
+.cf-q-head:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.cf-q-chevron { color: var(--fg-muted); font-size: 12px; width: 12px; }
+.cf-q-title { font-weight: 700; white-space: nowrap; }
+.cf-q-answer { flex: 1; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-q-unset { color: var(--fg-tiny); font-style: italic; }
+.cf-q-body { padding: 6px 14px 16px; border-top: 1px solid var(--border); }
+
+.cf-field { margin: 14px 0; }
+
+/* Entity picker autocomplete */
+.cf-entity-picker { position: relative; }
+.cf-entity-results {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--bg-elev);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.cf-entity-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--fg);
+}
+.cf-entity-result:last-child { border-bottom: none; }
+.cf-entity-result:hover { background: var(--bg-elev-2); }
+.cf-entity-name { font-weight: 600; }
+.cf-entity-meta { font-size: 12px; color: var(--fg-tiny); }
+.cf-entity-none { padding: 10px 12px; color: var(--fg-tiny); font-size: 13px; }
+
+/* Clue table */
+.cf-clue-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 6px 0 10px; font-size: 12px; }
+.cf-clue-head,
+.cf-clue-row {
+  display: grid;
+  grid-template-columns: 16px 1fr 1fr 32px;
+  gap: 8px;
+  align-items: center;
+}
+.cf-clue-head { margin-bottom: 4px; }
+.cf-clue-row { margin-bottom: 6px; }
+.cf-clues-empty { color: var(--fg-tiny); font-size: 13px; font-style: italic; }
+
+/* Resolution status badges (dot in the table, labelled chip in the legend). */
+.cf-badge {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: none;
+}
+.cf-clue-legend .cf-badge {
+  width: auto;
+  height: auto;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bg);
+}
+.cf-badge-direct { background: var(--cf-status-direct); }
+.cf-badge-template { background: var(--cf-status-template); }
+.cf-badge-template_unresolved { background: var(--cf-status-warn); }
+.cf-badge-unresolved { background: var(--cf-status-bad); }
+
+/* Translation helper */
+.cf-translate-actions { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+.cf-translate-note { font-size: 13px; color: var(--fg-muted); }
+.cf-paste { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+
+/* Preview */
+.cf-preview {
+  margin-top: 20px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: var(--bg-elev);
+}
+.cf-preview-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+:root[data-theme="hpvn"] .cf-preview-head h2 { color: var(--accent); }
+.cf-preview-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.cf-preview-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.cf-preview-answer { margin: 4px 0; }
+.cf-preview-count { font-size: 13px; color: var(--fg-muted); margin: 4px 0; }
+.cf-preview-clues { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.cf-preview-clue {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-elev-2);
+  color: var(--fg);
+}
+.cf-preview-warn { color: var(--cf-status-bad); font-size: 13px; margin-top: 8px; }

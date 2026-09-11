@@ -31,15 +31,20 @@ export const SHORT_ID_RE = /^[A-Za-z0-9]{5}$/;
 
 // Game-type ↔ short-link prefix. Kept here so every surface (home, editor,
 // play) agrees on the mapping. Add a row when a new game type ships.
-export const TYPE_PREFIX = { connections: 'c', strands: 's' };
-const PREFIX_TYPE = { c: 'connections', s: 'strands' };
+export const TYPE_PREFIX = { connections: 'c', strands: 's', catfishing: 'cf' };
+const PREFIX_TYPE = { c: 'connections', s: 'strands', cf: 'catfishing' };
 
 // Parse a user-supplied puzzle reference into { type, id }, or null if it
 // doesn't look like one. Accepts a bare 5-char id, a short path/hash
 // ("/c/abc12", "#s/abc12"), or a full URL containing one.
 //   opts.defaultType — type to assume for a bare id (default 'connections')
-//   opts.types       — allowed type prefixes (default both 'c' and 's')
-export function parseShortLink(raw, { defaultType = 'connections', types = ['c', 's'] } = {}) {
+//   opts.types       — allowed type prefixes (default 'c', 's', and 'cf')
+// Note on ordering: 'cf' shares a leading 'c' with 'c'. JS alternation is
+// ordered-with-backtracking, so listing 'c' before 'cf' still resolves a
+// "/cf/..." link correctly (the 'c' branch fails at the following char and the
+// engine falls through to 'cf'). The trailing "/" after the group prevents a
+// "/c/..." link from being misread as a truncated "/cf/...".
+export function parseShortLink(raw, { defaultType = 'connections', types = ['c', 's', 'cf'] } = {}) {
   const s = (raw || '').trim();
   if (!s) return null;
   if (SHORT_ID_RE.test(s)) return { type: defaultType, id: s };

@@ -122,6 +122,16 @@ function renderEditor() {
     import('./games/strands/editor.js').then((m) => m.mountStrandsEditor(renderEditor));
     return;
   }
+  // Catfishing lives in editor.html as a third tab (same in-place swap as
+  // Strands), NOT as a separate catfishing.html entrypoint. This diverges from
+  // Build Plan §3/§4 but matches the repo's actual editor model — neither
+  // Connections nor Strands has its own editor HTML; both share this shell and
+  // its tab strip. Dynamic import keeps the ~7.8k-entity catalog out of the
+  // first-paint bundle until the Catfishing tab is opened.
+  if (getSelectedTab() === 'catfishing') {
+    import('./games/catfishing/editor.js').then((m) => m.mountCatfishingEditor(renderEditor));
+    return;
+  }
   const main = document.querySelector('[data-slot="main"]');
   // Build size + mistake-mode option markup once here so the HTML template
   // below stays legible. Both are simple option lists driven by constants.

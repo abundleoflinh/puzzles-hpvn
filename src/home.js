@@ -10,6 +10,9 @@ import { escapeHtml, parseShortLink, SHORT_ID_RE, TYPE_PREFIX } from './lib/util
 const PLAY_PAGE = {
   connections: '/play-connections.html',
   strands: '/play-strands.html',
+  // play-catfishing.html lands in Step 6; until then a /cf/ link resolves here
+  // but the page 404s. The mapping is correct now so no relink is needed later.
+  catfishing: '/play-catfishing.html',
 };
 function playHref(type, id) {
   const page = PLAY_PAGE[type] || PLAY_PAGE.connections;
@@ -36,7 +39,7 @@ async function onSubmit(e) {
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
     try {
-      for (const type of ['connections', 'strands']) {
+      for (const type of ['connections', 'strands', 'catfishing']) {
         try {
           await fetchPuzzle(type, raw);
           window.location.href = playHref(type, raw);

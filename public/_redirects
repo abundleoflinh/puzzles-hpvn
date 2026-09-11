@@ -8,5 +8,6 @@
 # The trailing "!" (force) is deliberately omitted — if a real file ever
 # exists at these paths (it shouldn't), it wins over the redirect.
 
-/c/:id  /play-connections.html#c/:id  302
-/s/:id  /play-strands.html#s/:id      302
+/c/:id   /play-connections.html#c/:id   302
+/s/:id   /play-strands.html#s/:id       302
+/cf/:id  /play-catfishing.html#cf/:id   302

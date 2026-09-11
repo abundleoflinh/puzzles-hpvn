@@ -24,6 +24,7 @@ export function renderEditorTabs(container, onSwitch) {
     <div class="editor-tabs" role="tablist" aria-label="Game type">
       <button type="button" role="tab" data-tab="connections" aria-selected="${active === 'connections'}" class="editor-tab ${active === 'connections' ? 'active' : ''}">${escapeHtml(t('home.collections.type.connections'))}</button>
       <button type="button" role="tab" data-tab="strands" aria-selected="${active === 'strands'}" class="editor-tab ${active === 'strands' ? 'active' : ''}">${escapeHtml(t('home.collections.type.strands'))}</button>
+      <button type="button" role="tab" data-tab="catfishing" aria-selected="${active === 'catfishing'}" class="editor-tab ${active === 'catfishing' ? 'active' : ''}">${escapeHtml(t('home.collections.type.catfishing'))}</button>
     </div>
   `;
   container.querySelectorAll('[data-tab]').forEach((btn) => {
