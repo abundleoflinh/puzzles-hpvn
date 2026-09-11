@@ -91,9 +91,12 @@ async function main() {
   const effectiveLines = trailingBlank ? dictLines.slice(0, -1) : dictLines;
   const header = effectiveLines[0];
   const headerCols = parseCsvRow(header);
-  // Expected columns: en,vi,aliases_en,aliases_vi,notes,needs_review
+  // Current schema: en,vi,aliases_en,notes,needs_review. Header-driven so
+  // adding/dropping optional columns later doesn't break this script.
   const enIdx = headerCols.indexOf('en');
   const aliasEnIdx = headerCols.indexOf('aliases_en');
+  const notesIdx = headerCols.indexOf('notes');
+  const needsReviewIdx = headerCols.indexOf('needs_review');
   if (enIdx === -1 || aliasEnIdx === -1) {
     throw new Error(`dict_terms.csv header missing 'en' or 'aliases_en' columns: ${header}`);
   }
@@ -136,11 +139,16 @@ async function main() {
     return;
   }
 
-  // Build appended rows: en, vi(blank), aliases_en(blank), aliases_vi(blank),
-  // notes(marker), needs_review=TRUE. Preserve trailing newline convention.
-  const appended = toAppend.map((cat) =>
-    [csvField(cat), '', '', '', csvField(NOTES_MARKER), 'TRUE'].join(',')
-  );
+  // Build appended rows in HEADER ORDER so schema changes (e.g. dropping
+  // aliases_vi) don't break the writer. Fill: en, notes=marker,
+  // needs_review=TRUE. Every other column blank.
+  const appended = toAppend.map((cat) => {
+    const row = headerCols.map(() => '');
+    row[enIdx] = csvField(cat);
+    if (notesIdx !== -1) row[notesIdx] = csvField(NOTES_MARKER);
+    if (needsReviewIdx !== -1) row[needsReviewIdx] = 'TRUE';
+    return row.join(',');
+  });
 
   if (dryRun) {
     console.log('\n--dry-run: not writing. First 20 new rows:');

@@ -1,0 +1,3643 @@
+{
+  "meta": {
+    "generated_by": "scripts/build-dicts.mjs",
+    "source": "data/csv/dict_terms.csv",
+    "term_count": 515,
+    "alias_count": 352
+  },
+  "terms": {
+    "wizards": {
+      "en": "Wizards",
+      "vi": "Phù thủy",
+      "aliases_en": [
+        "Wizard"
+      ]
+    },
+    "males": {
+      "en": "Males",
+      "vi": "Nam",
+      "aliases_en": [
+        "Male"
+      ]
+    },
+    "spells of unknown incantation": {
+      "en": "Spells of unknown incantation",
+      "vi": "Bùa chú không rõ câu thần chú",
+      "aliases_en": []
+    },
+    "british or irish individuals": {
+      "en": "British or Irish individuals",
+      "vi": "Người Anh hoặc Ireland",
+      "aliases_en": []
+    },
+    "potion ingredients": {
+      "en": "Potion ingredients",
+      "vi": "Nguyên liệu độc dược",
+      "aliases_en": [
+        "Potion ingredient"
+      ]
+    },
+    "females": {
+      "en": "Females",
+      "vi": "Nữ",
+      "aliases_en": [
+        "Female"
+      ]
+    },
+    "creatures existing in the non-magic world": {
+      "en": "Creatures existing in the non-magic world",
+      "vi": "Sinh vật tồn tại trong thế giới Muggle",
+      "aliases_en": []
+    },
+    "magical objects": {
+      "en": "Magical objects",
+      "vi": "Vật ma thuật",
+      "aliases_en": [
+        "Magical object"
+      ]
+    },
+    "charms": {
+      "en": "Charms",
+      "vi": "Bùa",
+      "aliases_en": [
+        "Charm"
+      ]
+    },
+    "spells with a light": {
+      "en": "Spells with a light",
+      "vi": "Bùa chú có ánh sáng",
+      "aliases_en": []
+    },
+    "parents": {
+      "en": "Parents",
+      "vi": "Cha mẹ",
+      "aliases_en": [
+        "Parent"
+      ]
+    },
+    "unidentified spells": {
+      "en": "Unidentified spells",
+      "vi": "Bùa chú chưa xác định",
+      "aliases_en": [
+        "Unidentified spell"
+      ]
+    },
+    "cities and towns": {
+      "en": "Cities and towns",
+      "vi": "Thành phố và thị trấn",
+      "aliases_en": []
+    },
+    "british individuals": {
+      "en": "British individuals",
+      "vi": "Người Anh",
+      "aliases_en": [
+        "British individual"
+      ]
+    },
+    "married individuals": {
+      "en": "Married individuals",
+      "vi": "Người đã kết hôn",
+      "aliases_en": [
+        "Married individual"
+      ]
+    },
+    "shops": {
+      "en": "Shops",
+      "vi": "Cửa tiệm",
+      "aliases_en": [
+        "Shop"
+      ]
+    },
+    "20th century births": {
+      "en": "20th century births",
+      "vi": "Sinh vào thế kỷ 20",
+      "aliases_en": [
+        "20th century birth"
+      ]
+    },
+    "london": {
+      "en": "London",
+      "vi": "London",
+      "aliases_en": []
+    },
+    "pure-bloods": {
+      "en": "Pure-bloods",
+      "vi": "Phù thuỷ thuần chủng",
+      "aliases_en": [
+        "Pure-blood"
+      ]
+    },
+    "spells with incantations of latin origin": {
+      "en": "Spells with incantations of Latin origin",
+      "vi": "Bùa chú với câu thần chú gốc Latin",
+      "aliases_en": []
+    },
+    "plants": {
+      "en": "Plants",
+      "vi": "Thực vật",
+      "aliases_en": [
+        "Plant"
+      ]
+    },
+    "harry potter's possessions": {
+      "en": "Harry Potter's possessions",
+      "vi": "Đồ vật của Harry Potter",
+      "aliases_en": [
+        "Harry Potter's possession"
+      ]
+    },
+    "hogwarts": {
+      "en": "Hogwarts",
+      "vi": "Hogwarts",
+      "aliases_en": []
+    },
+    "transforming spells": {
+      "en": "Transforming spells",
+      "vi": "Thần chú biến hình",
+      "aliases_en": [
+        "Transforming spell"
+      ]
+    },
+    "patronus forms": {
+      "en": "Patronus forms",
+      "vi": "Hiện thân của Thần Hộ Mệnh",
+      "aliases_en": [
+        "Patronus form"
+      ]
+    },
+    "brown-eyed individuals": {
+      "en": "Brown-eyed individuals",
+      "vi": "Người mắt nâu",
+      "aliases_en": [
+        "Brown-eyed individual"
+      ]
+    },
+    "potions": {
+      "en": "Potions",
+      "vi": "Độc dược",
+      "aliases_en": [
+        "Potion"
+      ]
+    },
+    "england": {
+      "en": "England",
+      "vi": "Nước Anh",
+      "aliases_en": []
+    },
+    "new york": {
+      "en": "New York",
+      "vi": "New York",
+      "aliases_en": []
+    },
+    "defence against the dark arts": {
+      "en": "Defence Against the Dark Arts",
+      "vi": "Phòng chống Nghệ thuật Hắc ám",
+      "aliases_en": [
+        "Defence Against the Dark Art"
+      ]
+    },
+    "diagon alley": {
+      "en": "Diagon Alley",
+      "vi": "Hẻm Xéo",
+      "aliases_en": []
+    },
+    "hogwarts locations": {
+      "en": "Hogwarts locations",
+      "vi": "Địa điểm ở Hogwarts",
+      "aliases_en": [
+        "Hogwarts location"
+      ]
+    },
+    "objects held by the hogwarts library": {
+      "en": "Objects held by the Hogwarts Library",
+      "vi": "Đồ vật tại Thư viện Hogwarts",
+      "aliases_en": []
+    },
+    "unknown house": {
+      "en": "Unknown House",
+      "vi": "Không rõ Nhà",
+      "aliases_en": []
+    },
+    "healing magic": {
+      "en": "Healing magic",
+      "vi": "Ma thuật chữa lành",
+      "aliases_en": []
+    },
+    "poisons": {
+      "en": "Poisons",
+      "vi": "Chất độc",
+      "aliases_en": [
+        "Poison"
+      ]
+    },
+    "hogsmeade": {
+      "en": "Hogsmeade",
+      "vi": "Hogsmeade",
+      "aliases_en": []
+    },
+    "unnamed family members": {
+      "en": "Unnamed family members",
+      "vi": "Thành viên gia đình không rõ tên",
+      "aliases_en": [
+        "Unnamed family member"
+      ]
+    },
+    "english individuals": {
+      "en": "English individuals",
+      "vi": "Người Anh",
+      "aliases_en": [
+        "English individual"
+      ]
+    },
+    "wizarding locations": {
+      "en": "Wizarding locations",
+      "vi": "Địa điểm trong thế giới pháp thuật",
+      "aliases_en": [
+        "Wizarding location"
+      ]
+    },
+    "muggle-familiar creatures": {
+      "en": "Muggle-familiar creatures",
+      "vi": "Sinh vật quen thuộc với Muggle",
+      "aliases_en": [
+        "Muggle-familiar creature"
+      ]
+    },
+    "scotland": {
+      "en": "Scotland",
+      "vi": "Scotland",
+      "aliases_en": []
+    },
+    "portraits": {
+      "en": "Portraits",
+      "vi": "Chân dung",
+      "aliases_en": [
+        "Portrait"
+      ]
+    },
+    "slytherins": {
+      "en": "Slytherins",
+      "vi": "Học sinh nhà Slytherin",
+      "aliases_en": [
+        "Slytherin"
+      ]
+    },
+    "battle of hogwarts participants": {
+      "en": "Battle of Hogwarts participants",
+      "vi": "Người tham gia Trận Hogwarts",
+      "aliases_en": [
+        "Battle of Hogwarts participant"
+      ]
+    },
+    "blue-eyed individuals": {
+      "en": "Blue-eyed individuals",
+      "vi": "Người mắt xanh dương",
+      "aliases_en": [
+        "Blue-eyed individual"
+      ]
+    },
+    "houses": {
+      "en": "Houses",
+      "vi": "Nhà (Hogwarts)",
+      "aliases_en": [
+        "House"
+      ]
+    },
+    "herbology": {
+      "en": "Herbology",
+      "vi": "Thảo dược học",
+      "aliases_en": []
+    },
+    "transfiguration spells": {
+      "en": "Transfiguration spells",
+      "vi": "Thần chú Biến hình",
+      "aliases_en": [
+        "Transfiguration spell"
+      ]
+    },
+    "spells of known incantation": {
+      "en": "Spells of known incantation",
+      "vi": "Bùa chú biết câu thần chú",
+      "aliases_en": []
+    },
+    "murder victims": {
+      "en": "Murder victims",
+      "vi": "Nạn nhân bị sát hại",
+      "aliases_en": [
+        "Murder victim"
+      ]
+    },
+    "rooms": {
+      "en": "Rooms",
+      "vi": "Phòng",
+      "aliases_en": [
+        "Room"
+      ]
+    },
+    "gryffindors": {
+      "en": "Gryffindors",
+      "vi": "Học sinh nhà Gryffindor",
+      "aliases_en": [
+        "Gryffindor"
+      ]
+    },
+    "wands": {
+      "en": "Wands",
+      "vi": "Đũa phép",
+      "aliases_en": [
+        "Wand"
+      ]
+    },
+    "conjurations": {
+      "en": "Conjurations",
+      "vi": "Bùa chú Hiện hồn",
+      "aliases_en": [
+        "Conjuration"
+      ]
+    },
+    "forbidden forest": {
+      "en": "Forbidden Forest",
+      "vi": "Rừng Cấm",
+      "aliases_en": []
+    },
+    "buildings": {
+      "en": "Buildings",
+      "vi": "Toà nhà",
+      "aliases_en": [
+        "Building"
+      ]
+    },
+    "creature products": {
+      "en": "Creature products",
+      "vi": "Sản phẩm từ sinh vật",
+      "aliases_en": [
+        "Creature product"
+      ]
+    },
+    "medications": {
+      "en": "Medications",
+      "vi": "Thuốc",
+      "aliases_en": [
+        "Medication"
+      ]
+    },
+    "paris": {
+      "en": "Paris",
+      "vi": "Paris",
+      "aliases_en": []
+    },
+    "united states of america": {
+      "en": "United States of America",
+      "vi": "Hoa Kỳ",
+      "aliases_en": []
+    },
+    "green-eyed individuals": {
+      "en": "Green-eyed individuals",
+      "vi": "Người mắt xanh lá",
+      "aliases_en": [
+        "Green-eyed individual"
+      ]
+    },
+    "fire-based magic": {
+      "en": "Fire-based magic",
+      "vi": "Ma thuật liên quan tới lửa",
+      "aliases_en": []
+    },
+    "hermione granger's possessions": {
+      "en": "Hermione Granger's possessions",
+      "vi": "Đồ vật của Hermione Granger",
+      "aliases_en": [
+        "Hermione Granger's possession"
+      ]
+    },
+    "streets": {
+      "en": "Streets",
+      "vi": "Đường phố",
+      "aliases_en": [
+        "Street"
+      ]
+    },
+    "honeydukes": {
+      "en": "Honeydukes",
+      "vi": "Công tước Mật",
+      "aliases_en": []
+    },
+    "protective spells": {
+      "en": "Protective spells",
+      "vi": "Bùa chú bảo vệ",
+      "aliases_en": [
+        "Protective spell"
+      ]
+    },
+    "deceased individuals": {
+      "en": "Deceased individuals",
+      "vi": "Người đã qua đời",
+      "aliases_en": [
+        "Deceased individual"
+      ]
+    },
+    "documents": {
+      "en": "Documents",
+      "vi": "Tài liệu",
+      "aliases_en": [
+        "Document"
+      ]
+    },
+    "knockturn alley": {
+      "en": "Knockturn Alley",
+      "vi": "Hẻm Knockturn",
+      "aliases_en": []
+    },
+    "gold objects": {
+      "en": "Gold objects",
+      "vi": "Đồ vật bằng vàng",
+      "aliases_en": [
+        "Gold object"
+      ]
+    },
+    "non-magic people": {
+      "en": "Non-magic people",
+      "vi": "Người không có phép thuật",
+      "aliases_en": []
+    },
+    "ronald weasley's possessions": {
+      "en": "Ronald Weasley's possessions",
+      "vi": "Đồ vật của Ronald Weasley",
+      "aliases_en": [
+        "Ronald Weasley's possession"
+      ]
+    },
+    "sorted in the 1990s": {
+      "en": "Sorted in the 1990s",
+      "vi": "Được phân loại vào thập niên 1990",
+      "aliases_en": []
+    },
+    "flint family descendants": {
+      "en": "Flint family descendants",
+      "vi": "Hậu duệ nhà Flint",
+      "aliases_en": [
+        "Flint family descendant"
+      ]
+    },
+    "french individuals": {
+      "en": "French individuals",
+      "vi": "Người Pháp",
+      "aliases_en": [
+        "French individual"
+      ]
+    },
+    "jinxes": {
+      "en": "Jinxes",
+      "vi": "Bùa ếm",
+      "aliases_en": [
+        "Jinx"
+      ]
+    },
+    "ravenclaws": {
+      "en": "Ravenclaws",
+      "vi": "Học sinh nhà Ravenclaw",
+      "aliases_en": [
+        "Ravenclaw"
+      ]
+    },
+    "businesses": {
+      "en": "Businesses",
+      "vi": "Cơ sở kinh doanh",
+      "aliases_en": [
+        "Business"
+      ]
+    },
+    "sweets": {
+      "en": "Sweets",
+      "vi": "Kẹo",
+      "aliases_en": [
+        "Sweet"
+      ]
+    },
+    "water-based magic": {
+      "en": "Water-based magic",
+      "vi": "Ma thuật liên quan tới nước",
+      "aliases_en": []
+    },
+    "birds": {
+      "en": "Birds",
+      "vi": "Chim",
+      "aliases_en": [
+        "Bird"
+      ]
+    },
+    "curses": {
+      "en": "Curses",
+      "vi": "Lời nguyền",
+      "aliases_en": [
+        "Curse"
+      ]
+    },
+    "spellbooks": {
+      "en": "Spellbooks",
+      "vi": "Sách bùa chú",
+      "aliases_en": [
+        "Spellbook"
+      ]
+    },
+    "weasleys' wizard wheezes": {
+      "en": "Weasleys' Wizard Wheezes",
+      "vi": "Tiệm Phù Thỉ Wỉ Wái Của Weasley",
+      "aliases_en": [
+        "Weasleys' Wizard Wheeze"
+      ]
+    },
+    "protective objects": {
+      "en": "Protective objects",
+      "vi": "Vật bảo vệ",
+      "aliases_en": [
+        "Protective object"
+      ]
+    },
+    "pure-blood supremacists": {
+      "en": "Pure-blood supremacists",
+      "vi": "Kẻ tôn thờ dòng dõi thuần chủng",
+      "aliases_en": [
+        "Pure-blood supremacist"
+      ]
+    },
+    "bertie bott's every flavour beans flavours": {
+      "en": "Bertie Bott's Every Flavour Beans flavours",
+      "vi": "Vị của kẹo dẻo đủ vị hiệu Bertie Bott",
+      "aliases_en": [
+        "Bertie Bott's Every Flavour Beans flavour"
+      ]
+    },
+    "hufflepuffs": {
+      "en": "Hufflepuffs",
+      "vi": "Học sinh nhà Hufflepuff",
+      "aliases_en": [
+        "Hufflepuff"
+      ]
+    },
+    "spells with modifiers": {
+      "en": "Spells with modifiers",
+      "vi": "Bùa chú có biến thể",
+      "aliases_en": [
+        "Spells with modifier"
+      ]
+    },
+    "1970s births": {
+      "en": "1970s births",
+      "vi": "Sinh vào thập niên 1970",
+      "aliases_en": [
+        "1970s birth"
+      ]
+    },
+    "blood traitors": {
+      "en": "Blood traitors",
+      "vi": "Kẻ phản bội dòng máu",
+      "aliases_en": [
+        "Blood traitor"
+      ]
+    },
+    "concealment": {
+      "en": "Concealment",
+      "vi": "Sự che giấu",
+      "aliases_en": []
+    },
+    "magizoology books": {
+      "en": "Magizoology books",
+      "vi": "Sách Nghiên cứu Sinh vật Huyền bí",
+      "aliases_en": [
+        "Magizoology book"
+      ]
+    },
+    "christmas presents": {
+      "en": "Christmas presents",
+      "vi": "Quà Giáng sinh",
+      "aliases_en": [
+        "Christmas present"
+      ]
+    },
+    "cups": {
+      "en": "Cups",
+      "vi": "Cốc",
+      "aliases_en": [
+        "Cup"
+      ]
+    },
+    "light-based magic": {
+      "en": "Light-based magic",
+      "vi": "Ma thuật liên quan tới ánh sáng",
+      "aliases_en": []
+    },
+    "1994 quidditch world cup attendees": {
+      "en": "1994 Quidditch World Cup attendees",
+      "vi": "Khán giả Cúp Quidditch Thế giới 1994",
+      "aliases_en": [
+        "1994 Quidditch World Cup attendee"
+      ]
+    },
+    "care of magical creatures": {
+      "en": "Care of Magical Creatures",
+      "vi": "Chăm sóc Sinh vật Huyền bí",
+      "aliases_en": [
+        "Care of Magical Creature"
+      ]
+    },
+    "cursed objects": {
+      "en": "Cursed objects",
+      "vi": "Vật bị nguyền",
+      "aliases_en": [
+        "Cursed object"
+      ]
+    },
+    "offices": {
+      "en": "Offices",
+      "vi": "Văn phòng",
+      "aliases_en": [
+        "Office"
+      ]
+    },
+    "fruits and vegetables": {
+      "en": "Fruits and vegetables",
+      "vi": "Trái cây và rau củ",
+      "aliases_en": []
+    },
+    "hogwarts awards": {
+      "en": "Hogwarts awards",
+      "vi": "Giải thưởng Hogwarts",
+      "aliases_en": [
+        "Hogwarts award"
+      ]
+    },
+    "dark arts": {
+      "en": "Dark Arts",
+      "vi": "Nghệ thuật Hắc ám",
+      "aliases_en": [
+        "Dark Art"
+      ]
+    },
+    "grey-eyed individuals": {
+      "en": "Grey-eyed individuals",
+      "vi": "Người mắt xám",
+      "aliases_en": [
+        "Grey-eyed individual"
+      ]
+    },
+    "national quidditch teams": {
+      "en": "National Quidditch teams",
+      "vi": "Đội tuyển Quidditch quốc gia",
+      "aliases_en": [
+        "National Quidditch team"
+      ]
+    },
+    "albus dumbledore's possessions": {
+      "en": "Albus Dumbledore's possessions",
+      "vi": "Đồ vật của Albus Dumbledore",
+      "aliases_en": [
+        "Albus Dumbledore's possession"
+      ]
+    },
+    "authors": {
+      "en": "Authors",
+      "vi": "Tác giả",
+      "aliases_en": [
+        "Author"
+      ]
+    },
+    "divination": {
+      "en": "Divination",
+      "vi": "Tiên tri",
+      "aliases_en": []
+    },
+    "hogwarts dungeons": {
+      "en": "Hogwarts dungeons",
+      "vi": "Hầm ngục Hogwarts",
+      "aliases_en": [
+        "Hogwarts dungeon"
+      ]
+    },
+    "hogwarts grounds": {
+      "en": "Hogwarts grounds",
+      "vi": "Khuôn viên Hogwarts",
+      "aliases_en": [
+        "Hogwarts ground"
+      ]
+    },
+    "hogwarts secrets": {
+      "en": "Hogwarts secrets",
+      "vi": "Bí mật của Hogwarts",
+      "aliases_en": [
+        "Hogwarts secret"
+      ]
+    },
+    "hogwarts prefects": {
+      "en": "Hogwarts prefects",
+      "vi": "Huynh trưởng Hogwarts",
+      "aliases_en": [
+        "Hogwarts prefect"
+      ]
+    },
+    "muggle studies": {
+      "en": "Muggle Studies",
+      "vi": "Muggle Học",
+      "aliases_en": [
+        "Muggle Study"
+      ]
+    },
+    "sentient objects": {
+      "en": "Sentient objects",
+      "vi": "Đồ vật có tri giác",
+      "aliases_en": [
+        "Sentient object"
+      ]
+    },
+    "triwizard tournament": {
+      "en": "Triwizard Tournament",
+      "vi": "Cuộc thi Tam Pháp Thuật",
+      "aliases_en": []
+    },
+    "mental magic": {
+      "en": "Mental magic",
+      "vi": "Ma thuật tâm trí",
+      "aliases_en": []
+    },
+    "boggart forms": {
+      "en": "Boggart forms",
+      "vi": "Hình dạng Ông Kẹ",
+      "aliases_en": [
+        "Boggart form"
+      ]
+    },
+    "british ministry of magic": {
+      "en": "British Ministry of Magic",
+      "vi": "Bộ Pháp thuật",
+      "aliases_en": []
+    },
+    "chasers": {
+      "en": "Chasers",
+      "vi": "Truy thủ",
+      "aliases_en": [
+        "Chaser"
+      ]
+    },
+    "half-bloods": {
+      "en": "Half-bloods",
+      "vi": "Phù thuỷ lai",
+      "aliases_en": [
+        "Half-blood"
+      ]
+    },
+    "hogwarts textbooks": {
+      "en": "Hogwarts textbooks",
+      "vi": "Sách giáo khoa Hogwarts",
+      "aliases_en": [
+        "Hogwarts textbook"
+      ]
+    },
+    "mammals": {
+      "en": "Mammals",
+      "vi": "Động vật có vú",
+      "aliases_en": [
+        "Mammal"
+      ]
+    },
+    "cosmetics": {
+      "en": "Cosmetics",
+      "vi": "Mỹ phẩm",
+      "aliases_en": [
+        "Cosmetic"
+      ]
+    },
+    "dogs": {
+      "en": "Dogs",
+      "vi": "Chó",
+      "aliases_en": [
+        "Dog"
+      ]
+    },
+    "human transfigurations": {
+      "en": "Human Transfigurations",
+      "vi": "Phép Biến hình Người",
+      "aliases_en": [
+        "Human Transfiguration"
+      ]
+    },
+    "silver objects": {
+      "en": "Silver objects",
+      "vi": "Đồ vật bằng bạc",
+      "aliases_en": [
+        "Silver object"
+      ]
+    },
+    "beasts": {
+      "en": "Beasts",
+      "vi": "Quái thú",
+      "aliases_en": [
+        "Beast"
+      ]
+    },
+    "books": {
+      "en": "Books",
+      "vi": "Sách",
+      "aliases_en": [
+        "Book"
+      ]
+    },
+    "unmarried individuals": {
+      "en": "Unmarried individuals",
+      "vi": "Người chưa kết hôn",
+      "aliases_en": [
+        "Unmarried individual"
+      ]
+    },
+    "wildlife reserves": {
+      "en": "Wildlife reserves",
+      "vi": "Khu bảo tồn động vật hoang dã",
+      "aliases_en": [
+        "Wildlife reserve"
+      ]
+    },
+    "bronze chocolate frog cards": {
+      "en": "Bronze Chocolate Frog Cards",
+      "vi": "Thẻ Sôcôla Ếch nhái đồng",
+      "aliases_en": [
+        "Bronze Chocolate Frog Card"
+      ]
+    },
+    "cats": {
+      "en": "Cats",
+      "vi": "Mèo",
+      "aliases_en": [
+        "Cat"
+      ]
+    },
+    "killed by tom riddle": {
+      "en": "Killed by Tom Riddle",
+      "vi": "Bị Tom Riddle giết",
+      "aliases_en": []
+    },
+    "levitation": {
+      "en": "Levitation",
+      "vi": "Bay",
+      "aliases_en": []
+    },
+    "sorted in the 20th century": {
+      "en": "Sorted in the 20th century",
+      "vi": "Được phân loại vào thế kỷ 20",
+      "aliases_en": []
+    },
+    "unforgivable curse users": {
+      "en": "Unforgivable Curse users",
+      "vi": "Kẻ dùng Lời nguyền Không thể Tha thứ",
+      "aliases_en": [
+        "Unforgivable Curse user"
+      ]
+    },
+    "charms books": {
+      "en": "Charms books",
+      "vi": "Sách Bùa chú",
+      "aliases_en": [
+        "Charms book"
+      ]
+    },
+    "france": {
+      "en": "France",
+      "vi": "Pháp",
+      "aliases_en": []
+    },
+    "pets": {
+      "en": "Pets",
+      "vi": "Thú cưng",
+      "aliases_en": [
+        "Pet"
+      ]
+    },
+    "quidditch": {
+      "en": "Quidditch",
+      "vi": "Quidditch",
+      "aliases_en": []
+    },
+    "second wizarding war casualties": {
+      "en": "Second Wizarding War casualties",
+      "vi": "Thương vong trong Cuộc chiến Phù thủy lần thứ hai",
+      "aliases_en": [
+        "Second Wizarding War casualty"
+      ]
+    },
+    "events": {
+      "en": "Events",
+      "vi": "Sự kiện",
+      "aliases_en": [
+        "Event"
+      ]
+    },
+    "hogwarts classrooms": {
+      "en": "Hogwarts classrooms",
+      "vi": "Phòng học Hogwarts",
+      "aliases_en": [
+        "Hogwarts classroom"
+      ]
+    },
+    "invisibility": {
+      "en": "Invisibility",
+      "vi": "Vô hình",
+      "aliases_en": []
+    },
+    "organisations": {
+      "en": "Organisations",
+      "vi": "Tổ chức",
+      "aliases_en": [
+        "Organisation"
+      ]
+    },
+    "prank devices": {
+      "en": "Prank devices",
+      "vi": "Đồ chơi khăm",
+      "aliases_en": [
+        "Prank device"
+      ]
+    },
+    "antidotes": {
+      "en": "Antidotes",
+      "vi": "Thuốc giải",
+      "aliases_en": [
+        "Antidote"
+      ]
+    },
+    "dumbledore's army": {
+      "en": "Dumbledore's Army",
+      "vi": "Đoàn Quân Dumbledore",
+      "aliases_en": []
+    },
+    "shop owners": {
+      "en": "Shop owners",
+      "vi": "Chủ tiệm",
+      "aliases_en": [
+        "Shop owner"
+      ]
+    },
+    "siege of hogwarts participants": {
+      "en": "Siege of Hogwarts participants",
+      "vi": "Người tham gia Cuộc bao vây Hogwarts",
+      "aliases_en": [
+        "Siege of Hogwarts participant"
+      ]
+    },
+    "astronomy": {
+      "en": "Astronomy",
+      "vi": "Thiên văn học",
+      "aliases_en": []
+    },
+    "house of black": {
+      "en": "House of Black",
+      "vi": "Nhà Black",
+      "aliases_en": []
+    },
+    "leaky cauldron": {
+      "en": "Leaky Cauldron",
+      "vi": "Cái Vạc Lủng",
+      "aliases_en": []
+    },
+    "newton scamander's possessions": {
+      "en": "Newton Scamander's possessions",
+      "vi": "Đồ vật của Newton Scamander",
+      "aliases_en": [
+        "Newton Scamander's possession"
+      ]
+    },
+    "statues": {
+      "en": "Statues",
+      "vi": "Tượng",
+      "aliases_en": [
+        "Statue"
+      ]
+    },
+    "toys": {
+      "en": "Toys",
+      "vi": "Đồ chơi",
+      "aliases_en": [
+        "Toy"
+      ]
+    },
+    "trans-species transformations": {
+      "en": "Trans-species Transformations",
+      "vi": "Biến hình giữa các loài",
+      "aliases_en": [
+        "Trans-species Transformation"
+      ]
+    },
+    "aurors": {
+      "en": "Aurors",
+      "vi": "Thần Sáng",
+      "aliases_en": [
+        "Auror"
+      ]
+    },
+    "dark magic artefacts": {
+      "en": "Dark Magic artefacts",
+      "vi": "Khí cụ Hắc ám",
+      "aliases_en": [
+        "Dark Magic artefact"
+      ]
+    },
+    "fish": {
+      "en": "Fish",
+      "vi": "Cá",
+      "aliases_en": []
+    },
+    "insects": {
+      "en": "Insects",
+      "vi": "Côn trùng",
+      "aliases_en": [
+        "Insect"
+      ]
+    },
+    "lestrange family": {
+      "en": "Lestrange family",
+      "vi": "Nhà Lestrange",
+      "aliases_en": []
+    },
+    "portkeys": {
+      "en": "Portkeys",
+      "vi": "Khóa Cảng",
+      "aliases_en": [
+        "Portkey"
+      ]
+    },
+    "unicorn hair wands": {
+      "en": "Unicorn hair wands",
+      "vi": "Đũa phép lõi lông kỳ lân",
+      "aliases_en": [
+        "Unicorn hair wand"
+      ]
+    },
+    "capitals": {
+      "en": "Capitals",
+      "vi": "Thủ đô",
+      "aliases_en": [
+        "Capital"
+      ]
+    },
+    "christmas": {
+      "en": "Christmas",
+      "vi": "Giáng sinh",
+      "aliases_en": []
+    },
+    "dark charms": {
+      "en": "Dark charms",
+      "vi": "Bùa chú Hắc ám",
+      "aliases_en": [
+        "Dark charm"
+      ]
+    },
+    "death eater allies": {
+      "en": "Death Eater allies",
+      "vi": "Đồng minh của Tử Thần Thực Tử",
+      "aliases_en": [
+        "Death Eater ally"
+      ]
+    },
+    "history books": {
+      "en": "History books",
+      "vi": "Sách lịch sử",
+      "aliases_en": [
+        "History book"
+      ]
+    },
+    "mental spells": {
+      "en": "Mental spells",
+      "vi": "Bùa tâm trí",
+      "aliases_en": [
+        "Mental spell"
+      ]
+    },
+    "namesakes": {
+      "en": "Namesakes",
+      "vi": "Người được đặt tên theo",
+      "aliases_en": [
+        "Namesake"
+      ]
+    },
+    "snakes": {
+      "en": "Snakes",
+      "vi": "Rắn",
+      "aliases_en": [
+        "Snake"
+      ]
+    },
+    "weather magic": {
+      "en": "Weather magic",
+      "vi": "Ma thuật thời tiết",
+      "aliases_en": []
+    },
+    "wizarding towns": {
+      "en": "Wizarding towns",
+      "vi": "Thị trấn thế giới pháp thuật",
+      "aliases_en": [
+        "Wizarding town"
+      ]
+    },
+    "countries": {
+      "en": "Countries",
+      "vi": "Quốc gia",
+      "aliases_en": [
+        "Country"
+      ]
+    },
+    "courses": {
+      "en": "Courses",
+      "vi": "Môn học",
+      "aliases_en": [
+        "Course"
+      ]
+    },
+    "order of the phoenix allies": {
+      "en": "Order of the Phoenix allies",
+      "vi": "Đồng minh của Hội Phượng Hoàng",
+      "aliases_en": [
+        "Order of the Phoenix ally"
+      ]
+    },
+    "quidditch teams": {
+      "en": "Quidditch teams",
+      "vi": "Đội Quidditch",
+      "aliases_en": [
+        "Quidditch team"
+      ]
+    },
+    "ranks and titles": {
+      "en": "Ranks and titles",
+      "vi": "Cấp bậc và chức danh",
+      "aliases_en": []
+    },
+    "bedrooms": {
+      "en": "Bedrooms",
+      "vi": "Phòng ngủ",
+      "aliases_en": [
+        "Bedroom"
+      ]
+    },
+    "centenarians": {
+      "en": "Centenarians",
+      "vi": "Người trăm tuổi",
+      "aliases_en": [
+        "Centenarian"
+      ]
+    },
+    "chocolate frog cards": {
+      "en": "Chocolate Frog Cards",
+      "vi": "Thẻ Sôcôla Ếch nhái",
+      "aliases_en": [
+        "Chocolate Frog Card"
+      ]
+    },
+    "dragon heartstring wands": {
+      "en": "Dragon heartstring wands",
+      "vi": "Đũa phép lõi gân tim rồng",
+      "aliases_en": [
+        "Dragon heartstring wand"
+      ]
+    },
+    "george weasley's possessions": {
+      "en": "George Weasley's possessions",
+      "vi": "Đồ vật của George Weasley",
+      "aliases_en": [
+        "George Weasley's possession"
+      ]
+    },
+    "hogwarts corridors and passages": {
+      "en": "Hogwarts corridors and passages",
+      "vi": "Hành lang và lối đi Hogwarts",
+      "aliases_en": []
+    },
+    "unidentified potions": {
+      "en": "Unidentified potions",
+      "vi": "Độc dược chưa xác định",
+      "aliases_en": [
+        "Unidentified potion"
+      ]
+    },
+    "wand woods": {
+      "en": "Wand woods",
+      "vi": "Gỗ đũa phép",
+      "aliases_en": [
+        "Wand wood"
+      ]
+    },
+    "yaxley family descendants": {
+      "en": "Yaxley family descendants",
+      "vi": "Hậu duệ nhà Yaxley",
+      "aliases_en": [
+        "Yaxley family descendant"
+      ]
+    },
+    "2014 quidditch world cup attendees": {
+      "en": "2014 Quidditch World Cup attendees",
+      "vi": "Khán giả Cúp Quidditch Thế giới 2014",
+      "aliases_en": [
+        "2014 Quidditch World Cup attendee"
+      ]
+    },
+    "animagus forms": {
+      "en": "Animagus forms",
+      "vi": "Hình dạng Người Hóa Thú",
+      "aliases_en": [
+        "Animagus form"
+      ]
+    },
+    "british isles": {
+      "en": "British Isles",
+      "vi": "Quần đảo Anh",
+      "aliases_en": [
+        "British Isle"
+      ]
+    },
+    "competitions": {
+      "en": "Competitions",
+      "vi": "Cuộc thi",
+      "aliases_en": [
+        "Competition"
+      ]
+    },
+    "department for the regulation and control of magical creatures": {
+      "en": "Department for the Regulation and Control of Magical Creatures",
+      "vi": "Cục Quản lý và Kiểm soát Sinh vật Huyền bí",
+      "aliases_en": []
+    },
+    "fred weasley's possessions": {
+      "en": "Fred Weasley's possessions",
+      "vi": "Đồ vật của Fred Weasley",
+      "aliases_en": [
+        "Fred Weasley's possession"
+      ]
+    },
+    "gringotts": {
+      "en": "Gringotts",
+      "vi": "Ngân hàng Gringotts",
+      "aliases_en": []
+    },
+    "hogsmeade residents": {
+      "en": "Hogsmeade residents",
+      "vi": "Cư dân Hogsmeade",
+      "aliases_en": [
+        "Hogsmeade resident"
+      ]
+    },
+    "silver chocolate frog cards": {
+      "en": "Silver Chocolate Frog Cards",
+      "vi": "Thẻ Sôcôla Ếch nhái bạc",
+      "aliases_en": [
+        "Silver Chocolate Frog Card"
+      ]
+    },
+    "wands crafted by garrick ollivander": {
+      "en": "Wands crafted by Garrick Ollivander",
+      "vi": "Đũa phép do Garrick Ollivander chế tạo",
+      "aliases_en": []
+    },
+    "american individuals": {
+      "en": "American individuals",
+      "vi": "Người Mỹ",
+      "aliases_en": [
+        "American individual"
+      ]
+    },
+    "battles and skirmishes": {
+      "en": "Battles and skirmishes",
+      "vi": "Trận chiến và giao tranh",
+      "aliases_en": []
+    },
+    "chocolate": {
+      "en": "Chocolate",
+      "vi": "Sô-cô-la",
+      "aliases_en": []
+    },
+    "spiders": {
+      "en": "Spiders",
+      "vi": "Nhện",
+      "aliases_en": [
+        "Spider"
+      ]
+    },
+    "alchemy": {
+      "en": "Alchemy",
+      "vi": "Giả kim thuật",
+      "aliases_en": []
+    },
+    "ancient magic": {
+      "en": "Ancient magic",
+      "vi": "Ma thuật cổ",
+      "aliases_en": []
+    },
+    "battle of the department of mysteries participants": {
+      "en": "Battle of the Department of Mysteries participants",
+      "vi": "Người tham gia Trận Sở Bảo Mật",
+      "aliases_en": [
+        "Battle of the Department of Mysteries participant"
+      ]
+    },
+    "counties": {
+      "en": "Counties",
+      "vi": "Hạt (đơn vị địa chính)",
+      "aliases_en": [
+        "County"
+      ]
+    },
+    "deaths by killing curse": {
+      "en": "Deaths by Killing Curse",
+      "vi": "Chết vì Lời nguyền Chết chóc",
+      "aliases_en": []
+    },
+    "defence against the dark arts books": {
+      "en": "Defence Against the Dark Arts books",
+      "vi": "Sách Phòng chống Nghệ thuật Hắc ám",
+      "aliases_en": [
+        "Defence Against the Dark Arts book"
+      ]
+    },
+    "imperius curse victims": {
+      "en": "Imperius Curse victims",
+      "vi": "Nạn nhân Lời nguyền Độc đoán",
+      "aliases_en": [
+        "Imperius Curse victim"
+      ]
+    },
+    "impersonated individuals": {
+      "en": "Impersonated individuals",
+      "vi": "Người bị mạo danh",
+      "aliases_en": [
+        "Impersonated individual"
+      ]
+    },
+    "magizoology": {
+      "en": "Magizoology",
+      "vi": "Môn Nghiên cứu Sinh vật Huyền bí",
+      "aliases_en": []
+    },
+    "murderers": {
+      "en": "Murderers",
+      "vi": "Kẻ giết người",
+      "aliases_en": [
+        "Murderer"
+      ]
+    },
+    "neighbourhoods": {
+      "en": "Neighbourhoods",
+      "vi": "Khu phố",
+      "aliases_en": [
+        "Neighbourhood"
+      ]
+    },
+    "only children": {
+      "en": "Only children",
+      "vi": "Con một",
+      "aliases_en": []
+    },
+    "rubeus hagrid's possessions": {
+      "en": "Rubeus Hagrid's possessions",
+      "vi": "Đồ vật của Rubeus Hagrid",
+      "aliases_en": [
+        "Rubeus Hagrid's possession"
+      ]
+    },
+    "scottish individuals": {
+      "en": "Scottish individuals",
+      "vi": "Người Scotland",
+      "aliases_en": [
+        "Scottish individual"
+      ]
+    },
+    "secrecy breaches": {
+      "en": "Secrecy breaches",
+      "vi": "Vi phạm bảo mật",
+      "aliases_en": [
+        "Secrecy breach"
+      ]
+    },
+    "wizard secrecy": {
+      "en": "Wizard secrecy",
+      "vi": "Bí mật phù thuỷ",
+      "aliases_en": []
+    },
+    "auror office personnel": {
+      "en": "Auror Office personnel",
+      "vi": "Nhân viên Phòng Thần sáng",
+      "aliases_en": []
+    },
+    "british ministry of magic positions": {
+      "en": "British Ministry of Magic positions",
+      "vi": "Chức vụ trong Bộ Pháp Thuật",
+      "aliases_en": [
+        "British Ministry of Magic position"
+      ]
+    },
+    "europe": {
+      "en": "Europe",
+      "vi": "Châu Âu",
+      "aliases_en": []
+    },
+    "explosives": {
+      "en": "Explosives",
+      "vi": "Chất nổ",
+      "aliases_en": [
+        "Explosive"
+      ]
+    },
+    "magical games": {
+      "en": "Magical games",
+      "vi": "Trò chơi ma thuật",
+      "aliases_en": [
+        "Magical game"
+      ]
+    },
+    "minerva mcgonagall's possessions": {
+      "en": "Minerva McGonagall's possessions",
+      "vi": "Đồ vật của Minerva McGonagall",
+      "aliases_en": [
+        "Minerva McGonagall's possession"
+      ]
+    },
+    "muggle-borns": {
+      "en": "Muggle-borns",
+      "vi": "Phù thủy gốc Muggle",
+      "aliases_en": [
+        "Muggle-born"
+      ]
+    },
+    "rats": {
+      "en": "Rats",
+      "vi": "Chuột",
+      "aliases_en": [
+        "Rat"
+      ]
+    },
+    "slug club": {
+      "en": "Slug Club",
+      "vi": "Câu lạc bộ Slug",
+      "aliases_en": []
+    },
+    "unidentified 19th-century hogwarts student's possessions": {
+      "en": "Unidentified 19th-century Hogwarts student's possessions",
+      "vi": "Đồ vật của học sinh Hogwarts thế kỷ 19 không rõ tên",
+      "aliases_en": [
+        "Unidentified 19th-century Hogwarts student's possession"
+      ]
+    },
+    "zonko's joke shop": {
+      "en": "Zonko's Joke Shop",
+      "vi": "Tiệm Giỡn Zonko",
+      "aliases_en": []
+    },
+    "azkaban convicts": {
+      "en": "Azkaban convicts",
+      "vi": "Tù nhân Azkaban",
+      "aliases_en": [
+        "Azkaban convict"
+      ]
+    },
+    "battle of the department of mysteries": {
+      "en": "Battle of the Department of Mysteries",
+      "vi": "Trận Sở Bảo Mật",
+      "aliases_en": [
+        "Battle of the Department of Mystery"
+      ]
+    },
+    "cauldrons": {
+      "en": "Cauldrons",
+      "vi": "Vạc",
+      "aliases_en": [
+        "Cauldron"
+      ]
+    },
+    "dark wizards": {
+      "en": "Dark wizards",
+      "vi": "Phù thủy Hắc ám",
+      "aliases_en": [
+        "Dark wizard"
+      ]
+    },
+    "duelling club members": {
+      "en": "Duelling Club members",
+      "vi": "Thành viên Câu lạc bộ Đấu tay đôi",
+      "aliases_en": [
+        "Duelling Club member"
+      ]
+    },
+    "first wizarding war casualties": {
+      "en": "First Wizarding War casualties",
+      "vi": "Thương vong trong Cuộc chiến Phù thủy lần thứ nhất",
+      "aliases_en": [
+        "First Wizarding War casualty"
+      ]
+    },
+    "hair": {
+      "en": "Hair",
+      "vi": "Tóc",
+      "aliases_en": []
+    },
+    "hexes": {
+      "en": "Hexes",
+      "vi": "Bùa ếm",
+      "aliases_en": [
+        "Hex"
+      ]
+    },
+    "living books": {
+      "en": "Living books",
+      "vi": "Sách sống",
+      "aliases_en": [
+        "Living book"
+      ]
+    },
+    "newspaper segments": {
+      "en": "Newspaper segments",
+      "vi": "Mục báo",
+      "aliases_en": [
+        "Newspaper segment"
+      ]
+    },
+    "objects": {
+      "en": "Objects",
+      "vi": "Đồ vật",
+      "aliases_en": [
+        "Object"
+      ]
+    },
+    "plant-based magic": {
+      "en": "Plant-based magic",
+      "vi": "Ma thuật liên quan tới thực vật",
+      "aliases_en": []
+    },
+    "pubs": {
+      "en": "Pubs",
+      "vi": "Quán rượu",
+      "aliases_en": [
+        "Pub"
+      ]
+    },
+    "weasley family": {
+      "en": "Weasley family",
+      "vi": "Nhà Weasley",
+      "aliases_en": []
+    },
+    "awards": {
+      "en": "Awards",
+      "vi": "Giải thưởng",
+      "aliases_en": [
+        "Award"
+      ]
+    },
+    "disowned house of black descendants": {
+      "en": "Disowned House of Black descendants",
+      "vi": "Hậu duệ Nhà Black bị từ mặt",
+      "aliases_en": [
+        "Disowned House of Black descendant"
+      ]
+    },
+    "draco malfoy's possessions": {
+      "en": "Draco Malfoy's possessions",
+      "vi": "Đồ vật của Draco Malfoy",
+      "aliases_en": [
+        "Draco Malfoy's possession"
+      ]
+    },
+    "fire": {
+      "en": "Fire",
+      "vi": "Lửa",
+      "aliases_en": []
+    },
+    "first order of the phoenix": {
+      "en": "First Order of the Phoenix",
+      "vi": "Hội Phượng Hoàng đời đầu tiên",
+      "aliases_en": []
+    },
+    "ginevra weasley's possessions": {
+      "en": "Ginevra Weasley's possessions",
+      "vi": "Đồ vật của Ginevra Weasley",
+      "aliases_en": [
+        "Ginevra Weasley's possession"
+      ]
+    },
+    "hats": {
+      "en": "Hats",
+      "vi": "Mũ",
+      "aliases_en": [
+        "Hat"
+      ]
+    },
+    "islands": {
+      "en": "Islands",
+      "vi": "Đảo",
+      "aliases_en": [
+        "Island"
+      ]
+    },
+    "personal possessions": {
+      "en": "Personal possessions",
+      "vi": "Đồ vật cá nhân",
+      "aliases_en": [
+        "Personal possession"
+      ]
+    },
+    "potioneers": {
+      "en": "Potioneers",
+      "vi": "Người điều chế độc dược",
+      "aliases_en": [
+        "Potioneer"
+      ]
+    },
+    "speaking objects": {
+      "en": "Speaking objects",
+      "vi": "Vật biết nói",
+      "aliases_en": [
+        "Speaking object"
+      ]
+    },
+    "battle of the astronomy tower participants": {
+      "en": "Battle of the Astronomy Tower participants",
+      "vi": "Người tham gia Trận Tháp Thiên Văn",
+      "aliases_en": [
+        "Battle of the Astronomy Tower participant"
+      ]
+    },
+    "creatures affiliated with water": {
+      "en": "Creatures affiliated with water",
+      "vi": "Sinh vật liên quan tới nước",
+      "aliases_en": []
+    },
+    "death eaters": {
+      "en": "Death Eaters",
+      "vi": "Tử Thần Thực Tử",
+      "aliases_en": [
+        "Death Eater"
+      ]
+    },
+    "dragon parts": {
+      "en": "Dragon parts",
+      "vi": "Bộ phận rồng",
+      "aliases_en": [
+        "Dragon part"
+      ]
+    },
+    "flight": {
+      "en": "Flight",
+      "vi": "Thuật bay",
+      "aliases_en": []
+    },
+    "godric's hollow": {
+      "en": "Godric's Hollow",
+      "vi": "Thung lũng Godric",
+      "aliases_en": []
+    },
+    "music": {
+      "en": "Music",
+      "vi": "Âm nhạc",
+      "aliases_en": []
+    },
+    "security": {
+      "en": "Security",
+      "vi": "An ninh",
+      "aliases_en": []
+    },
+    "severus snape's possessions": {
+      "en": "Severus Snape's possessions",
+      "vi": "Đồ vật của Severus Snape",
+      "aliases_en": [
+        "Severus Snape's possession"
+      ]
+    },
+    "sorted in the 1980s": {
+      "en": "Sorted in the 1980s",
+      "vi": "Được phân loại vào thập niên 1980",
+      "aliases_en": []
+    },
+    "wand cores": {
+      "en": "Wand cores",
+      "vi": "Lõi đũa phép",
+      "aliases_en": [
+        "Wand core"
+      ]
+    },
+    "1990s births": {
+      "en": "1990s births",
+      "vi": "Sinh vào thập niên 1990",
+      "aliases_en": [
+        "1990s birth"
+      ]
+    },
+    "20th century deaths": {
+      "en": "20th century deaths",
+      "vi": "Mất vào thế kỷ 20",
+      "aliases_en": [
+        "20th century death"
+      ]
+    },
+    "caves": {
+      "en": "Caves",
+      "vi": "Hang động",
+      "aliases_en": [
+        "Cave"
+      ]
+    },
+    "communication": {
+      "en": "Communication",
+      "vi": "Liên lạc",
+      "aliases_en": []
+    },
+    "crime": {
+      "en": "Crime",
+      "vi": "Tội phạm",
+      "aliases_en": []
+    },
+    "cruciatus curse victims": {
+      "en": "Cruciatus Curse victims",
+      "vi": "Nạn nhân Lời nguyền Tra tấn",
+      "aliases_en": [
+        "Cruciatus Curse victim"
+      ]
+    },
+    "destroyed wands": {
+      "en": "Destroyed wands",
+      "vi": "Đũa phép bị phá hủy",
+      "aliases_en": [
+        "Destroyed wand"
+      ]
+    },
+    "eggs": {
+      "en": "Eggs",
+      "vi": "Trứng",
+      "aliases_en": [
+        "Egg"
+      ]
+    },
+    "gobstones players": {
+      "en": "Gobstones players",
+      "vi": "Người chơi Bi Xì Bùm",
+      "aliases_en": [
+        "Gobstones player"
+      ]
+    },
+    "healers": {
+      "en": "Healers",
+      "vi": "Lương y",
+      "aliases_en": [
+        "Healer"
+      ]
+    },
+    "love magic": {
+      "en": "Love magic",
+      "vi": "Tình thuật",
+      "aliases_en": []
+    },
+    "magical powers": {
+      "en": "Magical powers",
+      "vi": "Năng lực ma thuật",
+      "aliases_en": [
+        "Magical power"
+      ]
+    },
+    "muggle-baiting": {
+      "en": "Muggle-baiting",
+      "vi": "Trò chơi khăm dân Muggle",
+      "aliases_en": []
+    },
+    "potions books": {
+      "en": "Potions books",
+      "vi": "Sách Độc dược",
+      "aliases_en": [
+        "Potions book"
+      ]
+    },
+    "prewett family descendants": {
+      "en": "Prewett family descendants",
+      "vi": "Hậu duệ nhà Prewett",
+      "aliases_en": [
+        "Prewett family descendant"
+      ]
+    },
+    "restaurants": {
+      "en": "Restaurants",
+      "vi": "Nhà hàng",
+      "aliases_en": [
+        "Restaurant"
+      ]
+    },
+    "suits of armour": {
+      "en": "Suits of armour",
+      "vi": "Bộ giáp",
+      "aliases_en": []
+    },
+    "theatres": {
+      "en": "Theatres",
+      "vi": "Nhà hát",
+      "aliases_en": [
+        "Theatre"
+      ]
+    },
+    "water": {
+      "en": "Water",
+      "vi": "Nước",
+      "aliases_en": []
+    },
+    "widowed individuals": {
+      "en": "Widowed individuals",
+      "vi": "Người góa bụa",
+      "aliases_en": [
+        "Widowed individual"
+      ]
+    },
+    "ailments": {
+      "en": "Ailments",
+      "vi": "Bệnh tật",
+      "aliases_en": [
+        "Ailment"
+      ]
+    },
+    "bartemius crouch junior's possessions": {
+      "en": "Bartemius Crouch Junior's possessions",
+      "vi": "Đồ vật của Bartemius Crouch Con",
+      "aliases_en": [
+        "Bartemius Crouch Junior's possession"
+      ]
+    },
+    "battle of hogwarts": {
+      "en": "Battle of Hogwarts",
+      "vi": "Trận Hogwarts",
+      "aliases_en": []
+    },
+    "battle of the seven potters participants": {
+      "en": "Battle of the Seven Potters participants",
+      "vi": "Người tham gia Trận Bảy Potter",
+      "aliases_en": [
+        "Battle of the Seven Potters participant"
+      ]
+    },
+    "blood-related magic": {
+      "en": "Blood-related magic",
+      "vi": "Ma thuật liên quan tới máu",
+      "aliases_en": []
+    },
+    "bridges": {
+      "en": "Bridges",
+      "vi": "Cây cầu",
+      "aliases_en": [
+        "Bridge"
+      ]
+    },
+    "creatures found worldwide": {
+      "en": "Creatures found worldwide",
+      "vi": "Sinh vật có ở khắp thế giới",
+      "aliases_en": []
+    },
+    "dark arts books": {
+      "en": "Dark Arts books",
+      "vi": "Sách Nghệ thuật Hắc ám",
+      "aliases_en": [
+        "Dark Arts book"
+      ]
+    },
+    "goblin-made objects": {
+      "en": "Goblin-made objects",
+      "vi": "Đồ vật do yêu tinh chế tạo",
+      "aliases_en": [
+        "Goblin-made object"
+      ]
+    },
+    "gringotts employees": {
+      "en": "Gringotts employees",
+      "vi": "Nhân viên Ngân hàng Gringotts",
+      "aliases_en": [
+        "Gringotts employee"
+      ]
+    },
+    "hogwarts headmasters and headmistresses": {
+      "en": "Hogwarts Headmasters and Headmistresses",
+      "vi": "Hiệu trưởng Hogwarts",
+      "aliases_en": []
+    },
+    "individual plants": {
+      "en": "Individual plants",
+      "vi": "Cá thể thực vật",
+      "aliases_en": [
+        "Individual plant"
+      ]
+    },
+    "potter family": {
+      "en": "Potter family",
+      "vi": "Nhà Potter",
+      "aliases_en": []
+    },
+    "quills": {
+      "en": "Quills",
+      "vi": "Bút lông ngỗng",
+      "aliases_en": [
+        "Quill"
+      ]
+    },
+    "rivers": {
+      "en": "Rivers",
+      "vi": "Sông",
+      "aliases_en": [
+        "River"
+      ]
+    },
+    "wales": {
+      "en": "Wales",
+      "vi": "Xứ Wales",
+      "aliases_en": [
+        "Wale"
+      ]
+    },
+    "10-inch wands": {
+      "en": "10-inch wands",
+      "vi": "Đũa phép dài 10 inch",
+      "aliases_en": [
+        "10-inch wand"
+      ]
+    },
+    "alastor moody's possessions": {
+      "en": "Alastor Moody's possessions",
+      "vi": "Đồ vật của Alastor Moody",
+      "aliases_en": [
+        "Alastor Moody's possession"
+      ]
+    },
+    "apothecaries": {
+      "en": "Apothecaries",
+      "vi": "Tiệm dược thảo",
+      "aliases_en": [
+        "Apothecary"
+      ]
+    },
+    "award recipients": {
+      "en": "Award recipients",
+      "vi": "Người nhận giải thưởng",
+      "aliases_en": [
+        "Award recipient"
+      ]
+    },
+    "clothes shops": {
+      "en": "Clothes shops",
+      "vi": "Tiệm quần áo",
+      "aliases_en": [
+        "Clothes shop"
+      ]
+    },
+    "duels": {
+      "en": "Duels",
+      "vi": "Cuộc đấu tay đôi",
+      "aliases_en": [
+        "Duel"
+      ]
+    },
+    "emigrants": {
+      "en": "Emigrants",
+      "vi": "Người di cư",
+      "aliases_en": [
+        "Emigrant"
+      ]
+    },
+    "fungi": {
+      "en": "Fungi",
+      "vi": "Nấm",
+      "aliases_en": []
+    },
+    "garrick ollivander's possessions": {
+      "en": "Garrick Ollivander's possessions",
+      "vi": "Đồ vật của Garrick Ollivander",
+      "aliases_en": [
+        "Garrick Ollivander's possession"
+      ]
+    },
+    "gryffindor house": {
+      "en": "Gryffindor House",
+      "vi": "Nhà Gryffindor",
+      "aliases_en": []
+    },
+    "luna lovegood's possessions": {
+      "en": "Luna Lovegood's possessions",
+      "vi": "Đồ vật của Luna Lovegood",
+      "aliases_en": [
+        "Luna Lovegood's possession"
+      ]
+    },
+    "passwords": {
+      "en": "Passwords",
+      "vi": "Mật khẩu",
+      "aliases_en": [
+        "Password"
+      ]
+    },
+    "powders (substance)": {
+      "en": "Powders (substance)",
+      "vi": "Chất bột",
+      "aliases_en": []
+    },
+    "resting places": {
+      "en": "Resting places",
+      "vi": "Nơi an nghỉ",
+      "aliases_en": [
+        "Resting place"
+      ]
+    },
+    "rosier family descendants": {
+      "en": "Rosier family descendants",
+      "vi": "Hậu duệ nhà Rosier",
+      "aliases_en": [
+        "Rosier family descendant"
+      ]
+    },
+    "rubeus hagrid's pets": {
+      "en": "Rubeus Hagrid's pets",
+      "vi": "Thú cưng của Rubeus Hagrid",
+      "aliases_en": [
+        "Rubeus Hagrid's pet"
+      ]
+    },
+    "second order of the phoenix": {
+      "en": "Second Order of the Phoenix",
+      "vi": "Hội Phượng Hoàng thời kỳ thứ hai",
+      "aliases_en": []
+    },
+    "seekers": {
+      "en": "Seekers",
+      "vi": "Tầm thủ",
+      "aliases_en": [
+        "Seeker"
+      ]
+    },
+    "staircases in hogwarts castle": {
+      "en": "Staircases in Hogwarts Castle",
+      "vi": "Cầu thang trong Lâu đài Hogwarts",
+      "aliases_en": []
+    },
+    "the cave": {
+      "en": "The Cave",
+      "vi": "Hang Động",
+      "aliases_en": []
+    },
+    "12-inch wands": {
+      "en": "12-inch wands",
+      "vi": "Đũa phép dài 12 inch",
+      "aliases_en": [
+        "12-inch wand"
+      ]
+    },
+    "asia": {
+      "en": "Asia",
+      "vi": "Châu Á",
+      "aliases_en": []
+    },
+    "azkaban escapees": {
+      "en": "Azkaban escapees",
+      "vi": "Người vượt ngục Azkaban",
+      "aliases_en": [
+        "Azkaban escapee"
+      ]
+    },
+    "british ministry of magic locations": {
+      "en": "British Ministry of Magic locations",
+      "vi": "Địa điểm của Bộ Pháp Thuật Anh",
+      "aliases_en": [
+        "British Ministry of Magic location"
+      ]
+    },
+    "bulstrode family descendants": {
+      "en": "Bulstrode family descendants",
+      "vi": "Hậu duệ nhà Bulstrode",
+      "aliases_en": [
+        "Bulstrode family descendant"
+      ]
+    },
+    "castles": {
+      "en": "Castles",
+      "vi": "Lâu đài",
+      "aliases_en": [
+        "Castle"
+      ]
+    },
+    "china": {
+      "en": "China",
+      "vi": "Trung Quốc",
+      "aliases_en": []
+    },
+    "counter-charms": {
+      "en": "Counter-charms",
+      "vi": "Phản bùa",
+      "aliases_en": [
+        "Counter-charm"
+      ]
+    },
+    "dragons": {
+      "en": "Dragons",
+      "vi": "Rồng",
+      "aliases_en": [
+        "Dragon"
+      ]
+    },
+    "electronics": {
+      "en": "Electronics",
+      "vi": "Đồ điện tử",
+      "aliases_en": [
+        "Electronic"
+      ]
+    },
+    "essays": {
+      "en": "Essays",
+      "vi": "Bài luận",
+      "aliases_en": [
+        "Essay"
+      ]
+    },
+    "gilderoy lockhart's fans": {
+      "en": "Gilderoy Lockhart's fans",
+      "vi": "Người hâm mộ Gilderoy Lockhart",
+      "aliases_en": [
+        "Gilderoy Lockhart's fan"
+      ]
+    },
+    "great lake": {
+      "en": "Great Lake",
+      "vi": "Hồ Đen",
+      "aliases_en": []
+    },
+    "halls in hogwarts castle": {
+      "en": "Halls in Hogwarts Castle",
+      "vi": "Sảnh trong Lâu đài Hogwarts",
+      "aliases_en": []
+    },
+    "healing spells": {
+      "en": "Healing spells",
+      "vi": "Bùa chữa lành",
+      "aliases_en": [
+        "Healing spell"
+      ]
+    },
+    "humans": {
+      "en": "Humans",
+      "vi": "Con người",
+      "aliases_en": [
+        "Human"
+      ]
+    },
+    "individuals with shortened names": {
+      "en": "Individuals with shortened names",
+      "vi": "Người có tên viết tắt",
+      "aliases_en": [
+        "Individuals with shortened name"
+      ]
+    },
+    "mental potions": {
+      "en": "Mental potions",
+      "vi": "Độc dược tâm trí",
+      "aliases_en": [
+        "Mental potion"
+      ]
+    },
+    "mountains": {
+      "en": "Mountains",
+      "vi": "Núi",
+      "aliases_en": [
+        "Mountain"
+      ]
+    },
+    "neville longbottom's possessions": {
+      "en": "Neville Longbottom's possessions",
+      "vi": "Đồ vật của Neville Longbottom",
+      "aliases_en": [
+        "Neville Longbottom's possession"
+      ]
+    },
+    "red-eyed individuals": {
+      "en": "Red-eyed individuals",
+      "vi": "Người mắt đỏ",
+      "aliases_en": [
+        "Red-eyed individual"
+      ]
+    },
+    "sleep": {
+      "en": "Sleep",
+      "vi": "Giấc ngủ",
+      "aliases_en": []
+    },
+    "study of ancient runes": {
+      "en": "Study of Ancient Runes",
+      "vi": "Mông Nghiên cứu Cổ ngữ Rune",
+      "aliases_en": [
+        "Study of Ancient Rune"
+      ]
+    },
+    "transfiguration books": {
+      "en": "Transfiguration books",
+      "vi": "Sách Biến hình",
+      "aliases_en": [
+        "Transfiguration book"
+      ]
+    },
+    "trolls": {
+      "en": "Trolls",
+      "vi": "Quỷ khổng lồ",
+      "aliases_en": [
+        "Troll"
+      ]
+    },
+    "beaters": {
+      "en": "Beaters",
+      "vi": "Tấn thủ",
+      "aliases_en": [
+        "Beater"
+      ]
+    },
+    "beauxbatons": {
+      "en": "Beauxbatons",
+      "vi": "Trường Beauxbatons",
+      "aliases_en": [
+        "Beauxbaton"
+      ]
+    },
+    "brazil": {
+      "en": "Brazil",
+      "vi": "Brazil",
+      "aliases_en": []
+    },
+    "british ministry of magic employees": {
+      "en": "British Ministry of Magic employees",
+      "vi": "Nhân viên Bộ Pháp Thuật",
+      "aliases_en": [
+        "British Ministry of Magic employee"
+      ]
+    },
+    "broomsticks": {
+      "en": "Broomsticks",
+      "vi": "Chổi bay",
+      "aliases_en": [
+        "Broomstick"
+      ]
+    },
+    "cakes": {
+      "en": "Cakes",
+      "vi": "Bánh ngọt",
+      "aliases_en": [
+        "Cake"
+      ]
+    },
+    "death-related magic": {
+      "en": "Death-related magic",
+      "vi": "Ma thuật liên quan tới cái chết",
+      "aliases_en": []
+    },
+    "gardens": {
+      "en": "Gardens",
+      "vi": "Vườn",
+      "aliases_en": [
+        "Garden"
+      ]
+    },
+    "ghosts": {
+      "en": "Ghosts",
+      "vi": "Ma",
+      "aliases_en": [
+        "Ghost"
+      ]
+    },
+    "magically protected locations": {
+      "en": "Magically protected locations",
+      "vi": "Địa điểm được ma thuật bảo vệ",
+      "aliases_en": [
+        "Magically protected location"
+      ]
+    },
+    "meeting at malfoy manor participants": {
+      "en": "Meeting at Malfoy Manor participants",
+      "vi": "Người tham dự Cuộc họp tại Trang viên Malfoy",
+      "aliases_en": [
+        "Meeting at Malfoy Manor participant"
+      ]
+    },
+    "newton scamander's suitcase": {
+      "en": "Newton Scamander's suitcase",
+      "vi": "Va-li của Newton Scamander",
+      "aliases_en": []
+    },
+    "nuts and seeds": {
+      "en": "Nuts and seeds",
+      "vi": "Hạt và quả hạch",
+      "aliases_en": []
+    },
+    "opening spells": {
+      "en": "Opening spells",
+      "vi": "Bùa mở",
+      "aliases_en": [
+        "Opening spell"
+      ]
+    },
+    "parks": {
+      "en": "Parks",
+      "vi": "Công viên",
+      "aliases_en": [
+        "Park"
+      ]
+    },
+    "potion inventors": {
+      "en": "Potion inventors",
+      "vi": "Người phát minh độc dược",
+      "aliases_en": [
+        "Potion inventor"
+      ]
+    },
+    "quidditch stadiums": {
+      "en": "Quidditch stadiums",
+      "vi": "Sân vận động Quidditch",
+      "aliases_en": [
+        "Quidditch stadium"
+      ]
+    },
+    "slytherin house": {
+      "en": "Slytherin House",
+      "vi": "Nhà Slytherin",
+      "aliases_en": []
+    },
+    "spell inventors": {
+      "en": "Spell inventors",
+      "vi": "Người phát minh bùa chú",
+      "aliases_en": [
+        "Spell inventor"
+      ]
+    },
+    "transportation": {
+      "en": "Transportation",
+      "vi": "Phương tiện di chuyển",
+      "aliases_en": []
+    },
+    "vanishments": {
+      "en": "Vanishments",
+      "vi": "Ma thuật tiêu biến",
+      "aliases_en": [
+        "Vanishment"
+      ]
+    },
+    "weasley family possessions": {
+      "en": "Weasley family possessions",
+      "vi": "Đồ vật của nhà Weasley",
+      "aliases_en": [
+        "Weasley family possession"
+      ]
+    },
+    "wizard's chess players": {
+      "en": "Wizard's Chess players",
+      "vi": "Người chơi cờ phù thủy",
+      "aliases_en": [
+        "Wizard's Chess player"
+      ]
+    },
+    "1870s births": {
+      "en": "1870s births",
+      "vi": "Sinh vào thập niên 1870",
+      "aliases_en": [
+        "1870s birth"
+      ]
+    },
+    "1997 deaths": {
+      "en": "1997 deaths",
+      "vi": "Mất năm 1997",
+      "aliases_en": [
+        "1997 death"
+      ]
+    },
+    "apparition": {
+      "en": "Apparition",
+      "vi": "Độn thổ",
+      "aliases_en": []
+    },
+    "beast chocolate frog cards": {
+      "en": "Beast Chocolate Frog Cards",
+      "vi": "Thẻ Sôcôla Ếch nhái Sinh vật",
+      "aliases_en": [
+        "Beast Chocolate Frog Card"
+      ]
+    },
+    "beaufort family descendants": {
+      "en": "Beaufort family descendants",
+      "vi": "Hậu duệ nhà Beaufort",
+      "aliases_en": [
+        "Beaufort family descendant"
+      ]
+    },
+    "black-eyed individuals": {
+      "en": "Black-eyed individuals",
+      "vi": "Người mắt đen",
+      "aliases_en": [
+        "Black-eyed individual"
+      ]
+    },
+    "celebrations": {
+      "en": "Celebrations",
+      "vi": "Lễ hội",
+      "aliases_en": [
+        "Celebration"
+      ]
+    },
+    "creatures from europe": {
+      "en": "Creatures from Europe",
+      "vi": "Sinh vật từ châu Âu",
+      "aliases_en": []
+    },
+    "department of mysteries": {
+      "en": "Department of Mysteries",
+      "vi": "Sở Bảo Mật",
+      "aliases_en": [
+        "Department of Mystery"
+      ]
+    },
+    "discipline at hogwarts": {
+      "en": "Discipline at Hogwarts",
+      "vi": "Hình thức kỷ luật tại Hogwarts",
+      "aliases_en": []
+    },
+    "goblins": {
+      "en": "Goblins",
+      "vi": "Yêu tinh",
+      "aliases_en": [
+        "Goblin"
+      ]
+    },
+    "half-orphans": {
+      "en": "Half-orphans",
+      "vi": "Trẻ mồ côi cha hoặc mẹ",
+      "aliases_en": [
+        "Half-orphan"
+      ]
+    },
+    "heirlooms": {
+      "en": "Heirlooms",
+      "vi": "Vật gia truyền",
+      "aliases_en": [
+        "Heirloom"
+      ]
+    },
+    "hogwarts entrances": {
+      "en": "Hogwarts entrances",
+      "vi": "Lối vào Hogwarts",
+      "aliases_en": [
+        "Hogwarts entrance"
+      ]
+    },
+    "hogwarts storerooms": {
+      "en": "Hogwarts storerooms",
+      "vi": "Nhà kho Hogwarts",
+      "aliases_en": [
+        "Hogwarts storeroom"
+      ]
+    },
+    "hufflepuff house": {
+      "en": "Hufflepuff House",
+      "vi": "Nhà Hufflepuff",
+      "aliases_en": []
+    },
+    "ice": {
+      "en": "Ice",
+      "vi": "Băng",
+      "aliases_en": []
+    },
+    "international confederation of wizards": {
+      "en": "International Confederation of Wizards",
+      "vi": "Liên đoàn Phù thủy Quốc tế",
+      "aliases_en": [
+        "International Confederation of Wizard"
+      ]
+    },
+    "muggle government of the united kingdom": {
+      "en": "Muggle government of the United Kingdom",
+      "vi": "Chính phủ Muggle của Vương quốc Anh",
+      "aliases_en": []
+    },
+    "musical instruments": {
+      "en": "Musical instruments",
+      "vi": "Nhạc cụ",
+      "aliases_en": [
+        "Musical instrument"
+      ]
+    },
+    "pumpkins": {
+      "en": "Pumpkins",
+      "vi": "Bí ngô",
+      "aliases_en": [
+        "Pumpkin"
+      ]
+    },
+    "quidditch equipment": {
+      "en": "Quidditch equipment",
+      "vi": "Trang thiết bị Quidditch",
+      "aliases_en": []
+    },
+    "quidditch players": {
+      "en": "Quidditch players",
+      "vi": "Cầu thủ Quidditch",
+      "aliases_en": [
+        "Quidditch player"
+      ]
+    },
+    "return of lord voldemort": {
+      "en": "Return of Lord Voldemort",
+      "vi": "Sự trở lại của Chúa tể Voldemort",
+      "aliases_en": []
+    },
+    "skirmish at malfoy manor participants": {
+      "en": "Skirmish at Malfoy Manor participants",
+      "vi": "Người tham gia Giao tranh tại Trang viên Malfoy",
+      "aliases_en": [
+        "Skirmish at Malfoy Manor participant"
+      ]
+    },
+    "sparks": {
+      "en": "Sparks",
+      "vi": "Tia lửa",
+      "aliases_en": [
+        "Spark"
+      ]
+    },
+    "st mungo's patients": {
+      "en": "St Mungo's patients",
+      "vi": "Bệnh nhân bệnh viện Thánh Mungo",
+      "aliases_en": [
+        "St Mungo's patient"
+      ]
+    },
+    "tudor-era individuals": {
+      "en": "Tudor-era individuals",
+      "vi": "Người thời Tudor",
+      "aliases_en": [
+        "Tudor-era individual"
+      ]
+    },
+    "weapons": {
+      "en": "Weapons",
+      "vi": "Vũ khí",
+      "aliases_en": [
+        "Weapon"
+      ]
+    },
+    "1994 quidditch world cup": {
+      "en": "1994 Quidditch World Cup",
+      "vi": "Cúp Quidditch Thế giới 1994",
+      "aliases_en": []
+    },
+    "9-inch wands": {
+      "en": "9-inch wands",
+      "vi": "Đũa phép dài 9 inch",
+      "aliases_en": [
+        "9-inch wand"
+      ]
+    },
+    "argus filch's possessions": {
+      "en": "Argus Filch's possessions",
+      "vi": "Đồ vật của Argus Filch",
+      "aliases_en": [
+        "Argus Filch's possession"
+      ]
+    },
+    "arthur weasley's muggle artefacts": {
+      "en": "Arthur Weasley's Muggle artefacts",
+      "vi": "Đồ vật Muggle của Arthur Weasley",
+      "aliases_en": [
+        "Arthur Weasley's Muggle artefact"
+      ]
+    },
+    "badges": {
+      "en": "Badges",
+      "vi": "Huy hiệu",
+      "aliases_en": [
+        "Badge"
+      ]
+    },
+    "british and irish quidditch league quidditch teams": {
+      "en": "British and Irish Quidditch League Quidditch teams",
+      "vi": "Đội Quidditch của Liên đoàn Anh và Ireland",
+      "aliases_en": []
+    },
+    "busts": {
+      "en": "Busts",
+      "vi": "Tượng bán thân",
+      "aliases_en": [
+        "Bust"
+      ]
+    },
+    "creatures from the united states of america": {
+      "en": "Creatures from the United States of America",
+      "vi": "Sinh vật từ Hoa Kỳ",
+      "aliases_en": []
+    },
+    "european individuals": {
+      "en": "European individuals",
+      "vi": "Người châu Âu",
+      "aliases_en": [
+        "European individual"
+      ]
+    },
+    "furniture": {
+      "en": "Furniture",
+      "vi": "Nội thất",
+      "aliases_en": []
+    },
+    "germany": {
+      "en": "Germany",
+      "vi": "Nước Đức",
+      "aliases_en": []
+    },
+    "great hall": {
+      "en": "Great Hall",
+      "vi": "Đại Sảnh Đường",
+      "aliases_en": []
+    },
+    "hogwarts locations with a namesake": {
+      "en": "Hogwarts locations with a namesake",
+      "vi": "Địa điểm được đặt theo tên người tại Hogwarts",
+      "aliases_en": []
+    },
+    "hogwarts quidditch captains": {
+      "en": "Hogwarts Quidditch Captains",
+      "vi": "Đội trưởng Quidditch Hogwarts",
+      "aliases_en": [
+        "Hogwarts Quidditch Captain"
+      ]
+    },
+    "hogwarts students during the marauders' era": {
+      "en": "Hogwarts students during the Marauders' era",
+      "vi": "Học sinh Hogwarts thời Đạo Tặc",
+      "aliases_en": []
+    },
+    "italy": {
+      "en": "Italy",
+      "vi": "Nước Ý",
+      "aliases_en": []
+    },
+    "journalists": {
+      "en": "Journalists",
+      "vi": "Nhà báo",
+      "aliases_en": [
+        "Journalist"
+      ]
+    },
+    "locations used by the death eaters": {
+      "en": "Locations used by the Death Eaters",
+      "vi": "Địa điểm được Tử thần Thực tử sử dụng",
+      "aliases_en": [
+        "Locations used by the Death Eater"
+      ]
+    },
+    "magical self-help books": {
+      "en": "Magical self-help books",
+      "vi": "Sách tự học ma thuật",
+      "aliases_en": [
+        "Magical self-help book"
+      ]
+    },
+    "maps and charts": {
+      "en": "Maps and charts",
+      "vi": "Bản đồ và biểu đồ",
+      "aliases_en": []
+    },
+    "mirrors": {
+      "en": "Mirrors",
+      "vi": "Gương",
+      "aliases_en": [
+        "Mirror"
+      ]
+    },
+    "plot to open the chamber of secrets": {
+      "en": "Plot to open the Chamber of Secrets",
+      "vi": "Âm mưu mở cửa Phòng chứa Bí mật",
+      "aliases_en": [
+        "Plot to open the Chamber of Secret"
+      ]
+    },
+    "ravenclaw house": {
+      "en": "Ravenclaw House",
+      "vi": "Nhà Ravenclaw",
+      "aliases_en": []
+    },
+    "roads": {
+      "en": "Roads",
+      "vi": "Đường",
+      "aliases_en": [
+        "Road"
+      ]
+    },
+    "soups": {
+      "en": "Soups",
+      "vi": "Súp",
+      "aliases_en": [
+        "Soup"
+      ]
+    },
+    "spain": {
+      "en": "Spain",
+      "vi": "Tây Ban Nha",
+      "aliases_en": []
+    },
+    "the tale of the three brothers": {
+      "en": "The Tale of the Three Brothers",
+      "vi": "Truyện Ba Anh Em",
+      "aliases_en": [
+        "The Tale of the Three Brother"
+      ]
+    },
+    "toads": {
+      "en": "Toads",
+      "vi": "Cóc",
+      "aliases_en": [
+        "Toad"
+      ]
+    },
+    "transfiguration": {
+      "en": "Transfiguration",
+      "vi": "Biến hình",
+      "aliases_en": []
+    },
+    "unidentified individuals": {
+      "en": "Unidentified individuals",
+      "vi": "Người chưa xác định danh tính",
+      "aliases_en": [
+        "Unidentified individual"
+      ]
+    },
+    "yellow-eyed individuals": {
+      "en": "Yellow-eyed individuals",
+      "vi": "Người mắt vàng",
+      "aliases_en": [
+        "Yellow-eyed individual"
+      ]
+    },
+    "11-inch wands": {
+      "en": "11-inch wands",
+      "vi": "Đũa phép dài 11 inch",
+      "aliases_en": [
+        "11-inch wand"
+      ]
+    },
+    "accidental deaths": {
+      "en": "Accidental deaths",
+      "vi": "Cái chết do tai nạn",
+      "aliases_en": [
+        "Accidental death"
+      ]
+    },
+    "break-ins and infiltrations": {
+      "en": "Break-ins and infiltrations",
+      "vi": "Đột nhập và xâm nhập",
+      "aliases_en": []
+    },
+    "butterflies": {
+      "en": "Butterflies",
+      "vi": "Bướm",
+      "aliases_en": [
+        "Butterfly"
+      ]
+    },
+    "counter-curses": {
+      "en": "Counter-curses",
+      "vi": "Phản nguyền",
+      "aliases_en": [
+        "Counter-curse"
+      ]
+    },
+    "creatures affiliated with fire": {
+      "en": "Creatures affiliated with fire",
+      "vi": "Sinh vật liên quan tới lửa",
+      "aliases_en": []
+    },
+    "examinations and tests": {
+      "en": "Examinations and tests",
+      "vi": "Kỳ thi và bài kiểm tra",
+      "aliases_en": []
+    },
+    "exploding snap players": {
+      "en": "Exploding Snap players",
+      "vi": "Người chơi Bài Nổ",
+      "aliases_en": [
+        "Exploding Snap player"
+      ]
+    },
+    "explosive enterprises": {
+      "en": "Explosive Enterprises",
+      "vi": "Sản phẩm Pháo nổ của anh em Weasley",
+      "aliases_en": [
+        "Explosive Enterprise"
+      ]
+    },
+    "gellert grindelwald's possessions": {
+      "en": "Gellert Grindelwald's possessions",
+      "vi": "Đồ vật của Gellert Grindelwald",
+      "aliases_en": [
+        "Gellert Grindelwald's possession"
+      ]
+    },
+    "gloves": {
+      "en": "Gloves",
+      "vi": "Găng tay",
+      "aliases_en": [
+        "Glove"
+      ]
+    },
+    "heads of house": {
+      "en": "Heads of House",
+      "vi": "Chủ nhiệm Nhà",
+      "aliases_en": []
+    },
+    "house of black descendants": {
+      "en": "House of Black descendants",
+      "vi": "Hậu duệ Nhà Black",
+      "aliases_en": [
+        "House of Black descendant"
+      ]
+    },
+    "inventors": {
+      "en": "Inventors",
+      "vi": "Nhà phát minh",
+      "aliases_en": [
+        "Inventor"
+      ]
+    },
+    "japan": {
+      "en": "Japan",
+      "vi": "Nhật Bản",
+      "aliases_en": []
+    },
+    "letters": {
+      "en": "Letters",
+      "vi": "Thư",
+      "aliases_en": [
+        "Letter"
+      ]
+    },
+    "plot to murder peter pettigrew": {
+      "en": "Plot to murder Peter Pettigrew",
+      "vi": "Âm mưu giết Peter Pettigrew",
+      "aliases_en": []
+    },
+    "rosaceae": {
+      "en": "Rosaceae",
+      "vi": "Họ Hoa hồng",
+      "aliases_en": []
+    },
+    "tom riddle's possessions": {
+      "en": "Tom Riddle's possessions",
+      "vi": "Đồ vật của Tom Riddle",
+      "aliases_en": [
+        "Tom Riddle's possession"
+      ]
+    },
+    "twins": {
+      "en": "Twins",
+      "vi": "Cặp song sinh",
+      "aliases_en": [
+        "Twin"
+      ]
+    },
+    "unidentified slytherins": {
+      "en": "Unidentified Slytherins",
+      "vi": "Học sinh Slytherin chưa xác định",
+      "aliases_en": [
+        "Unidentified Slytherin"
+      ]
+    },
+    "valentine's day": {
+      "en": "Valentine's Day",
+      "vi": "Ngày Valentine",
+      "aliases_en": []
+    },
+    "19th century births": {
+      "en": "19th century births",
+      "vi": "Sinh vào thế kỷ 19",
+      "aliases_en": [
+        "19th century birth"
+      ]
+    },
+    "artists": {
+      "en": "Artists",
+      "vi": "Nghệ sĩ",
+      "aliases_en": [
+        "Artist"
+      ]
+    },
+    "azkaban": {
+      "en": "Azkaban",
+      "vi": "Nhà tù Azkaban",
+      "aliases_en": []
+    },
+    "battle of hogwarts fatalities": {
+      "en": "Battle of Hogwarts fatalities",
+      "vi": "Người tử trận trong Trận Hogwarts",
+      "aliases_en": [
+        "Battle of Hogwarts fatality"
+      ]
+    },
+    "bookshops": {
+      "en": "Bookshops",
+      "vi": "Tiệm sách",
+      "aliases_en": [
+        "Bookshop"
+      ]
+    },
+    "cafés": {
+      "en": "Cafés",
+      "vi": "Quán cà phê",
+      "aliases_en": []
+    },
+    "crabbe family descendants": {
+      "en": "Crabbe family descendants",
+      "vi": "Hậu duệ nhà Crabbe",
+      "aliases_en": [
+        "Crabbe family descendant"
+      ]
+    },
+    "creatures from great britain": {
+      "en": "Creatures from Great Britain",
+      "vi": "Sinh vật từ Vương quốc Anh",
+      "aliases_en": []
+    },
+    "creatures from ireland": {
+      "en": "Creatures from Ireland",
+      "vi": "Sinh vật từ Ireland",
+      "aliases_en": []
+    },
+    "cuisine": {
+      "en": "Cuisine",
+      "vi": "Ẩm thực",
+      "aliases_en": []
+    },
+    "daily prophet": {
+      "en": "Daily Prophet",
+      "vi": "Nhật Báo Tiên Tri",
+      "aliases_en": []
+    },
+    "daily prophet staff": {
+      "en": "Daily Prophet staff",
+      "vi": "Nhân viên Nhật Báo Tiên Tri",
+      "aliases_en": []
+    },
+    "frogs": {
+      "en": "Frogs",
+      "vi": "Ếch",
+      "aliases_en": [
+        "Frog"
+      ]
+    },
+    "gold chocolate frog cards": {
+      "en": "Gold Chocolate Frog Cards",
+      "vi": "Thẻ Sôcôla Ếch nhái vàng",
+      "aliases_en": [
+        "Gold Chocolate Frog Card"
+      ]
+    },
+    "head boys and girls": {
+      "en": "Head Boys and Girls",
+      "vi": "Thủ lĩnh Nam sinh và Nữ sinh",
+      "aliases_en": []
+    },
+    "herbology books": {
+      "en": "Herbology books",
+      "vi": "Sách Thảo dược học",
+      "aliases_en": [
+        "Herbology book"
+      ]
+    },
+    "hogwarts castle namesakes": {
+      "en": "Hogwarts Castle namesakes",
+      "vi": "Được đặt tên cho địa điểm trong lâu đài Hogwarts",
+      "aliases_en": [
+        "Hogwarts Castle namesake"
+      ]
+    },
+    "hogwarts clubs": {
+      "en": "Hogwarts clubs",
+      "vi": "Câu lạc bộ tại Hogwarts",
+      "aliases_en": [
+        "Hogwarts club"
+      ]
+    },
+    "hogwarts express": {
+      "en": "Hogwarts Express",
+      "vi": "Tàu tốc hành Hogwarts",
+      "aliases_en": []
+    },
+    "hogwarts towers": {
+      "en": "Hogwarts towers",
+      "vi": "Tháp tại Hogwarts",
+      "aliases_en": [
+        "Hogwarts tower"
+      ]
+    },
+    "horcrux possessors": {
+      "en": "Horcrux possessors",
+      "vi": "Người sở hữu Trường Sinh Linh Giá",
+      "aliases_en": [
+        "Horcrux possessor"
+      ]
+    },
+    "jobs": {
+      "en": "Jobs",
+      "vi": "Nghề nghiệp",
+      "aliases_en": [
+        "Job"
+      ]
+    },
+    "keys": {
+      "en": "Keys",
+      "vi": "Chìa khóa",
+      "aliases_en": [
+        "Key"
+      ]
+    },
+    "lakes": {
+      "en": "Lakes",
+      "vi": "Hồ",
+      "aliases_en": [
+        "Lake"
+      ]
+    },
+    "languages": {
+      "en": "Languages",
+      "vi": "Ngôn ngữ",
+      "aliases_en": [
+        "Language"
+      ]
+    },
+    "mascots": {
+      "en": "Mascots",
+      "vi": "Linh vật",
+      "aliases_en": [
+        "Mascot"
+      ]
+    },
+    "objects stored in gringotts wizarding bank": {
+      "en": "Objects stored in Gringotts Wizarding Bank",
+      "vi": "Vật gửi tại Ngân hàng Phù thủy Gringotts",
+      "aliases_en": []
+    },
+    "order of merlin recipients": {
+      "en": "Order of Merlin recipients",
+      "vi": "Người nhận Huân chương Merlin",
+      "aliases_en": [
+        "Order of Merlin recipient"
+      ]
+    },
+    "phoenix feather wands": {
+      "en": "Phoenix feather wands",
+      "vi": "Đũa phép lõi lông phượng hoàng",
+      "aliases_en": []
+    },
+    "prisons": {
+      "en": "Prisons",
+      "vi": "Nhà tù",
+      "aliases_en": []
+    },
+    "quidditch in england": {
+      "en": "Quidditch in England",
+      "vi": "Quidditch ở Anh",
+      "aliases_en": []
+    },
+    "surrey": {
+      "en": "Surrey",
+      "vi": "Surrey",
+      "aliases_en": []
+    },
+    "sybill trelawney's possessions": {
+      "en": "Sybill Trelawney's possessions",
+      "vi": "Đồ vật của Sybill Trelawney",
+      "aliases_en": []
+    },
+    "symbols": {
+      "en": "Symbols",
+      "vi": "Biểu tượng",
+      "aliases_en": []
+    },
+    "the burrow": {
+      "en": "The Burrow",
+      "vi": "Hang Sóc",
+      "aliases_en": []
+    },
+    "three broomsticks inn": {
+      "en": "Three Broomsticks Inn",
+      "vi": "Quán trọ Ba Cây Chổi",
+      "aliases_en": []
+    },
+    "train stations": {
+      "en": "Train stations",
+      "vi": "Nhà ga",
+      "aliases_en": []
+    },
+    "underground chambers": {
+      "en": "Underground Chambers",
+      "vi": "Phòng dưới lòng đất",
+      "aliases_en": [
+        "Underground Chamber"
+      ]
+    },
+    "unforgivable curses": {
+      "en": "Unforgivable Curses",
+      "vi": "Lời nguyền Không thể Tha thứ",
+      "aliases_en": [
+        "Unforgivable Curse"
+      ]
+    },
+    "unidentified 19th-century hogwarts student's documents": {
+      "en": "Unidentified 19th-century Hogwarts student's documents",
+      "vi": "Tài liệu của học sinh Hogwarts thế kỷ 19 không rõ tên",
+      "aliases_en": [
+        "Unidentified 19th-century Hogwarts student's document"
+      ]
+    },
+    "1981 deaths": {
+      "en": "1981 deaths",
+      "vi": "Mất năm 1981",
+      "aliases_en": [
+        "1981 death"
+      ]
+    },
+    "1998 deaths": {
+      "en": "1998 deaths",
+      "vi": "Mất năm 1998",
+      "aliases_en": [
+        "1998 death"
+      ]
+    },
+    "africa": {
+      "en": "Africa",
+      "vi": "Châu Phi",
+      "aliases_en": []
+    },
+    "animagi": {
+      "en": "Animagi",
+      "vi": "Người Hóa Thú",
+      "aliases_en": [
+        "Animagus"
+      ]
+    },
+    "australia": {
+      "en": "Australia",
+      "vi": "Úc",
+      "aliases_en": []
+    },
+    "books by gilderoy lockhart": {
+      "en": "Books by Gilderoy Lockhart",
+      "vi": "Sách của Gilderoy Lockhart",
+      "aliases_en": []
+    },
+    "british ministers for magic": {
+      "en": "British Ministers for Magic",
+      "vi": "Bộ trưởng Bộ Pháp Thuật Anh",
+      "aliases_en": [
+        "British Minister for Magic"
+      ]
+    },
+    "condiments and seasonings": {
+      "en": "Condiments and seasonings",
+      "vi": "Gia vị",
+      "aliases_en": []
+    },
+    "conferences": {
+      "en": "Conferences",
+      "vi": "Hội nghị",
+      "aliases_en": [
+        "Conference"
+      ]
+    },
+    "dolores umbridge's possessions": {
+      "en": "Dolores Umbridge's possessions",
+      "vi": "Đồ vật của Dolores Umbridge",
+      "aliases_en": [
+        "Dolores Umbridge's possession"
+      ]
+    },
+    "forests": {
+      "en": "Forests",
+      "vi": "Rừng",
+      "aliases_en": [
+        "Forest"
+      ]
+    },
+    "lgbt individuals": {
+      "en": "LGBT individuals",
+      "vi": "Người LGBT",
+      "aliases_en": [
+        "LGBT individual"
+      ]
+    },
+    "murder": {
+      "en": "Murder",
+      "vi": "Án mạng",
+      "aliases_en": []
+    },
+    "room of requirement": {
+      "en": "Room of Requirement",
+      "vi": "Phòng Cần Thiết",
+      "aliases_en": []
+    },
+    "second wizarding war": {
+      "en": "Second Wizarding War",
+      "vi": "Cuộc chiến Phù thủy lần thứ hai",
+      "aliases_en": []
+    },
+    "sirius black's possessions": {
+      "en": "Sirius Black's possessions",
+      "vi": "Đồ vật của Sirius Black",
+      "aliases_en": [
+        "Sirius Black's possession"
+      ]
+    },
+    "sorted in the 2000s": {
+      "en": "Sorted in the 2000s",
+      "vi": "Được phân loại vào thập niên 2000",
+      "aliases_en": []
+    },
+    "stones": {
+      "en": "Stones",
+      "vi": "Đá",
+      "aliases_en": [
+        "Stone"
+      ]
+    },
+    "transformation victims": {
+      "en": "Transformation victims",
+      "vi": "Nạn nhân của thuật Biến hình",
+      "aliases_en": [
+        "Transformation victim"
+      ]
+    },
+    "wedding of william weasley and fleur delacour": {
+      "en": "Wedding of William Weasley and Fleur Delacour",
+      "vi": "Đám cưới của Bill Weasley và Fleur Delacour",
+      "aliases_en": []
+    },
+    "wizengamot": {
+      "en": "Wizengamot",
+      "vi": "Tòa án Pháp sư Tối cao",
+      "aliases_en": []
+    },
+    "wonderwitch": {
+      "en": "WonderWitch",
+      "vi": "Phù Thủy Tuyệt Vời",
+      "aliases_en": []
+    },
+    "2000s births": {
+      "en": "2000s births",
+      "vi": "Sinh vào thập niên 2000",
+      "aliases_en": [
+        "2000s birth"
+      ]
+    }
+  },
+  "aliases": {
+    "wizard": "wizards",
+    "male": "males",
+    "potion ingredient": "potion ingredients",
+    "female": "females",
+    "magical object": "magical objects",
+    "charm": "charms",
+    "parent": "parents",
+    "unidentified spell": "unidentified spells",
+    "british individual": "british individuals",
+    "married individual": "married individuals",
+    "shop": "shops",
+    "20th century birth": "20th century births",
+    "pure-blood": "pure-bloods",
+    "plant": "plants",
+    "harry potter's possession": "harry potter's possessions",
+    "transforming spell": "transforming spells",
+    "patronus form": "patronus forms",
+    "brown-eyed individual": "brown-eyed individuals",
+    "potion": "potions",
+    "defence against the dark art": "defence against the dark arts",
+    "hogwarts location": "hogwarts locations",
+    "poison": "poisons",
+    "unnamed family member": "unnamed family members",
+    "english individual": "english individuals",
+    "wizarding location": "wizarding locations",
+    "muggle-familiar creature": "muggle-familiar creatures",
+    "portrait": "portraits",
+    "slytherin": "slytherins",
+    "battle of hogwarts participant": "battle of hogwarts participants",
+    "blue-eyed individual": "blue-eyed individuals",
+    "house": "houses",
+    "transfiguration spell": "transfiguration spells",
+    "murder victim": "murder victims",
+    "room": "rooms",
+    "gryffindor": "gryffindors",
+    "wand": "wands",
+    "conjuration": "conjurations",
+    "building": "buildings",
+    "creature product": "creature products",
+    "medication": "medications",
+    "green-eyed individual": "green-eyed individuals",
+    "hermione granger's possession": "hermione granger's possessions",
+    "street": "streets",
+    "protective spell": "protective spells",
+    "deceased individual": "deceased individuals",
+    "document": "documents",
+    "gold object": "gold objects",
+    "ronald weasley's possession": "ronald weasley's possessions",
+    "flint family descendant": "flint family descendants",
+    "french individual": "french individuals",
+    "jinx": "jinxes",
+    "ravenclaw": "ravenclaws",
+    "business": "businesses",
+    "sweet": "sweets",
+    "bird": "birds",
+    "curse": "curses",
+    "spellbook": "spellbooks",
+    "weasleys' wizard wheeze": "weasleys' wizard wheezes",
+    "protective object": "protective objects",
+    "pure-blood supremacist": "pure-blood supremacists",
+    "bertie bott's every flavour beans flavour": "bertie bott's every flavour beans flavours",
+    "hufflepuff": "hufflepuffs",
+    "spells with modifier": "spells with modifiers",
+    "1970s birth": "1970s births",
+    "blood traitor": "blood traitors",
+    "magizoology book": "magizoology books",
+    "christmas present": "christmas presents",
+    "cup": "cups",
+    "1994 quidditch world cup attendee": "1994 quidditch world cup attendees",
+    "care of magical creature": "care of magical creatures",
+    "cursed object": "cursed objects",
+    "office": "offices",
+    "hogwarts award": "hogwarts awards",
+    "dark art": "dark arts",
+    "grey-eyed individual": "grey-eyed individuals",
+    "national quidditch team": "national quidditch teams",
+    "albus dumbledore's possession": "albus dumbledore's possessions",
+    "author": "authors",
+    "hogwarts dungeon": "hogwarts dungeons",
+    "hogwarts ground": "hogwarts grounds",
+    "hogwarts secret": "hogwarts secrets",
+    "hogwarts prefect": "hogwarts prefects",
+    "muggle study": "muggle studies",
+    "sentient object": "sentient objects",
+    "boggart form": "boggart forms",
+    "chaser": "chasers",
+    "half-blood": "half-bloods",
+    "hogwarts textbook": "hogwarts textbooks",
+    "mammal": "mammals",
+    "cosmetic": "cosmetics",
+    "dog": "dogs",
+    "human transfiguration": "human transfigurations",
+    "silver object": "silver objects",
+    "beast": "beasts",
+    "book": "books",
+    "unmarried individual": "unmarried individuals",
+    "wildlife reserve": "wildlife reserves",
+    "bronze chocolate frog card": "bronze chocolate frog cards",
+    "cat": "cats",
+    "unforgivable curse user": "unforgivable curse users",
+    "charms book": "charms books",
+    "pet": "pets",
+    "second wizarding war casualty": "second wizarding war casualties",
+    "event": "events",
+    "hogwarts classroom": "hogwarts classrooms",
+    "organisation": "organisations",
+    "prank device": "prank devices",
+    "antidote": "antidotes",
+    "shop owner": "shop owners",
+    "siege of hogwarts participant": "siege of hogwarts participants",
+    "newton scamander's possession": "newton scamander's possessions",
+    "statue": "statues",
+    "toy": "toys",
+    "trans-species transformation": "trans-species transformations",
+    "auror": "aurors",
+    "dark magic artefact": "dark magic artefacts",
+    "insect": "insects",
+    "portkey": "portkeys",
+    "unicorn hair wand": "unicorn hair wands",
+    "capital": "capitals",
+    "dark charm": "dark charms",
+    "death eater ally": "death eater allies",
+    "history book": "history books",
+    "mental spell": "mental spells",
+    "namesake": "namesakes",
+    "snake": "snakes",
+    "wizarding town": "wizarding towns",
+    "country": "countries",
+    "course": "courses",
+    "order of the phoenix ally": "order of the phoenix allies",
+    "quidditch team": "quidditch teams",
+    "bedroom": "bedrooms",
+    "centenarian": "centenarians",
+    "chocolate frog card": "chocolate frog cards",
+    "dragon heartstring wand": "dragon heartstring wands",
+    "george weasley's possession": "george weasley's possessions",
+    "unidentified potion": "unidentified potions",
+    "wand wood": "wand woods",
+    "yaxley family descendant": "yaxley family descendants",
+    "2014 quidditch world cup attendee": "2014 quidditch world cup attendees",
+    "animagus form": "animagus forms",
+    "british isle": "british isles",
+    "competition": "competitions",
+    "fred weasley's possession": "fred weasley's possessions",
+    "hogsmeade resident": "hogsmeade residents",
+    "silver chocolate frog card": "silver chocolate frog cards",
+    "american individual": "american individuals",
+    "spider": "spiders",
+    "battle of the department of mysteries participant": "battle of the department of mysteries participants",
+    "county": "counties",
+    "defence against the dark arts book": "defence against the dark arts books",
+    "imperius curse victim": "imperius curse victims",
+    "impersonated individual": "impersonated individuals",
+    "murderer": "murderers",
+    "neighbourhood": "neighbourhoods",
+    "rubeus hagrid's possession": "rubeus hagrid's possessions",
+    "scottish individual": "scottish individuals",
+    "secrecy breach": "secrecy breaches",
+    "british ministry of magic position": "british ministry of magic positions",
+    "explosive": "explosives",
+    "magical game": "magical games",
+    "minerva mcgonagall's possession": "minerva mcgonagall's possessions",
+    "muggle-born": "muggle-borns",
+    "rat": "rats",
+    "unidentified 19th-century hogwarts student's possession": "unidentified 19th-century hogwarts student's possessions",
+    "azkaban convict": "azkaban convicts",
+    "battle of the department of mystery": "battle of the department of mysteries",
+    "cauldron": "cauldrons",
+    "dark wizard": "dark wizards",
+    "duelling club member": "duelling club members",
+    "first wizarding war casualty": "first wizarding war casualties",
+    "hex": "hexes",
+    "living book": "living books",
+    "newspaper segment": "newspaper segments",
+    "object": "objects",
+    "pub": "pubs",
+    "award": "awards",
+    "disowned house of black descendant": "disowned house of black descendants",
+    "draco malfoy's possession": "draco malfoy's possessions",
+    "ginevra weasley's possession": "ginevra weasley's possessions",
+    "hat": "hats",
+    "island": "islands",
+    "personal possession": "personal possessions",
+    "potioneer": "potioneers",
+    "speaking object": "speaking objects",
+    "battle of the astronomy tower participant": "battle of the astronomy tower participants",
+    "death eater": "death eaters",
+    "dragon part": "dragon parts",
+    "severus snape's possession": "severus snape's possessions",
+    "wand core": "wand cores",
+    "1990s birth": "1990s births",
+    "20th century death": "20th century deaths",
+    "cave": "caves",
+    "cruciatus curse victim": "cruciatus curse victims",
+    "destroyed wand": "destroyed wands",
+    "egg": "eggs",
+    "gobstones player": "gobstones players",
+    "healer": "healers",
+    "magical power": "magical powers",
+    "potions book": "potions books",
+    "prewett family descendant": "prewett family descendants",
+    "restaurant": "restaurants",
+    "theatre": "theatres",
+    "widowed individual": "widowed individuals",
+    "ailment": "ailments",
+    "bartemius crouch junior's possession": "bartemius crouch junior's possessions",
+    "battle of the seven potters participant": "battle of the seven potters participants",
+    "bridge": "bridges",
+    "dark arts book": "dark arts books",
+    "goblin-made object": "goblin-made objects",
+    "gringotts employee": "gringotts employees",
+    "individual plant": "individual plants",
+    "quill": "quills",
+    "river": "rivers",
+    "wale": "wales",
+    "10-inch wand": "10-inch wands",
+    "alastor moody's possession": "alastor moody's possessions",
+    "apothecary": "apothecaries",
+    "award recipient": "award recipients",
+    "clothes shop": "clothes shops",
+    "duel": "duels",
+    "emigrant": "emigrants",
+    "garrick ollivander's possession": "garrick ollivander's possessions",
+    "luna lovegood's possession": "luna lovegood's possessions",
+    "password": "passwords",
+    "resting place": "resting places",
+    "rosier family descendant": "rosier family descendants",
+    "rubeus hagrid's pet": "rubeus hagrid's pets",
+    "seeker": "seekers",
+    "12-inch wand": "12-inch wands",
+    "azkaban escapee": "azkaban escapees",
+    "british ministry of magic location": "british ministry of magic locations",
+    "bulstrode family descendant": "bulstrode family descendants",
+    "castle": "castles",
+    "counter-charm": "counter-charms",
+    "dragon": "dragons",
+    "electronic": "electronics",
+    "essay": "essays",
+    "gilderoy lockhart's fan": "gilderoy lockhart's fans",
+    "healing spell": "healing spells",
+    "human": "humans",
+    "individuals with shortened name": "individuals with shortened names",
+    "mental potion": "mental potions",
+    "mountain": "mountains",
+    "neville longbottom's possession": "neville longbottom's possessions",
+    "red-eyed individual": "red-eyed individuals",
+    "study of ancient rune": "study of ancient runes",
+    "transfiguration book": "transfiguration books",
+    "troll": "trolls",
+    "beater": "beaters",
+    "beauxbaton": "beauxbatons",
+    "british ministry of magic employee": "british ministry of magic employees",
+    "broomstick": "broomsticks",
+    "cake": "cakes",
+    "garden": "gardens",
+    "ghost": "ghosts",
+    "magically protected location": "magically protected locations",
+    "meeting at malfoy manor participant": "meeting at malfoy manor participants",
+    "opening spell": "opening spells",
+    "park": "parks",
+    "potion inventor": "potion inventors",
+    "quidditch stadium": "quidditch stadiums",
+    "spell inventor": "spell inventors",
+    "vanishment": "vanishments",
+    "weasley family possession": "weasley family possessions",
+    "wizard's chess player": "wizard's chess players",
+    "1870s birth": "1870s births",
+    "1997 death": "1997 deaths",
+    "beast chocolate frog card": "beast chocolate frog cards",
+    "beaufort family descendant": "beaufort family descendants",
+    "black-eyed individual": "black-eyed individuals",
+    "celebration": "celebrations",
+    "department of mystery": "department of mysteries",
+    "goblin": "goblins",
+    "half-orphan": "half-orphans",
+    "heirloom": "heirlooms",
+    "hogwarts entrance": "hogwarts entrances",
+    "hogwarts storeroom": "hogwarts storerooms",
+    "international confederation of wizard": "international confederation of wizards",
+    "musical instrument": "musical instruments",
+    "pumpkin": "pumpkins",
+    "quidditch player": "quidditch players",
+    "skirmish at malfoy manor participant": "skirmish at malfoy manor participants",
+    "spark": "sparks",
+    "st mungo's patient": "st mungo's patients",
+    "tudor-era individual": "tudor-era individuals",
+    "weapon": "weapons",
+    "9-inch wand": "9-inch wands",
+    "argus filch's possession": "argus filch's possessions",
+    "arthur weasley's muggle artefact": "arthur weasley's muggle artefacts",
+    "badge": "badges",
+    "bust": "busts",
+    "european individual": "european individuals",
+    "hogwarts quidditch captain": "hogwarts quidditch captains",
+    "journalist": "journalists",
+    "locations used by the death eater": "locations used by the death eaters",
+    "magical self-help book": "magical self-help books",
+    "mirror": "mirrors",
+    "plot to open the chamber of secret": "plot to open the chamber of secrets",
+    "road": "roads",
+    "soup": "soups",
+    "the tale of the three brother": "the tale of the three brothers",
+    "toad": "toads",
+    "unidentified individual": "unidentified individuals",
+    "yellow-eyed individual": "yellow-eyed individuals",
+    "11-inch wand": "11-inch wands",
+    "accidental death": "accidental deaths",
+    "butterfly": "butterflies",
+    "counter-curse": "counter-curses",
+    "exploding snap player": "exploding snap players",
+    "explosive enterprise": "explosive enterprises",
+    "gellert grindelwald's possession": "gellert grindelwald's possessions",
+    "glove": "gloves",
+    "house of black descendant": "house of black descendants",
+    "inventor": "inventors",
+    "letter": "letters",
+    "tom riddle's possession": "tom riddle's possessions",
+    "twin": "twins",
+    "unidentified slytherin": "unidentified slytherins",
+    "19th century birth": "19th century births",
+    "artist": "artists",
+    "battle of hogwarts fatality": "battle of hogwarts fatalities",
+    "bookshop": "bookshops",
+    "crabbe family descendant": "crabbe family descendants",
+    "frog": "frogs",
+    "gold chocolate frog card": "gold chocolate frog cards",
+    "herbology book": "herbology books",
+    "hogwarts castle namesake": "hogwarts castle namesakes",
+    "hogwarts club": "hogwarts clubs",
+    "hogwarts tower": "hogwarts towers",
+    "horcrux possessor": "horcrux possessors",
+    "job": "jobs",
+    "key": "keys",
+    "lake": "lakes",
+    "language": "languages",
+    "mascot": "mascots",
+    "order of merlin recipient": "order of merlin recipients",
+    "underground chamber": "underground chambers",
+    "unforgivable curse": "unforgivable curses",
+    "unidentified 19th-century hogwarts student's document": "unidentified 19th-century hogwarts student's documents",
+    "1981 death": "1981 deaths",
+    "1998 death": "1998 deaths",
+    "animagus": "animagi",
+    "british minister for magic": "british ministers for magic",
+    "conference": "conferences",
+    "dolores umbridge's possession": "dolores umbridge's possessions",
+    "forest": "forests",
+    "lgbt individual": "lgbt individuals",
+    "sirius black's possession": "sirius black's possessions",
+    "stone": "stones",
+    "transformation victim": "transformation victims",
+    "2000s birth": "2000s births"
+  }
+}

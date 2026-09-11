@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "generated_by": "scripts/build-dicts.mjs",
+    "source": "data/csv/dict_templates.csv",
+    "template_count": 8
+  },
+  "templates": [
+    {
+      "pattern_en": "{X} members",
+      "pattern_vi": "Thành viên của {X}"
+    },
+    {
+      "pattern_en": "{X} participants",
+      "pattern_vi": "Người tham gia {X}"
+    },
+    {
+      "pattern_en": "{X} residents",
+      "pattern_vi": "Người sống ở {X}"
+    },
+    {
+      "pattern_en": "Individuals with {X}",
+      "pattern_vi": "Người có {X}"
+    },
+    {
+      "pattern_en": "{X} staff",
+      "pattern_vi": "Nhân viên {X}"
+    },
+    {
+      "pattern_en": "{X} students",
+      "pattern_vi": "Học sinh {X}"
+    },
+    {
+      "pattern_en": "Members of {X}",
+      "pattern_vi": "Thành viên của {X}"
+    },
+    {
+      "pattern_en": "Individuals who {X}",
+      "pattern_vi": "Người từng {X}"
+    }
+  ]
+}
