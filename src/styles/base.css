@@ -1471,6 +1471,21 @@ input, textarea, select { font: inherit; color: inherit; }
 
 .cf-field { margin: 14px 0; }
 
+/* Section header with an inline action (Randomize set). */
+.cf-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cf-randomize-hint { font-style: italic; }
+
+/* Entity picker + per-question Randomize button share a row. */
+.cf-entity-row { display: flex; gap: 8px; align-items: flex-start; }
+.cf-entity-row .cf-entity-picker { flex: 1; }
+.cf-entity-row .cf-randomize-q { flex: none; white-space: nowrap; }
+
 /* Entity picker autocomplete */
 .cf-entity-picker { position: relative; }
 .cf-entity-results {

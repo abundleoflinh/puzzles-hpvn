@@ -73,6 +73,48 @@ function searchEntities(query) {
   return out;
 }
 
+// Difficulty → entity bucket, built once from the search index. Each entity's
+// difficulty is its scrape-time suggested_difficulty (Build Plan §7.1), so the
+// buckets line up with the internal per-question tags.
+let buckets = null;
+function getBuckets() {
+  if (buckets) return buckets;
+  buckets = { easy: [], medium: [], hard: [] };
+  for (const item of getSearchIndex()) (buckets[item.difficulty] || buckets.medium).push(item);
+  return buckets;
+}
+
+// Prominence-weighted random pick from a candidate list (Build Plan: more
+// recognisable entities surface more often, but obscure ones can still appear).
+// A small floor keeps zero-prominence entities from being unpickable.
+function weightedPick(candidates) {
+  if (!candidates.length) return null;
+  let total = 0;
+  for (const c of candidates) total += Math.max(c.prominence, 0.001);
+  let r = Math.random() * total;
+  for (const c of candidates) {
+    r -= Math.max(c.prominence, 0.001);
+    if (r <= 0) return c;
+  }
+  return candidates[candidates.length - 1]; // float-rounding safety net
+}
+
+// Pick one entity of the given difficulty, excluding keys already used in the
+// set. Returns null when the bucket is exhausted.
+function pickEntity(difficulty, excludeKeys) {
+  const pool = (getBuckets()[difficulty] || []).filter((e) => !excludeKeys.has(e.key));
+  return weightedPick(pool);
+}
+
+// Entity keys already claimed by other questions (so a randomize never repeats
+// an entity within one set). `exceptIndex` excludes a question from the tally —
+// used when rerolling that question so its own current entity isn't counted.
+function usedEntityKeys(exceptIndex = -1) {
+  const s = new Set();
+  state.questions.forEach((q, i) => { if (i !== exceptIndex && q.entityKey) s.add(q.entityKey); });
+  return s;
+}
+
 // ============== STATE ==============
 
 function blankQuestion(difficulty) {
@@ -138,8 +180,13 @@ export async function mountCatfishingEditor(onSwitch) {
       </div>
 
       <div class="editor-section">
-        <div class="editor-section-title">${escapeHtml(t('catfishing.editor.questions.heading'))}</div>
+        <div class="cf-section-head">
+          <div class="editor-section-title">${escapeHtml(t('catfishing.editor.questions.heading'))}</div>
+          <button type="button" class="btn btn-sm btn-primary" id="cf-randomize-set">${escapeHtml(t('catfishing.editor.randomize.set'))}</button>
+        </div>
         <p class="field-help">${escapeHtml(t('catfishing.editor.questions.help'))}</p>
+        <p class="field-help cf-randomize-hint">${escapeHtml(t('catfishing.editor.randomize.setHint'))}</p>
+        <span class="cf-translate-note" id="cf-randomize-note"></span>
         <div id="cf-questions"></div>
       </div>
 
@@ -228,9 +275,12 @@ function questionBodyHtml(q, i) {
   return `
     <div class="cf-field">
       <label class="field-label" for="cf-entity-${i}">${escapeHtml(t('catfishing.editor.entityPicker.label'))}</label>
-      <div class="cf-entity-picker">
-        <input type="text" class="input-block cf-entity-input" id="cf-entity-${i}" data-i="${i}" placeholder="${escapeHtml(t('catfishing.editor.entityPicker.placeholder'))}" autocomplete="off" spellcheck="false" />
-        <div class="cf-entity-results" id="cf-entity-results-${i}" hidden></div>
+      <div class="cf-entity-row">
+        <div class="cf-entity-picker">
+          <input type="text" class="input-block cf-entity-input" id="cf-entity-${i}" data-i="${i}" placeholder="${escapeHtml(t('catfishing.editor.entityPicker.placeholder'))}" autocomplete="off" spellcheck="false" />
+          <div class="cf-entity-results" id="cf-entity-results-${i}" hidden></div>
+        </div>
+        <button type="button" class="btn btn-sm cf-randomize-q" data-i="${i}" title="${escapeHtml(t('catfishing.editor.randomize.questionTitle'))}">${escapeHtml(t('catfishing.editor.randomize.question'))}</button>
       </div>
       <p class="field-help">${escapeHtml(t('catfishing.editor.entityPicker.help'))}</p>
     </div>
@@ -338,6 +388,9 @@ function wireQuestion(i) {
     entityInput.addEventListener('blur', () => setTimeout(() => hideEntityResults(i), 150));
   }
 
+  const rq = document.querySelector(`.cf-randomize-q[data-i="${i}"]`);
+  if (rq) rq.addEventListener('click', () => randomizeQuestion(i));
+
   bindInput(`cf-answer-en-${i}`, (v) => { state.questions[i].answerEn = v; refreshQuestionHead(i); });
   bindInput(`cf-answer-vi-${i}`, (v) => { state.questions[i].answerVi = v; });
   bindInput(`cf-aliases-en-${i}`, (v) => { state.questions[i].aliasesEn = v; });
@@ -429,19 +482,74 @@ function hideEntityResults(i) {
   if (box) { box.hidden = true; box.innerHTML = ''; }
 }
 
+// Write one catalog entity into a question: answer EN, EN aliases, the
+// auto-suggested difficulty tag, and the resolved (colour-coded) clue table.
+// The VI fields reset — they belonged to whatever entity was here before, so
+// they'd be stale. Shared by manual selection and the randomizers.
+function applyEntityToQuestion(i, item) {
+  const q = state.questions[i];
+  q.entityKey = item.key;
+  q.answerEn = item.name;
+  q.answerVi = '';
+  q.aliasesEn = item.aliases.join(', ');
+  q.aliasesVi = '';
+  q.difficulty = item.difficulty;
+  q.clues = resolveCategories(item.categories).map((c) => ({ en: c.en, vi: c.vi, status: c.status }));
+}
+
 function selectEntity(i, key) {
   const item = getSearchIndex().find((e) => e.key === key);
   if (!item) return;
-  const q = state.questions[i];
-  q.entityKey = key;
-  q.answerEn = item.name;
-  q.aliasesEn = item.aliases.join(', ');
-  q.difficulty = item.difficulty; // auto-suggested prominence tag
-  // Resolve every raw category to a VI clue with a colour-coded status.
-  q.clues = resolveCategories(item.categories).map((c) => ({ en: c.en, vi: c.vi, status: c.status }));
+  applyEntityToQuestion(i, item);
   hideEntityResults(i);
   // Full re-render of this question body so all prefilled fields + clue table show.
   renderQuestions();
+}
+
+// ============== RANDOMIZE ==============
+
+// Reroll a single question, keeping its current difficulty tag and guaranteeing
+// a different entity than the one it holds (and no repeat of another question's
+// entity). Explicit per-question action, so it overwrites without a prompt.
+function randomizeQuestion(i) {
+  const q = state.questions[i];
+  const exclude = usedEntityKeys(i);
+  if (q.entityKey) exclude.add(q.entityKey); // force a fresh pick
+  const item = pickEntity(q.difficulty, exclude);
+  if (!item) {
+    showError(t('catfishing.editor.randomize.noneAvailable', {
+      difficulty: t(`catfishing.editor.difficulty.${q.difficulty}`),
+    }));
+    return;
+  }
+  applyEntityToQuestion(i, item);
+  showError('');
+  renderQuestions();
+}
+
+// Fill every EMPTY question (no entity and no typed answer) with a random
+// entity matching that question's current difficulty tag. Questions you've
+// already picked or edited are left untouched — nothing is overwritten. Entities
+// are never repeated within the set.
+function randomizeSet() {
+  const used = usedEntityKeys();
+  let filled = 0;
+  state.questions.forEach((q, i) => {
+    const isEmpty = !q.entityKey && !q.answerEn.trim();
+    if (!isEmpty) return;
+    const item = pickEntity(q.difficulty, used);
+    if (!item) return; // bucket exhausted — skip this slot
+    applyEntityToQuestion(i, item);
+    used.add(item.key);
+    filled++;
+  });
+  renderQuestions();
+  const note = document.getElementById('cf-randomize-note');
+  if (note) {
+    note.textContent = filled === 0
+      ? t('catfishing.editor.randomize.noneEmpty')
+      : t('catfishing.editor.randomize.setDone', { n: filled });
+  }
 }
 
 // ============== TRANSLATION HELPER ==============
@@ -616,6 +724,7 @@ function wireEvents() {
     document.getElementById('cf-collection').value = '';
     state.collectionId = '';
   });
+  document.getElementById('cf-randomize-set').addEventListener('click', randomizeSet);
   document.getElementById('cf-copy-prompt').addEventListener('click', onCopyPrompt);
   document.getElementById('cf-paste-apply').addEventListener('click', onPasteApply);
   document.getElementById('cf-preview-btn').addEventListener('click', onPreview);
