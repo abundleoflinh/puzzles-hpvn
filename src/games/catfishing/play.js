@@ -172,6 +172,9 @@ function renderGuess(el) {
              aria-label="${escapeHtml(t('catfishing.play.guessPlaceholder'))}" />
       <button type="submit" class="btn btn-primary" id="cf-guess-btn">${escapeHtml(t('catfishing.play.guessButton'))}</button>
     </form>
+    <div class="cf-skip-row">
+      <button type="button" class="btn btn-sm cf-skip-btn" id="cf-skip-btn">${escapeHtml(t('catfishing.play.skipButton'))}</button>
+    </div>
   `;
   const input = document.getElementById('cf-guess-input');
   input.value = state.guessValue;
@@ -180,6 +183,7 @@ function renderGuess(el) {
     e.preventDefault();
     onGuess();
   });
+  document.getElementById('cf-skip-btn').addEventListener('click', onSkip);
   input.focus();
 }
 
@@ -212,9 +216,12 @@ function renderRevealed(el) {
   const markGlyph = credited ? '✓' : '✗';
   const markLabel = r.outcome === 'override'
     ? t('catfishing.play.markOverride')
-    : credited ? t('catfishing.play.markHit') : t('catfishing.play.markMiss');
-  // Honor-system override: only offered on an uncredited miss, and only once.
-  const overrideBtn = r.outcome === 'miss'
+    : credited ? t('catfishing.play.markHit')
+    : r.skipped ? t('catfishing.play.markSkip')
+    : t('catfishing.play.markMiss');
+  // Honor-system override: only offered when the player actually guessed and
+  // missed — never after a skip (a skip is a deliberate concession).
+  const overrideBtn = r.outcome === 'miss' && !r.skipped
     ? `<button type="button" class="btn btn-sm cf-override-btn" id="cf-override-btn">${escapeHtml(t('catfishing.play.overrideButton'))}</button>`
     : '';
   const isLast = state.current >= totalQuestions() - 1;
@@ -306,16 +313,23 @@ async function onConfirmNo() {
   await finalize('miss');
 }
 
+// Skip: the player concedes this question. Counts as wrong (0 points) and
+// reveals the answer, but — unlike a real miss — never offers the "I was right"
+// override, since there was no guess to have been right about.
+async function onSkip() {
+  await finalize('miss', { skipped: true });
+}
+
 // Lock in one question's outcome: reveal the canonical answer, record the
 // result, and move to the revealed state. Reveal is best-effort — a network
 // failure still finalizes the outcome, just without the canonical text.
-async function finalize(outcome) {
+async function finalize(outcome, { skipped = false } = {}) {
   let answer = null;
   try {
     const r = await revealCatfishingAnswer(puzzleId, state.current);
     answer = r.answer || null;
   } catch { /* reveal is best-effort */ }
-  state.results[state.current] = { outcome, answer };
+  state.results[state.current] = { outcome, answer, skipped };
   state.phase = 'revealed';
   state.confirmSuggested = null;
   state.guessValue = '';

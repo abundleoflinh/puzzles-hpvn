@@ -1645,6 +1645,8 @@ input, textarea, select { font: inherit; color: inherit; }
 
 .cf-guess-row { display: flex; gap: 8px; }
 .cf-guess-row .cf-guess-input { flex: 1; }
+.cf-skip-row { margin-top: 10px; text-align: center; }
+.cf-skip-btn { color: var(--fg-muted); }
 
 .cf-confirm { text-align: center; padding: 8px 0; }
 .cf-confirm-prompt { font-size: 16px; margin-bottom: 14px; }

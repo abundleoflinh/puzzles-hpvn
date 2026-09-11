@@ -201,6 +201,8 @@
   "catfishing.play.score": "Score {score}/{total}",
   "catfishing.play.guessPlaceholder": "Who or what is it? (EN or VI)",
   "catfishing.play.guessButton": "Guess",
+  "catfishing.play.skipButton": "Skip — I don't know",
+  "catfishing.play.markSkip": "Skipped.",
   "catfishing.play.confirmPrompt": "Did you mean {name}?",
   "catfishing.play.yes": "Yes",
   "catfishing.play.no": "No",

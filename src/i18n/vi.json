@@ -201,6 +201,8 @@
   "catfishing.play.score": "Điểm {score}/{total}",
   "catfishing.play.guessPlaceholder": "Là ai hoặc là gì? (Anh hoặc Việt)",
   "catfishing.play.guessButton": "Đoán",
+  "catfishing.play.skipButton": "Bỏ qua — mình không biết",
+  "catfishing.play.markSkip": "Đã bỏ qua.",
   "catfishing.play.confirmPrompt": "Có phải ý bạn là {name}?",
   "catfishing.play.yes": "Có",
   "catfishing.play.no": "Không",
