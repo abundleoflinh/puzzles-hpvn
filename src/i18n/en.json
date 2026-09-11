@@ -190,5 +190,6 @@
   "strands.editor.err.themeRequired": "Theme clue is required.",
   "strands.editor.err.spangramRequired": "Spangram must be entered and have a path drawn.",
   "strands.editor.err.tooFewWords": "At least {min} theme words are required.",
-  "strands.editor.err.wordPathMissing": "Every theme word needs a drawn path."
+  "strands.editor.err.wordPathMissing": "Every theme word needs a drawn path.",
+  "strands.editor.load.masked": "Couldn't load the full puzzle for editing (got the player view). Wait a minute and try again."
 }

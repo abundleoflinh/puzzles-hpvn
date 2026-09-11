@@ -378,8 +378,13 @@ async function handleFetchPuzzle(request, env, type, id) {
     return new Response(JSON.stringify({ puzzle: maskStrands(puzzle) }), {
       headers: {
         'Content-Type': 'application/json',
-        // No public cache when auth might upgrade the response — keep it simple.
+        // This URL serves two different bodies: the masked view (no password)
+        // and the full puzzle (valid password header). Vary on the password
+        // header so a cached masked entry is NEVER reused for the editor's
+        // authenticated GET — otherwise the editor loads a puzzle with no
+        // words or paths and renders a blank form.
         'Cache-Control': 'public, max-age=60',
+        'Vary': 'X-Editor-Password',
         ...CORS_HEADERS,
       },
     });
@@ -392,6 +397,9 @@ async function handleFetchPuzzle(request, env, type, id) {
       // so send no-store when password header is present. Public GETs get a
       // brief cache; updates propagate within a minute.
       'Cache-Control': checkPassword(request, env) ? 'no-store' : 'public, max-age=60',
+      // Same-URL/two-bodies concern as the masked branch above (Strands). Keep
+      // the caches keyed on the password header for every fetch path.
+      'Vary': 'X-Editor-Password',
       ...CORS_HEADERS,
     },
   });

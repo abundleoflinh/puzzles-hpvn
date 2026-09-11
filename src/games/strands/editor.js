@@ -609,7 +609,15 @@ async function onLoadExisting() {
   if (!parsed || parsed.type !== 'strands') { flashError(t('editor.load.invalid')); return; }
   try {
     const res = await fetchPuzzle('strands', parsed.id, getPassword());
-    hydrateFromPuzzle(parsed.id, res.puzzle);
+    // A full (editable) puzzle always carries the solution. If it doesn't, we
+    // were handed the masked player view — usually a stale cache entry served
+    // to our authenticated GET. Refuse rather than hydrate a blank form.
+    const p = res?.puzzle;
+    if (!p || !p.spangram || !Array.isArray(p.words)) {
+      showError(t('strands.editor.load.masked'));
+      return;
+    }
+    hydrateFromPuzzle(parsed.id, p);
   } catch (err) {
     if (err.status === 404) flashError(t('editor.load.notFound'));
     else flashError(err.message || t('editor.error.generic'));

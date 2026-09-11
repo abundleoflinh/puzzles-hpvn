@@ -190,5 +190,6 @@
   "strands.editor.err.themeRequired": "Cần nhập gợi ý chủ đề.",
   "strands.editor.err.spangramRequired": "Từ khoá phải được nhập và có đường đi.",
   "strands.editor.err.tooFewWords": "Cần ít nhất {min} từ chủ đề.",
-  "strands.editor.err.wordPathMissing": "Mỗi từ chủ đề cần có đường đi."
+  "strands.editor.err.wordPathMissing": "Mỗi từ chủ đề cần có đường đi.",
+  "strands.editor.load.masked": "Không tải được câu đố đầy đủ để chỉnh sửa (nhận được bản dành cho người chơi). Vui lòng đợi một phút rồi thử lại."
 }
