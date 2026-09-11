@@ -3,6 +3,9 @@ dist/
 .wrangler/
 .env
 .env.local
+# Local wrangler dev secrets (EDITOR_PASSWORD etc.) — never commit.
+.dev.vars
+worker/.dev.vars
 .DS_Store
 *.log
 

@@ -22,14 +22,29 @@
 // /api/admin/backfill-metadata endpoint (password-gated) upgrades them in place.
 // Auth: shared password sent in X-Editor-Password header, compared to env.EDITOR_PASSWORD.
 
-const ALLOWED_TYPES = new Set(['connections', 'strands']);
+const ALLOWED_TYPES = new Set(['connections', 'strands', 'catfishing']);
 const ID_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; // base58, no 0/O/I/l
 const ID_LENGTH = 5;
-const MAX_PUZZLE_BYTES = 8 * 1024; // 8KB — generous for Connections, room for Strands
+// Per-type payload cap. Connections/Strands are small; a Catfishing set carries
+// 5 questions × (bilingual answer + aliases + a 20–40 clue bilingual dump), so
+// it needs more headroom. Any unlisted type falls back to the conservative 8KB.
+const MAX_BYTES_BY_TYPE = { connections: 8 * 1024, strands: 8 * 1024, catfishing: 16 * 1024 };
+const DEFAULT_MAX_PUZZLE_BYTES = 8 * 1024;
+function maxBytesForType(type) { return MAX_BYTES_BY_TYPE[type] ?? DEFAULT_MAX_PUZZLE_BYTES; }
 const MAX_COLLECTION_BYTES = 1024; // small — just name + createdAt + id
 const MAX_TITLE_LEN = 80;
 const MAX_COLLECTION_NAME_LEN = 60;
 const COLLECTION_PREFIX = 'collection:';
+
+// Catfishing bounds. A published set is exactly CF_QUESTION_COUNT questions;
+// each question is one HP entity with a bilingual answer and a dump of
+// bilingual category clues. Difficulty is an internal tag, never shown to the
+// player. Kept aligned with src/games/catfishing/* when that lands.
+const CF_QUESTION_COUNT = 5;
+const CF_DIFFICULTIES = new Set(['easy', 'medium', 'hard']);
+const CF_MIN_CLUES = 1;   // minimal shape guard — the editor aims for 20–40
+const CF_MAX_CLUES = 60;  // upper bound so a single question can't blow the payload
+const CF_FUZZY_THRESHOLD = 0.85; // max(levenshtein, trigram) at/above → "did you mean"
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -174,6 +189,43 @@ function validateStrands(puzzle) {
   return null;
 }
 
+// Catfishing set validator. A published set is exactly CF_QUESTION_COUNT
+// questions; each carries a bilingual answer (with optional alias arrays), a
+// list of bilingual clues, and an internal difficulty tag. Light by design —
+// same "reject obviously broken writes" philosophy as the other validators;
+// the editor does the richer authoring-time checks.
+function validateCatfishing(puzzle) {
+  const { questions } = puzzle;
+  if (!Array.isArray(questions) || questions.length !== CF_QUESTION_COUNT) {
+    return `catfishing set needs exactly ${CF_QUESTION_COUNT} questions`;
+  }
+  const strOk = (v) => typeof v === 'string' && v.trim().length > 0;
+  const strArrOk = (v) => v == null || (Array.isArray(v) && v.every((s) => typeof s === 'string'));
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    if (!q || typeof q !== 'object') return `questions[${i}] must be an object`;
+    const a = q.answer;
+    if (!a || typeof a !== 'object') return `questions[${i}].answer required`;
+    if (!strOk(a.en) || !strOk(a.vi)) return `questions[${i}].answer needs non-empty en and vi`;
+    if (!strArrOk(a.aliases_en) || !strArrOk(a.aliases_vi)) {
+      return `questions[${i}].answer aliases must be string arrays`;
+    }
+    if (!Array.isArray(q.clues) || q.clues.length < CF_MIN_CLUES || q.clues.length > CF_MAX_CLUES) {
+      return `questions[${i}].clues must have ${CF_MIN_CLUES}–${CF_MAX_CLUES} entries`;
+    }
+    for (let c = 0; c < q.clues.length; c++) {
+      const clue = q.clues[c];
+      if (!clue || typeof clue !== 'object' || !strOk(clue.en) || !strOk(clue.vi)) {
+        return `questions[${i}].clues[${c}] needs non-empty en and vi`;
+      }
+    }
+    if (!CF_DIFFICULTIES.has(q.difficulty)) {
+      return `questions[${i}].difficulty must be one of easy|medium|hard`;
+    }
+  }
+  return null;
+}
+
 function validatePuzzle(puzzle, type) {
   if (!puzzle || typeof puzzle !== 'object') return 'puzzle must be an object';
   if (puzzle.type !== type) return 'puzzle.type mismatch';
@@ -261,6 +313,10 @@ function validatePuzzle(puzzle, type) {
     const err = validateStrands(puzzle);
     if (err) return err;
   }
+  if (type === 'catfishing') {
+    const err = validateCatfishing(puzzle);
+    if (err) return err;
+  }
   return null;
 }
 
@@ -284,6 +340,25 @@ function maskStrands(puzzle) {
   };
 }
 
+// Player-facing view of a Catfishing set: each question's bilingual clues and
+// its index, but NEVER the answer (or aliases) and NEVER the difficulty tag.
+// Per Project Instructions §3 the answer is server-validated via /guess, so it
+// must never appear in an unauthenticated payload. This is the single point
+// that shapes the public body, and the public GET is edge-cached — so a leak
+// here would be a permanent one. Keep it answer-free.
+function maskCatfishing(puzzle) {
+  return {
+    type: 'catfishing',
+    title: puzzle.title ?? null,
+    collectionId: puzzle.collectionId ?? null,
+    questionCount: Array.isArray(puzzle.questions) ? puzzle.questions.length : 0,
+    questions: (puzzle.questions || []).map((q, i) => ({
+      q_index: i,
+      clues: (q.clues || []).map((c) => ({ en: c.en, vi: c.vi })),
+    })),
+  };
+}
+
 // Parse JSON body or throw a short-circuit Response.
 async function parseJsonBody(request) {
   try {
@@ -298,7 +373,7 @@ function validateAndSerialize(puzzle, type) {
   const validationError = validatePuzzle(puzzle, type);
   if (validationError) throw json({ error: validationError }, 400);
   const serialized = JSON.stringify(puzzle);
-  if (serialized.length > MAX_PUZZLE_BYTES) throw json({ error: 'puzzle too large' }, 413);
+  if (serialized.length > maxBytesForType(type)) throw json({ error: 'puzzle too large' }, 413);
   return serialized;
 }
 
@@ -342,8 +417,8 @@ async function handleCreatePuzzle(request, env) {
   if (!id) return json({ error: 'could not generate unique id' }, 500);
 
   await env.PUZZLES.put(`${type}:${id}`, serialized, { metadata: puzzleMetadata(puzzle) });
-  const prefix = type === 'connections' ? '/c/' : '/s/';
-  return json({ id, url: `${prefix}${id}` }, 201);
+  const URL_PREFIX = { connections: '/c/', strands: '/s/', catfishing: '/cf/' };
+  return json({ id, url: `${URL_PREFIX[type] ?? '/'}${id}` }, 201);
 }
 
 async function handleUpdatePuzzle(request, env, type, id) {
@@ -372,17 +447,22 @@ async function handleFetchPuzzle(request, env, type, id) {
   const raw = await env.PUZZLES.get(`${type}:${id}`);
   if (!raw) return json({ error: 'not found' }, 404);
 
-  if (type === 'strands' && !checkPassword(request, env)) {
+  // Types whose public payload hides the solution. Strands masks its theme
+  // words/paths; Catfishing masks its answers/difficulty. Editors bypass the
+  // mask by presenting the shared password header.
+  const MASKERS = { strands: maskStrands, catfishing: maskCatfishing };
+  const masker = MASKERS[type];
+  if (masker && !checkPassword(request, env)) {
     let puzzle;
     try { puzzle = JSON.parse(raw); } catch { return json({ error: 'corrupt puzzle' }, 500); }
-    return new Response(JSON.stringify({ puzzle: maskStrands(puzzle) }), {
+    return new Response(JSON.stringify({ puzzle: masker(puzzle) }), {
       headers: {
         'Content-Type': 'application/json',
         // This URL serves two different bodies: the masked view (no password)
         // and the full puzzle (valid password header). Vary on the password
         // header so a cached masked entry is NEVER reused for the editor's
-        // authenticated GET — otherwise the editor loads a puzzle with no
-        // words or paths and renders a blank form.
+        // authenticated GET — otherwise the editor loads a solution-less puzzle
+        // and renders a blank form.
         'Cache-Control': 'public, max-age=60',
         'Vary': 'X-Editor-Password',
         ...CORS_HEADERS,
@@ -452,6 +532,241 @@ async function handleStrandsHint(request, env, id) {
     [cells[i], cells[j]] = [cells[j], cells[i]];
   }
   return json({ wordIndex: pick, cells });
+}
+
+// ============== CATFISHING ==============
+
+// --- Guess matcher (deterministic, no external deps) -------------------------
+//
+// Normalize the guess and the answer set, then: exact (post-normalization)
+// match → hit; else the best fuzzy score (max of Levenshtein ratio and trigram
+// Jaccard) at/above CF_FUZZY_THRESHOLD → confirm (echo the canonical suggestion
+// the player effectively typed); else miss.
+//
+// Language-agnostic: the guess is compared against the EN answer, the VI
+// answer, and both alias lists, so a player may answer in either language
+// regardless of the UI they are playing in.
+//
+// Normalization folds Unicode combining marks (so an undiacriticized Vietnamese
+// guess still matches — "tu than" ≈ "tử thần"), but đ/Đ is an atomic Vietnamese
+// letter with NO combining-mark decomposition, so NFD leaves it intact: it is
+// deliberately NOT folded to d. Honorifics (EN + VI) and punctuation are
+// stripped and whitespace is collapsed.
+
+const CF_HONORIFICS = [
+  'professor', 'prof', 'mr', 'mrs', 'ms', 'miss', 'dr',
+  'giao su', 'gs', 'thay', 'co', 'ong', 'ba',
+];
+
+function cfNormalize(s) {
+  let t = String(s ?? '').toLowerCase();
+  // Fold combining diacritics (á→a, ầ→a…) but keep atomic letters like đ.
+  t = t.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  // Punctuation/symbols → spaces; keep letters (incl. đ), digits, whitespace.
+  t = t.replace(/[^\p{L}\p{N}\s]/gu, ' ');
+  // Strip leading honorific tokens, repeatedly (e.g. "Professor Dr X").
+  let tokens = t.split(/\s+/).filter(Boolean);
+  while (tokens.length > 1 && CF_HONORIFICS.includes(tokens[0])) tokens = tokens.slice(1);
+  return tokens.join(' ').trim();
+}
+
+function cfLevenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  let prev = new Array(n + 1);
+  let cur = new Array(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    cur[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
+    }
+    [prev, cur] = [cur, prev];
+  }
+  return prev[n];
+}
+
+function cfLevRatio(a, b) {
+  const maxLen = Math.max(a.length, b.length);
+  if (maxLen === 0) return 1;
+  return 1 - cfLevenshtein(a, b) / maxLen;
+}
+
+function cfTrigrams(s) {
+  const padded = `  ${s} `;
+  const grams = new Set();
+  for (let i = 0; i < padded.length - 2; i++) grams.add(padded.slice(i, i + 3));
+  return grams;
+}
+
+function cfTrigramSim(a, b) {
+  if (a === b) return 1;
+  const A = cfTrigrams(a), B = cfTrigrams(b);
+  if (A.size === 0 || B.size === 0) return 0;
+  let inter = 0;
+  for (const g of A) if (B.has(g)) inter++;
+  return inter / (A.size + B.size - inter); // Jaccard
+}
+
+// Candidate list [{ canonical, norm }] for a question's answer + all aliases.
+function cfCandidates(answer) {
+  const raw = [answer.en, answer.vi, ...(answer.aliases_en || []), ...(answer.aliases_vi || [])]
+    .filter((s) => typeof s === 'string' && s.trim());
+  return raw.map((canonical) => ({ canonical, norm: cfNormalize(canonical) }));
+}
+
+// → { status: 'hit' } | { status: 'confirm', suggested } | { status: 'miss' }.
+function cfMatch(guess, answer) {
+  const g = cfNormalize(guess);
+  if (!g) return { status: 'miss' };
+  const cands = cfCandidates(answer);
+  for (const c of cands) if (c.norm && c.norm === g) return { status: 'hit' };
+  let best = null, bestScore = 0;
+  for (const c of cands) {
+    if (!c.norm) continue;
+    const score = Math.max(cfLevRatio(g, c.norm), cfTrigramSim(g, c.norm));
+    if (score > bestScore) { bestScore = score; best = c; }
+  }
+  if (best && bestScore >= CF_FUZZY_THRESHOLD) {
+    return { status: 'confirm', suggested: best.canonical };
+  }
+  return { status: 'miss' };
+}
+
+// --- Handlers ----------------------------------------------------------------
+
+// Load a set + resolve one question index (from the request body). Throws a
+// short-circuit Response on any problem. Shared by /guess and /reveal.
+async function cfLoadQuestion(env, id, qIndex) {
+  const raw = await env.PUZZLES.get(`catfishing:${id}`);
+  if (!raw) throw json({ error: 'not found' }, 404);
+  let puzzle;
+  try { puzzle = JSON.parse(raw); } catch { throw json({ error: 'corrupt puzzle' }, 500); }
+  if (!Number.isInteger(qIndex) || qIndex < 0 || qIndex >= (puzzle.questions?.length || 0)) {
+    throw json({ error: 'invalid q_index' }, 400);
+  }
+  return { puzzle, question: puzzle.questions[qIndex] };
+}
+
+// Public: validate a free-text guess for one question. Never returns the answer
+// on a miss; 'confirm' echoes only the canonical the player effectively typed.
+// On a hit, bumps the aggregate correct[q] counter server-side — the only place
+// it's writable — best-effort, so a stats failure can't fail the guess.
+async function handleCatfishingGuess(request, env, id) {
+  const body = await parseJsonBody(request);
+  const qIndex = body?.q_index;
+  const guess = body?.guess;
+  if (typeof guess !== 'string') return json({ error: 'guess required' }, 400);
+  const { question } = await cfLoadQuestion(env, id, qIndex);
+
+  const result = cfMatch(guess, question.answer);
+  if (result.status === 'hit') {
+    try { await cfBumpCorrect(env, id, qIndex); } catch { /* stats are best-effort */ }
+  }
+  return json(result);
+}
+
+// Public: reveal the canonical answer for one question. Trust model per build
+// plan §9 — the client calls this after receiving hit/miss/confirm from /guess.
+// Calling it early only spoils the caller's own game; no server-side session
+// state is kept, deliberately.
+async function handleCatfishingReveal(request, env, id) {
+  const body = await parseJsonBody(request);
+  const qIndex = body?.q_index;
+  const { question } = await cfLoadQuestion(env, id, qIndex);
+  const a = question.answer;
+  return json({
+    answer: {
+      en: a.en,
+      vi: a.vi,
+      aliases_en: a.aliases_en || [],
+      aliases_vi: a.aliases_vi || [],
+    },
+  });
+}
+
+// Public: honor-system override. When a player judges the matcher (or an
+// answer's alias coverage) too strict and self-declares correct, they keep the
+// point client-side; this records the self-declare in the SEPARATE overrides[q]
+// counter (never in correct[q]). Deliberately player-callable and trivially
+// inflatable — the same trust model as the feature itself. A rising
+// overrides[q] is the editor's cue to widen that answer's aliases.
+async function handleCatfishingOverride(request, env, id) {
+  const body = await parseJsonBody(request);
+  const qIndex = body?.q_index;
+  await cfLoadQuestion(env, id, qIndex); // validates set exists + q_index in range
+  await cfBumpOverride(env, id, qIndex);
+  return json({ ok: true });
+}
+
+// --- Stats (aggregate only; no per-player data) ------------------------------
+// KV key: stats:cf:{id} →
+//   { plays, completions,
+//     correct:   number[CF_QUESTION_COUNT],   // true matcher hits (server-only)
+//     overrides: number[CF_QUESTION_COUNT] }  // honor-system self-declares
+// KV is eventually consistent, so concurrent updates can undercount slightly —
+// acceptable per build plan §5/§11. start/complete are gated client-side by a
+// localStorage flag; correct[] is bumped only inside /guess. overrides[] is
+// bumped by the player-callable /stats/override route and is kept SEPARATE from
+// correct[] on purpose: correct% stays a true-match measure, while a high
+// overrides[q] tells the editor that answer's aliases need widening.
+
+function cfStatsKey(id) { return `stats:cf:${id}`; }
+
+async function cfReadStats(env, id) {
+  const raw = await env.PUZZLES.get(cfStatsKey(id));
+  let s = null;
+  if (raw) { try { s = JSON.parse(raw); } catch { s = null; } }
+  if (!s || typeof s !== 'object') s = {};
+  // Coerce a stored per-question array to exactly CF_QUESTION_COUNT finite
+  // numbers; anything malformed (or absent, e.g. pre-overrides rows) → zeros.
+  const arr = (v) => (Array.isArray(v) && v.length === CF_QUESTION_COUNT
+    ? v.map((n) => (Number.isFinite(n) ? n : 0))
+    : new Array(CF_QUESTION_COUNT).fill(0));
+  return {
+    plays: Number.isFinite(s.plays) ? s.plays : 0,
+    completions: Number.isFinite(s.completions) ? s.completions : 0,
+    correct: arr(s.correct),
+    overrides: arr(s.overrides),
+  };
+}
+
+async function cfWriteStats(env, id, stats) {
+  await env.PUZZLES.put(cfStatsKey(id), JSON.stringify(stats));
+}
+
+async function cfBumpCorrect(env, id, qIndex) {
+  const stats = await cfReadStats(env, id);
+  stats.correct[qIndex] = (stats.correct[qIndex] || 0) + 1;
+  await cfWriteStats(env, id, stats);
+}
+
+async function cfBumpOverride(env, id, qIndex) {
+  const stats = await cfReadStats(env, id);
+  stats.overrides[qIndex] = (stats.overrides[qIndex] || 0) + 1;
+  await cfWriteStats(env, id, stats);
+}
+
+// Public: bump plays or completions. `which` is fixed by the route (not the
+// request body), so a caller can only ever touch those two counters. Requires
+// the set to exist so counters can't be spun up for a random id.
+async function handleCatfishingStatsBump(env, id, which) {
+  const exists = await env.PUZZLES.get(`catfishing:${id}`);
+  if (!exists) return json({ error: 'not found' }, 404);
+  const stats = await cfReadStats(env, id);
+  stats[which] = (stats[which] || 0) + 1;
+  await cfWriteStats(env, id, stats);
+  return json({ ok: true });
+}
+
+// Public: read aggregate stats (players see completions + per-question
+// correct% at end-of-set; plays is editor-facing).
+async function handleCatfishingStatsGet(env, id) {
+  const exists = await env.PUZZLES.get(`catfishing:${id}`);
+  if (!exists) return json({ error: 'not found' }, 404);
+  return json(await cfReadStats(env, id));
 }
 
 // ============== COLLECTIONS ==============
@@ -718,6 +1033,35 @@ export default {
       const hintMatch = path.match(/^\/api\/puzzle\/strands\/([A-Za-z0-9]+)\/hint$/);
       if (hintMatch && request.method === 'POST') {
         return await handleStrandsHint(request, env, hintMatch[1]);
+      }
+
+      // Catfishing: create/update/fetch reuse the generic /api/puzzle routes
+      // above (type-gated by ALLOWED_TYPES; GET masks answers via maskCatfishing).
+      // These game-specific routes handle guessing, reveal, and aggregate stats,
+      // mirroring the Strands guess/hint pattern under /api/puzzle/{type}/{id}/*.
+      const cfGuessMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/guess$/);
+      if (cfGuessMatch && request.method === 'POST') {
+        return await handleCatfishingGuess(request, env, cfGuessMatch[1]);
+      }
+      const cfRevealMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/reveal$/);
+      if (cfRevealMatch && request.method === 'POST') {
+        return await handleCatfishingReveal(request, env, cfRevealMatch[1]);
+      }
+      const cfStatsStartMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/stats\/start$/);
+      if (cfStatsStartMatch && request.method === 'POST') {
+        return await handleCatfishingStatsBump(env, cfStatsStartMatch[1], 'plays');
+      }
+      const cfStatsCompleteMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/stats\/complete$/);
+      if (cfStatsCompleteMatch && request.method === 'POST') {
+        return await handleCatfishingStatsBump(env, cfStatsCompleteMatch[1], 'completions');
+      }
+      const cfStatsOverrideMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/stats\/override$/);
+      if (cfStatsOverrideMatch && request.method === 'POST') {
+        return await handleCatfishingOverride(request, env, cfStatsOverrideMatch[1]);
+      }
+      const cfStatsGetMatch = path.match(/^\/api\/puzzle\/catfishing\/([A-Za-z0-9]+)\/stats$/);
+      if (cfStatsGetMatch && request.method === 'GET') {
+        return await handleCatfishingStatsGet(env, cfStatsGetMatch[1]);
       }
 
       // ---------- collections ----------
