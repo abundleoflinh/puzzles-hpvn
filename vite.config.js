@@ -17,6 +17,7 @@ export default defineConfig({
         editor: resolve(__dirname, 'editor.html'),
         playConnections: resolve(__dirname, 'play-connections.html'),
         playStrands: resolve(__dirname, 'play-strands.html'),
+        playCatfishing: resolve(__dirname, 'play-catfishing.html'),
       },
     },
   },

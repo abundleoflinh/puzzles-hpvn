@@ -85,7 +85,7 @@ let lastFocusedBeforeModal = null;
 
 // Which game sections to render inside the info modal, defaulting to both.
 // Callers narrow this on game pages (e.g. play-strands passes ['strands']).
-const KNOWN_GAMES = ['connections', 'strands'];
+const KNOWN_GAMES = ['connections', 'strands', 'catfishing'];
 
 function renderInfoModal(games) {
   if (document.getElementById('info-modal')) return;

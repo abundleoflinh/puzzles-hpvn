@@ -369,6 +369,18 @@ input, textarea, select { font: inherit; color: inherit; }
    collections, so we let the layout stay compact in that case. */
 .collections { margin-top: 40px; }
 .collections:empty { display: none; }
+/* The input column is capped at 560px, but the collection listing wants room
+   for a multi-column grid. Break it out of that cap and center it on the page
+   from ~desktop width up; on narrow screens it stays in the normal flow and
+   renders as a single column. */
+@media (min-width: 620px) {
+  .collections {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(860px, calc(100vw - 48px));
+  }
+}
 .collections-heading {
   font-family: var(--font-wordmark);
   font-weight: 700;
@@ -399,11 +411,15 @@ input, textarea, select { font: inherit; color: inherit; }
 :root[data-theme="hpvn"] .collection-name { color: var(--accent); }
 
 /* One column per game type inside a collection. auto-fit keeps columns
-   readable at any width and stacks them on narrow screens. */
+   readable at any width: up to 3 across on desktop (Connections, Strands,
+   Catfishing), fewer as the viewport narrows, single column on mobile.
+   align-items:start tops the columns off cleanly instead of stretching the
+   shortest ones to match the tallest. */
 .collection-groups {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px 22px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px 28px;
+  align-items: start;
 }
 .collection-group { min-width: 0; }
 
@@ -1589,3 +1605,93 @@ input, textarea, select { font: inherit; color: inherit; }
   color: var(--fg);
 }
 .cf-preview-warn { color: var(--cf-status-bad); font-size: 13px; margin-top: 8px; }
+
+/* ============== CATFISHING PLAY ============== */
+/* Player runtime (Build Plan §9). All colours go through the theme tokens
+   defined in the three :root blocks above, so light / dark / hpvn all work with
+   no per-theme overrides here. Hit reuses the "dictionary" green, miss the
+   "unresolved" red — the same two signal colours the editor already themes. */
+
+.cf-play-progress {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 640px;
+  margin: 0 auto 16px;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.cf-play-score { font-weight: 700; color: var(--fg); }
+
+.cf-clue-dump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 640px;
+  margin: 0 auto 20px;
+}
+.cf-clue {
+  font-size: 14px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--fg);
+}
+
+.cf-play-interact { max-width: 520px; margin: 0 auto; }
+
+.cf-guess-row { display: flex; gap: 8px; }
+.cf-guess-row .cf-guess-input { flex: 1; }
+
+.cf-confirm { text-align: center; padding: 8px 0; }
+.cf-confirm-prompt { font-size: 16px; margin-bottom: 14px; }
+.cf-confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+.cf-reveal {
+  text-align: center;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-top: 14px;
+}
+.cf-reveal-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.cf-reveal-mark { font-size: 20px; font-weight: 700; line-height: 1; }
+.cf-reveal-mark.hit, .cf-summary-mark.hit { color: var(--cf-status-direct); }
+.cf-reveal-mark.miss, .cf-summary-mark.miss { color: var(--cf-status-bad); }
+.cf-reveal-answer { color: var(--fg-muted); margin-bottom: 16px; font-size: 15px; }
+.cf-reveal-answer strong { color: var(--fg); }
+.cf-reveal-alt { color: var(--fg-tiny); }
+.cf-reveal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* End-of-set summary. Reuses .play-result for the card frame + heading colour. */
+.cf-end-score { font-size: 16px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
+.cf-end-completions { font-size: 13px; color: var(--fg-muted); margin-bottom: 4px; }
+.cf-summary {
+  max-width: 480px;
+  margin: 16px auto 20px;
+  text-align: left;
+}
+.cf-summary-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.cf-summary-row:last-child { border-bottom: none; }
+.cf-summary-mark { font-weight: 700; line-height: 1; }
+.cf-summary-q { color: var(--fg-muted); font-weight: 600; }
+.cf-summary-answer { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-summary-stat { color: var(--fg-tiny); font-size: 12px; white-space: nowrap; text-align: right; }
+.cf-rare-flag { color: var(--cf-status-bad); font-weight: 600; font-size: 11px; margin-left: 4px; }

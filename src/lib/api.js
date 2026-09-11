@@ -66,6 +66,54 @@ export function requestStrandsHint(id, found) {
   });
 }
 
+// Catfishing: submit a free-text guess for one question. The server normalizes
+// and matches against the (hidden) answer + alias lists in both languages and
+// returns `{ status: 'hit' }`, `{ status: 'confirm', suggested }` (a fuzzy
+// near-miss the player is asked to confirm), or `{ status: 'miss' }`. The answer
+// is never returned here — only the canonical the player effectively typed, on
+// a confirm. On a hit the server bumps the aggregate correct[q] counter.
+export function submitCatfishingGuess(id, qIndex, guess) {
+  return request(`/api/puzzle/catfishing/${id}/guess`, {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ q_index: qIndex, guess }),
+  });
+}
+
+// Catfishing: reveal the canonical answer for one question. The client calls
+// this only after receiving a hit/miss/confirm from /guess, so calling it early
+// would only spoil the caller's own game. Returns
+// `{ answer: { en, vi, aliases_en, aliases_vi } }`.
+export function revealCatfishingAnswer(id, qIndex) {
+  return request(`/api/puzzle/catfishing/${id}/reveal`, {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ q_index: qIndex }),
+  });
+}
+
+// Catfishing aggregate stats (no per-player data). start/complete bump the
+// plays/completions counters — gate these client-side with a localStorage flag
+// so one player counts once. override records an honor-system self-declare in
+// the SEPARATE overrides[q] counter (never in correct[q]). getCatfishingStats
+// reads the aggregate for the end-of-set display.
+export function catfishingStatsStart(id) {
+  return request(`/api/puzzle/catfishing/${id}/stats/start`, { method: 'POST' });
+}
+export function catfishingStatsComplete(id) {
+  return request(`/api/puzzle/catfishing/${id}/stats/complete`, { method: 'POST' });
+}
+export function catfishingStatsOverride(id, qIndex) {
+  return request(`/api/puzzle/catfishing/${id}/stats/override`, {
+    method: 'POST',
+    headers: jsonHeaders(),
+    body: JSON.stringify({ q_index: qIndex }),
+  });
+}
+export function getCatfishingStats(id) {
+  return request(`/api/puzzle/catfishing/${id}/stats`);
+}
+
 export function createPuzzle(type, puzzle, password) {
   return request('/api/puzzle', {
     method: 'POST',

@@ -60,6 +60,15 @@ async function onSubmit(e) {
 
 // ============== COLLECTIONS ==============
 
+// Display order for game types within a collection. The Worker returns type
+// groups sorted alphabetically (catfishing, connections, strands); we override
+// that here to a deliberate order. Unknown types sink to the end, alphabetically.
+const TYPE_ORDER = ['connections', 'strands', 'catfishing'];
+function typeRank(type) {
+  const i = TYPE_ORDER.indexOf(type);
+  return i === -1 ? TYPE_ORDER.length : i;
+}
+
 // Turn one puzzle entry into an <li> with a numbered link. Title falls back
 // to "Puzzle #{id}" when the editor didn't set one.
 function renderPuzzleLi(puzzle) {
@@ -73,7 +82,9 @@ function renderPuzzleLi(puzzle) {
 function renderCollection(collection) {
   const groups = Array.isArray(collection.typeGroups) ? collection.typeGroups : [];
   // Skip collections that have no puzzles at all — nothing to show.
-  const nonEmpty = groups.filter((g) => Array.isArray(g.puzzles) && g.puzzles.length > 0);
+  const nonEmpty = groups
+    .filter((g) => Array.isArray(g.puzzles) && g.puzzles.length > 0)
+    .sort((a, b) => typeRank(a.type) - typeRank(b.type) || a.type.localeCompare(b.type));
   if (!nonEmpty.length) return '';
 
   // One column per game type, always with a heading — even when only one
