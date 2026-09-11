@@ -136,11 +136,9 @@ function render() {
   if (state.finished) { renderEnd(); return; }
   const main = mainSlot();
   const total = totalQuestions();
-  // Clues render as plain text, left-aligned, separated by a gold sparkle —
-  // matching the reference mockup (the ✦ is the site's own HPVN brand glyph).
   const clueChips = sortedClues()
     .map((c) => `<span class="cf-clue">${escapeHtml(c)}</span>`)
-    .join('<span class="cf-clue-sep" aria-hidden="true">✦</span>');
+    .join('');
   main.innerHTML = `
     <div class="play-header">
       <h1>${escapeHtml(titleText())}</h1>
