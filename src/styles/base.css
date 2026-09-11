@@ -1624,21 +1624,26 @@ input, textarea, select { font: inherit; color: inherit; }
 }
 .cf-play-score { font-weight: 700; color: var(--fg); }
 
+/* Plain text, left-aligned, sparkle-separated (matches the reference mockup):
+   an inline run of clue words with a gold ✦ between each. The row gap plus
+   the separator falling at line breaks reproduce the mockup's wrapping. */
 .cf-clue-dump {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  max-width: 640px;
-  margin: 0 auto 20px;
+  align-items: baseline;
+  gap: 4px 10px;
+  max-width: 720px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
 }
 .cf-clue {
-  font-size: 14px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--bg-elev);
+  font-size: 16px;
   color: var(--fg);
+}
+.cf-clue-sep {
+  color: var(--cf-medium);
+  font-size: 14px;
+  user-select: none;
 }
 
 .cf-play-interact { max-width: 520px; margin: 0 auto; }
