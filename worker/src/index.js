@@ -160,17 +160,21 @@ function validateStrands(puzzle) {
   const spangramErr = checkPath(spangram.word, spangram.path, 'spangram');
   if (spangramErr) return spangramErr;
 
-  // Spangram must touch two opposite edges (top+bottom OR left+right).
-  let touchesTop = false, touchesBottom = false, touchesLeft = false, touchesRight = false;
-  for (const idx of spangram.path) {
+  // Spangram must START on one edge and END on the opposite edge: its two
+  // endpoints lie on top+bottom or left+right. A mid-path cell touching an edge
+  // does not count. Existing stored puzzles are never re-validated on read, so
+  // this only gates new writes.
+  const edgesOf = (idx) => {
     const r = Math.floor(idx / cols), c = idx % cols;
-    if (r === 0) touchesTop = true;
-    if (r === rows - 1) touchesBottom = true;
-    if (c === 0) touchesLeft = true;
-    if (c === cols - 1) touchesRight = true;
-  }
-  if (!((touchesTop && touchesBottom) || (touchesLeft && touchesRight))) {
-    return 'spangram must touch two opposite edges';
+    return { top: r === 0, bottom: r === rows - 1, left: c === 0, right: c === cols - 1 };
+  };
+  const spanA = edgesOf(spangram.path[0]);
+  const spanB = edgesOf(spangram.path[spangram.path.length - 1]);
+  const spansOpposite =
+    (spanA.top && spanB.bottom) || (spanA.bottom && spanB.top) ||
+    (spanA.left && spanB.right) || (spanA.right && spanB.left);
+  if (!spansOpposite) {
+    return 'spangram must start and end on opposite edges';
   }
 
   for (let i = 0; i < words.length; i++) {

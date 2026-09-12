@@ -69,12 +69,16 @@ function typeRank(type) {
   return i === -1 ? TYPE_ORDER.length : i;
 }
 
-// Turn one puzzle entry into an <li> with a numbered link. Title falls back
-// to "Puzzle #{id}" when the editor didn't set one.
+// The displayed label for a puzzle. Title falls back to "Puzzle #{id}" when the
+// editor didn't set one. Shared by the sort and the <li> render so both agree.
+function puzzleLabel(puzzle) {
+  return puzzle.title || t('home.collections.puzzleFallback', { id: puzzle.id });
+}
+
+// Turn one puzzle entry into an <li> with a numbered link.
 function renderPuzzleLi(puzzle) {
   const href = playHref(puzzle.type, puzzle.id);
-  const label = puzzle.title || t('home.collections.puzzleFallback', { id: puzzle.id });
-  return `<li><a href="${href}">${escapeHtml(label)}</a></li>`;
+  return `<li><a href="${href}">${escapeHtml(puzzleLabel(puzzle))}</a></li>`;
 }
 
 // Render one collection: name, then one numbered <ol> per game type
@@ -93,7 +97,13 @@ function renderCollection(collection) {
   const groupsHtml = nonEmpty
     .map((g) => {
       const heading = `<h4 class="collection-type-heading">${escapeHtml(t(`home.collections.type.${g.type}`))}</h4>`;
-      const items = g.puzzles.map(renderPuzzleLi).join('');
+      // Sort puzzles alphabetically by their displayed label (the Worker returns
+      // them oldest-first by createdAt). `numeric` gives natural order so a title
+      // like "#2" sorts before "#10". Sort a copy — never mutate the API payload.
+      const sorted = [...g.puzzles].sort((a, b) =>
+        puzzleLabel(a).localeCompare(puzzleLabel(b), undefined, { numeric: true, sensitivity: 'base' })
+      );
+      const items = sorted.map(renderPuzzleLi).join('');
       return `<div class="collection-group">${heading}<ol class="collection-list">${items}</ol></div>`;
     })
     .join('');

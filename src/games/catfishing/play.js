@@ -136,9 +136,12 @@ function render() {
   if (state.finished) { renderEnd(); return; }
   const main = mainSlot();
   const total = totalQuestions();
-  const clueChips = sortedClues()
+  // Clues read as one left-aligned run of plain text, each separated by a gold
+  // sparkle — no pills. Separators are decorative, so they're hidden from
+  // assistive tech.
+  const clueHtml = sortedClues()
     .map((c) => `<span class="cf-clue">${escapeHtml(c)}</span>`)
-    .join('');
+    .join('<span class="cf-clue-sep" aria-hidden="true">✦</span>');
   main.innerHTML = `
     <div class="play-header">
       <h1>${escapeHtml(titleText())}</h1>
@@ -147,7 +150,7 @@ function render() {
       <span>${escapeHtml(t('catfishing.play.questionOf', { n: state.current + 1, total }))}</span>
       <span class="cf-play-score">${escapeHtml(t('catfishing.play.score', { score: score(), total }))}</span>
     </div>
-    <div class="cf-clue-dump" id="cf-clue-dump">${clueChips}</div>
+    <div class="cf-clue-dump" id="cf-clue-dump">${clueHtml}</div>
     <div class="feedback" id="feedback"></div>
     <div class="cf-play-interact" id="cf-interact"></div>
   `;
@@ -164,17 +167,22 @@ function renderInteract() {
 }
 
 function renderGuess(el) {
+  // Skip (left) and check/submit (right) flank the input as circular icon
+  // buttons. Skip is type="button" so it doesn't submit the form; the check is
+  // the form's submit control. Both carry text labels for assistive tech.
   el.innerHTML = `
     <form class="cf-guess-row" id="cf-guess-form">
+      <button type="button" class="cf-icon-btn cf-skip-icon" id="cf-skip-btn"
+              aria-label="${escapeHtml(t('catfishing.play.skipButton'))}"
+              title="${escapeHtml(t('catfishing.play.skipButton'))}">»</button>
       <input type="text" class="input-block cf-guess-input" id="cf-guess-input"
              placeholder="${escapeHtml(t('catfishing.play.guessPlaceholder'))}"
              autocomplete="off" autocapitalize="off" spellcheck="false"
              aria-label="${escapeHtml(t('catfishing.play.guessPlaceholder'))}" />
-      <button type="submit" class="btn btn-primary" id="cf-guess-btn">${escapeHtml(t('catfishing.play.guessButton'))}</button>
+      <button type="submit" class="cf-icon-btn cf-check-icon" id="cf-guess-btn"
+              aria-label="${escapeHtml(t('catfishing.play.guessButton'))}"
+              title="${escapeHtml(t('catfishing.play.guessButton'))}">✓</button>
     </form>
-    <div class="cf-skip-row">
-      <button type="button" class="btn btn-sm cf-skip-btn" id="cf-skip-btn">${escapeHtml(t('catfishing.play.skipButton'))}</button>
-    </div>
   `;
   const input = document.getElementById('cf-guess-input');
   input.value = state.guessValue;
@@ -213,7 +221,8 @@ function renderRevealed(el) {
     ? `<p class="cf-reveal-answer">${escapeHtml(t('catfishing.play.answerWas'))} <strong>${escapeHtml(primary || '')}</strong>${showBoth ? ` <span class="cf-reveal-alt">(${escapeHtml(secondary)})</span>` : ''}</p>`
     : '';
   const markClass = credited ? 'hit' : 'miss';
-  const markGlyph = credited ? '✓' : '✗';
+  // Match the share tiles: 🐈 hit, 🎣 override, 🐟 miss.
+  const markGlyph = r.outcome === 'override' ? '🎣' : credited ? '🐈' : '🐟';
   const markLabel = r.outcome === 'override'
     ? t('catfishing.play.markOverride')
     : credited ? t('catfishing.play.markHit')
@@ -414,7 +423,7 @@ function renderEnd() {
     const a = r.answer || {};
     const primary = lang === 'vi' ? (a.vi || a.en) : (a.en || a.vi);
     const markClass = credited ? 'hit' : 'miss';
-    const markGlyph = r.outcome === 'override' ? '🟰' : credited ? '✓' : '✗';
+    const markGlyph = r.outcome === 'override' ? '🎣' : credited ? '🐈' : '🐟';
     const pct = correctPct(i);
     const pctText = pct == null ? '' : t('catfishing.play.correctPct', { pct });
     const rare = pct != null && pct < RARE_ANSWER_PCT

@@ -1483,19 +1483,57 @@ input, textarea, select { font: inherit; color: inherit; }
 .cf-q-title { font-weight: 700; white-space: nowrap; }
 .cf-q-answer { flex: 1; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cf-q-unset { color: var(--fg-tiny); font-style: italic; }
-.cf-q-body { padding: 6px 14px 16px; border-top: 1px solid var(--border); }
+.cf-q-body { padding: 12px 16px 18px; border-top: 1px solid var(--border); }
 
-.cf-field { margin: 14px 0; }
+.cf-field { margin: 16px 0; }
+/* First field sits flush under the body padding; no doubled top gap. */
+.cf-q-body > :first-child { margin-top: 0; }
+/* Stacked answer/alias rows need their own vertical rhythm — a bare .meta-row
+   has none, so two in a row would jam together (matches the Strands editor's
+   explicit meta-row spacing). */
+.cf-q-body .meta-row + .meta-row { margin-top: 14px; }
+.cf-q-body .meta-row + .field-help { margin-top: 8px; }
 
-/* Section header with an inline action (Randomize set). */
-.cf-section-head {
+/* Questions section header: title + intro on the left, the Randomize-set
+   button with its own explanation on the right, so the hint clearly belongs to
+   the button rather than floating under the section heading. */
+.cf-questions-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 24px;
   flex-wrap: wrap;
+  margin-bottom: 18px;
 }
-.cf-randomize-hint { font-style: italic; }
+.cf-questions-head-main { flex: 1; min-width: 240px; }
+.cf-questions-head-main .editor-section-title { margin-bottom: 6px; }
+.cf-questions-intro { margin-top: 0; max-width: 62ch; }
+.cf-randomize-set-group {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 300px;
+}
+.cf-randomize-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--fg-tiny);
+  font-style: italic;
+  text-align: right;
+}
+.cf-randomize-set-group .cf-translate-note { text-align: right; margin: 0; }
+@media (max-width: 560px) {
+  .cf-randomize-set-group {
+    align-items: flex-start;
+    max-width: none;
+    width: 100%;
+  }
+  .cf-randomize-hint,
+  .cf-randomize-set-group .cf-translate-note { text-align: left; }
+}
 
 /* Entity picker + per-question Randomize button share a row. */
 .cf-entity-row { display: flex; gap: 8px; align-items: flex-start; }
@@ -1546,9 +1584,10 @@ input, textarea, select { font: inherit; color: inherit; }
   gap: 8px;
   align-items: center;
 }
-.cf-clue-head { margin-bottom: 4px; }
-.cf-clue-row { margin-bottom: 6px; }
+.cf-clue-head { margin-bottom: 6px; }
+.cf-clue-row { margin-bottom: 8px; }
 .cf-clues-empty { color: var(--fg-tiny); font-size: 13px; font-style: italic; }
+.cf-add-clue { margin-top: 10px; }
 
 /* Resolution status badges (dot in the table, labelled chip in the legend). */
 .cf-badge {
@@ -1612,41 +1651,78 @@ input, textarea, select { font: inherit; color: inherit; }
    no per-theme overrides here. Hit reuses the "dictionary" green, miss the
    "unresolved" red — the same two signal colours the editor already themes. */
 
+/* Compact status bar: "Q 1 · 5" on the left, score on the right, small-caps. */
 .cf-play-progress {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
   max-width: 640px;
-  margin: 0 auto 16px;
-  font-size: 14px;
+  margin: 0 auto 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--fg-muted);
 }
-.cf-play-score { font-weight: 700; color: var(--fg); }
+.cf-play-score { color: var(--fg); }
 
+/* Clues as a single left-aligned run of plain text, separated by gold
+   sparkles. No pills — the container is centred on the page but its text reads
+   left-to-right like a category list. */
 .cf-clue-dump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
   max-width: 640px;
-  margin: 0 auto 20px;
+  margin: 0 auto 24px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--fg);
+  text-align: left;
 }
-.cf-clue {
-  font-size: 14px;
-  padding: 5px 12px;
+.cf-clue-sep {
+  color: var(--cf-medium);
+  margin: 0 8px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.cf-play-interact { max-width: 640px; margin: 0 auto; }
+
+/* Skip + check flank the input as circular icon buttons. */
+.cf-guess-row { display: flex; gap: 10px; align-items: center; }
+.cf-guess-row .cf-guess-input {
+  flex: 1;
   border-radius: 999px;
-  border: 1px solid var(--border);
+  padding: 12px 18px;
+  font-size: 15px;
+}
+.cf-icon-btn {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1.5px solid var(--border-strong);
   background: var(--bg-elev);
   color: var(--fg);
+  transition: background 0.15s ease, filter 0.15s ease, transform 0.05s ease;
 }
-
-.cf-play-interact { max-width: 520px; margin: 0 auto; }
-
-.cf-guess-row { display: flex; gap: 8px; }
-.cf-guess-row .cf-guess-input { flex: 1; }
-.cf-skip-row { margin-top: 10px; text-align: center; }
-.cf-skip-btn { color: var(--fg-muted); }
+.cf-icon-btn:hover { background: var(--bg-elev-2); }
+.cf-icon-btn:active { transform: translateY(1px); }
+.cf-icon-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.cf-skip-icon { color: var(--fg-muted); font-size: 22px; }
+.cf-check-icon {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.cf-check-icon:hover { filter: brightness(1.1); background: var(--accent); }
 
 .cf-confirm { text-align: center; padding: 8px 0; }
 .cf-confirm-prompt { font-size: 16px; margin-bottom: 14px; }

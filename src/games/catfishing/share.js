@@ -1,19 +1,19 @@
 // Build the Catfishing share paste. One line of tiles, one per question in
 // order, plus the score and the link:
 //   Title
-//   ✅✅❌🟰✅  (per-question outcome)
+//   🐈🐈🐟🎣🐈  (per-question outcome)
 //   3/5
 //   Link
 //
 // Tiles:
-//   ✅  hit — matched by the server
-//   🟰  override — self-declared correct (honor system); still a point, but
+//   🐈  hit — matched by the server (the cat caught its fish)
+//   🎣  override — self-declared correct (honor system); still a point, but
 //       flagged distinctly so a shared result stays honest about how it landed
-//   ❌  miss
+//   🐟  miss — the fish got away
 //
 // `outcomes` is an ordered array of 'hit' | 'override' | 'miss'.
 
-const TILE = { hit: '✅', override: '🟰', miss: '❌' };
+const TILE = { hit: '🐈', override: '🎣', miss: '🐟' };
 
 function tileFor(outcome) {
   return TILE[outcome] || TILE.miss;

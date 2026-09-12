@@ -180,13 +180,17 @@ export async function mountCatfishingEditor(onSwitch) {
       </div>
 
       <div class="editor-section">
-        <div class="cf-section-head">
-          <div class="editor-section-title">${escapeHtml(t('catfishing.editor.questions.heading'))}</div>
-          <button type="button" class="btn btn-sm btn-primary" id="cf-randomize-set">${escapeHtml(t('catfishing.editor.randomize.set'))}</button>
+        <div class="cf-questions-head">
+          <div class="cf-questions-head-main">
+            <div class="editor-section-title">${escapeHtml(t('catfishing.editor.questions.heading'))}</div>
+            <p class="field-help cf-questions-intro">${escapeHtml(t('catfishing.editor.questions.help'))}</p>
+          </div>
+          <div class="cf-randomize-set-group">
+            <button type="button" class="btn btn-sm btn-primary" id="cf-randomize-set">${escapeHtml(t('catfishing.editor.randomize.set'))}</button>
+            <p class="cf-randomize-hint">${escapeHtml(t('catfishing.editor.randomize.setHint'))}</p>
+            <span class="cf-translate-note" id="cf-randomize-note"></span>
+          </div>
         </div>
-        <p class="field-help">${escapeHtml(t('catfishing.editor.questions.help'))}</p>
-        <p class="field-help cf-randomize-hint">${escapeHtml(t('catfishing.editor.randomize.setHint'))}</p>
-        <span class="cf-translate-note" id="cf-randomize-note"></span>
         <div id="cf-questions"></div>
       </div>
 
@@ -581,7 +585,7 @@ function buildTranslationPrompt(list) {
   // canonical Vietnamese HP style used across the site.
   const items = list.map((s) => `- ${s}`).join('\n');
   return [
-    'Translate these Harry Potter Fandom category names and character/entity names',
+    'Translate these Harry Potter Wiki category names and character/entity names',
     'from English to Vietnamese. Use the canonical Lý Lan Vietnamese translation of',
     'Harry Potter for all names, houses, spells, and terms (e.g. "Muggle-borns" →',
     '"Phù thuỷ gốc Muggle"). Keep each translation concise — it is a game clue.',

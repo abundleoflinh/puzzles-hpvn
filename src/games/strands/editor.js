@@ -18,7 +18,7 @@ import {
   ROW_MIN, ROW_MAX, COL_MIN, COL_MAX, ROW_DEFAULT, COL_DEFAULT,
   SPANGRAM_MIN, SPANGRAM_MAX, WORD_MIN_LEN, WORD_MIN_COUNT, WORD_MAX_COUNT,
 } from './constants.js';
-import { normalizeLetters, validatePuzzle, areAdjacent, touchesOppositeEdges } from './model.js';
+import { normalizeLetters, validatePuzzle, areAdjacent, spansOppositeEdges } from './model.js';
 
 const PASSWORD_KEY = 'hpvn.editor.password';
 const NEW_COLLECTION_VALUE = '__new__';
@@ -784,4 +784,4 @@ function onReset() {
 }
 
 // Currently unused but kept to sanity-check module structure.
-export function _isTouching(path, rows, cols) { return touchesOppositeEdges(path, rows, cols); }
+export function _spansOppositeEdges(path, rows, cols) { return spansOppositeEdges(path, rows, cols); }

@@ -42,17 +42,22 @@ export function neighbors(idx, rows, cols) {
   return out;
 }
 
-// Does `path` touch two opposite edges of a rows×cols grid?
-export function touchesOppositeEdges(path, rows, cols) {
-  let top = false, bottom = false, left = false, right = false;
-  for (const idx of path) {
-    const r = Math.floor(idx / cols), c = idx % cols;
-    if (r === 0) top = true;
-    if (r === rows - 1) bottom = true;
-    if (c === 0) left = true;
-    if (c === cols - 1) right = true;
-  }
-  return (top && bottom) || (left && right);
+// Which edges of a rows×cols grid does cell `idx` lie on? Corner cells lie
+// on two. Row-major indexing.
+function edgesOfCell(idx, rows, cols) {
+  const r = Math.floor(idx / cols), c = idx % cols;
+  return { top: r === 0, bottom: r === rows - 1, left: c === 0, right: c === cols - 1 };
+}
+
+// Does `path` START on one edge and END on the opposite edge? Only the two
+// endpoints count — a mid-path cell that happens to touch an edge does not.
+// (This is stricter than the old "touches opposite edges anywhere" rule.)
+export function spansOppositeEdges(path, rows, cols) {
+  if (!Array.isArray(path) || path.length < 2) return false;
+  const a = edgesOfCell(path[0], rows, cols);
+  const b = edgesOfCell(path[path.length - 1], rows, cols);
+  return (a.top && b.bottom) || (a.bottom && b.top) ||
+         (a.left && b.right) || (a.right && b.left);
 }
 
 // Validate one path against a grid + expected word. Returns null on success
@@ -105,7 +110,7 @@ export function validatePuzzle(puzzle) {
   };
   const spanErr = checkOne(spangram.word, spangram.path, 'spangram');
   if (spanErr) return spanErr;
-  if (!touchesOppositeEdges(spangram.path, rows, cols)) return 'spangram must touch two opposite edges';
+  if (!spansOppositeEdges(spangram.path, rows, cols)) return 'spangram must start and end on opposite edges';
 
   for (let i = 0; i < words.length; i++) {
     const w = words[i];
