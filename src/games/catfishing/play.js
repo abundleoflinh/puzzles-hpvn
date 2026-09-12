@@ -198,7 +198,9 @@ function renderGuess(el) {
     <form class="cf-guess-row" id="cf-guess-form">
       <button type="button" class="cf-icon-btn cf-skip-icon" id="cf-skip-btn"
               aria-label="${escapeHtml(t('catfishing.play.skipButton'))}"
-              title="${escapeHtml(t('catfishing.play.skipButton'))}">»</button>
+              title="${escapeHtml(t('catfishing.play.skipButton'))}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5l7 7-7 7"/><path d="M13 5l7 7-7 7"/></svg>
+      </button>
       <input type="text" class="input-block cf-guess-input" id="cf-guess-input"
              placeholder="${escapeHtml(t('catfishing.play.guessPlaceholder'))}"
              autocomplete="off" autocapitalize="off" spellcheck="false"

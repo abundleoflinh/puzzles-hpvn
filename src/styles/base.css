@@ -1759,9 +1759,10 @@ input, textarea, select { font: inherit; color: inherit; }
 .cf-icon-btn:hover { background: var(--bg-elev-2); }
 .cf-icon-btn:active { transform: translateY(1px); }
 .cf-icon-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-/* The » glyph reads optically small, so size it up and bolden it to balance
-   the checkmark on the other side of the input. */
-.cf-skip-icon { color: var(--fg-muted); font-size: 30px; font-weight: 700; }
+/* Skip uses an SVG double-chevron so it stays crisp and centred (the » glyph's
+   side-bearings push it off-centre and thicken when bolded). */
+.cf-skip-icon { color: var(--fg-muted); }
+.cf-skip-icon svg { width: 22px; height: 22px; display: block; }
 .cf-check-icon {
   background: var(--accent);
   color: var(--accent-fg);
