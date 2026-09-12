@@ -120,6 +120,24 @@ function sortedClues() {
   return clues.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 }
 
+// One progress pip per question. The pip for the question in play reads
+// "current"; answered questions carry their outcome colour (credited vs miss)
+// so the strip doubles as a mini scoreboard; the rest stay faint.
+function pipsHtml(markCurrent = true) {
+  const total = totalQuestions();
+  let out = '';
+  for (let i = 0; i < total; i++) {
+    let cls = 'future';
+    const r = state.results[i];
+    if (r) cls = r.outcome === 'hit' || r.outcome === 'override' ? 'hit' : 'miss';
+    // On the end screen every pip shows its final outcome; mid-play the pip for
+    // the question in play wins the "current" highlight over its outcome.
+    if (markCurrent && i === state.current) cls = 'current';
+    out += `<span class="cf-pip cf-pip-${cls}"></span>`;
+  }
+  return out;
+}
+
 // ============== RENDERERS ==============
 
 function renderLoading() { mainSlot().innerHTML = `<div class="play-loading">${t('play.loading')}</div>`; }
@@ -136,23 +154,29 @@ function render() {
   if (state.finished) { renderEnd(); return; }
   const main = mainSlot();
   const total = totalQuestions();
+  const clues = sortedClues();
   // Clues read as one left-aligned run of plain text, each separated by a gold
   // sparkle — no pills. Separators are decorative, so they're hidden from
   // assistive tech.
-  const clueHtml = sortedClues()
+  const clueHtml = clues
     .map((c) => `<span class="cf-clue">${escapeHtml(c)}</span>`)
     .join('<span class="cf-clue-sep" aria-hidden="true">✦</span>');
+  // Whole question view is one framed card: a header band (title, progress
+  // pips, score) over a body (clue count, clues, guess row).
   main.innerHTML = `
-    <div class="play-header">
-      <h1>${escapeHtml(titleText())}</h1>
+    <div class="cf-card">
+      <div class="cf-card-header">
+        <span class="cf-card-title">${escapeHtml(titleText())}</span>
+        <span class="cf-pips" role="img" aria-label="${escapeHtml(t('catfishing.play.questionOf', { n: state.current + 1, total }))}">${pipsHtml()}</span>
+        <span class="cf-play-score">${escapeHtml(t('catfishing.play.score', { score: score(), total }))}</span>
+      </div>
+      <div class="cf-card-body">
+        <p class="cf-clue-count">${escapeHtml(t('catfishing.play.clueCount', { n: clues.length }))}</p>
+        <div class="cf-clue-dump" id="cf-clue-dump">${clueHtml}</div>
+        <div class="feedback" id="feedback"></div>
+        <div class="cf-play-interact" id="cf-interact"></div>
+      </div>
     </div>
-    <div class="cf-play-progress">
-      <span>${escapeHtml(t('catfishing.play.questionOf', { n: state.current + 1, total }))}</span>
-      <span class="cf-play-score">${escapeHtml(t('catfishing.play.score', { score: score(), total }))}</span>
-    </div>
-    <div class="cf-clue-dump" id="cf-clue-dump">${clueHtml}</div>
-    <div class="feedback" id="feedback"></div>
-    <div class="cf-play-interact" id="cf-interact"></div>
   `;
   renderInteract();
   restoreFeedback();
@@ -445,18 +469,21 @@ function renderEnd() {
     : '';
 
   main.innerHTML = `
-    <div class="play-header">
-      <h1>${escapeHtml(titleText())}</h1>
-    </div>
-    <div class="play-result cf-end">
-      <h2>${escapeHtml(t('catfishing.play.endTitle'))}</h2>
-      <p class="cf-end-score">${escapeHtml(t('catfishing.play.endScore', { score: sc, total }))}</p>
-      ${completedLine}
-      <div class="cf-summary">${rows.join('')}</div>
-      <div class="play-result-actions">
-        <button type="button" class="btn btn-primary" id="cf-share-btn">${escapeHtml(t('play.result.share'))}</button>
-        <button type="button" class="btn" id="cf-reset-btn">${escapeHtml(t('play.result.reset'))}</button>
-        <a href="/" class="btn">${escapeHtml(t('play.result.playAnother'))}</a>
+    <div class="cf-card">
+      <div class="cf-card-header">
+        <span class="cf-card-title">${escapeHtml(titleText())}</span>
+        <span class="cf-pips" role="img" aria-label="${escapeHtml(t('catfishing.play.score', { score: sc, total }))}">${pipsHtml(false)}</span>
+      </div>
+      <div class="cf-card-body cf-end">
+        <h2>${escapeHtml(t('catfishing.play.endTitle'))}</h2>
+        <p class="cf-end-score">${escapeHtml(t('catfishing.play.endScore', { score: sc, total }))}</p>
+        ${completedLine}
+        <div class="cf-summary">${rows.join('')}</div>
+        <div class="play-result-actions">
+          <button type="button" class="btn btn-primary" id="cf-share-btn">${escapeHtml(t('play.result.share'))}</button>
+          <button type="button" class="btn" id="cf-reset-btn">${escapeHtml(t('play.result.reset'))}</button>
+          <a href="/" class="btn">${escapeHtml(t('play.result.playAnother'))}</a>
+        </div>
       </div>
     </div>
   `;

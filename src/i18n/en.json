@@ -198,6 +198,7 @@
   "strands.editor.load.masked": "Couldn't load the full puzzle for editing (got the player view). Wait a minute and try again.",
 
   "catfishing.play.questionOf": "Q{n} · {total}",
+  "catfishing.play.clueCount": "{n} clues",
   "catfishing.play.score": "Score {score}/{total}",
   "catfishing.play.guessPlaceholder": "Who or what is it? (EN or VI)",
   "catfishing.play.guessButton": "Guess",

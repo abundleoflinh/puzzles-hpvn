@@ -1651,28 +1651,71 @@ input, textarea, select { font: inherit; color: inherit; }
    no per-theme overrides here. Hit reuses the "dictionary" green, miss the
    "unresolved" red — the same two signal colours the editor already themes. */
 
-/* Compact status bar: "Q 1 · 5" on the left, score on the right, small-caps. */
-.cf-play-progress {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+/* The whole question view is one framed card: a header band (title, progress
+   pips, score) over a body (clue count, clues, guess row). */
+.cf-card {
   max-width: 640px;
-  margin: 0 auto 18px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-elev);
+  overflow: hidden;
 }
-.cf-play-score { color: var(--fg); }
+.cf-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  background: var(--bg-elev-2);
+  border-bottom: 1px solid var(--border);
+}
+.cf-card-title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-wordmark);
+  font-weight: var(--font-wordmark-weight);
+  letter-spacing: var(--font-wordmark-tracking);
+  font-size: 18px;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+:root[data-theme="hpvn"] .cf-card-title { color: var(--accent); }
+
+/* Progress pips: one per question. Answered pips carry their outcome colour;
+   the current pip is accent; the rest stay faint. */
+.cf-pips { display: flex; gap: 6px; align-items: center; flex: none; }
+.cf-pip { width: 22px; height: 5px; border-radius: 999px; background: var(--border-strong); }
+.cf-pip-hit { background: var(--cf-status-direct); }
+.cf-pip-miss { background: var(--cf-status-bad); }
+.cf-pip-current { background: var(--accent); }
+.cf-pip-future { background: var(--border-strong); opacity: 0.5; }
+@media (max-width: 460px) { .cf-pip { width: 15px; } }
+
+.cf-play-score {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.cf-card-body { padding: 18px; }
+.cf-clue-count {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-tiny);
+}
 
 /* Clues as a single left-aligned run of plain text, separated by gold
-   sparkles. No pills — the container is centred on the page but its text reads
-   left-to-right like a category list. */
+   sparkles. No pills — reads left-to-right like a category list. */
 .cf-clue-dump {
-  max-width: 640px;
-  margin: 0 auto 24px;
+  margin: 0 0 6px;
   font-size: 16px;
   line-height: 1.9;
   color: var(--fg);
@@ -1685,7 +1728,7 @@ input, textarea, select { font: inherit; color: inherit; }
   vertical-align: middle;
 }
 
-.cf-play-interact { max-width: 640px; margin: 0 auto; }
+.cf-play-interact { margin-top: 2px; }
 
 /* Skip + check flank the input as circular icon buttons. */
 .cf-guess-row { display: flex; gap: 10px; align-items: center; }
@@ -1716,7 +1759,9 @@ input, textarea, select { font: inherit; color: inherit; }
 .cf-icon-btn:hover { background: var(--bg-elev-2); }
 .cf-icon-btn:active { transform: translateY(1px); }
 .cf-icon-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-.cf-skip-icon { color: var(--fg-muted); font-size: 22px; }
+/* The » glyph reads optically small, so size it up and bolden it to balance
+   the checkmark on the other side of the input. */
+.cf-skip-icon { color: var(--fg-muted); font-size: 30px; font-weight: 700; }
 .cf-check-icon {
   background: var(--accent);
   color: var(--accent-fg);
@@ -1750,7 +1795,17 @@ input, textarea, select { font: inherit; color: inherit; }
 .cf-reveal-alt { color: var(--fg-tiny); }
 .cf-reveal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-/* End-of-set summary. Reuses .play-result for the card frame + heading colour. */
+/* End-of-set summary. Lives inside the same .cf-card frame as the question
+   view; the body is centred and carries its own heading style (it no longer
+   borrows .play-result). */
+.cf-end { text-align: center; }
+.cf-end h2 {
+  font-family: var(--font-wordmark);
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 6px;
+}
+:root[data-theme="hpvn"] .cf-end h2 { color: var(--accent); }
 .cf-end-score { font-size: 16px; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
 .cf-end-completions { font-size: 13px; color: var(--fg-muted); margin-bottom: 4px; }
 .cf-summary {

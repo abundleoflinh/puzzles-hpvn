@@ -198,6 +198,7 @@
   "strands.editor.load.masked": "Không tải được câu đố đầy đủ để chỉnh sửa (nhận được bản dành cho người chơi). Vui lòng đợi một phút rồi thử lại.",
 
   "catfishing.play.questionOf": "Câu {n} · {total}",
+  "catfishing.play.clueCount": "{n} gợi ý",
   "catfishing.play.score": "Điểm {score}/{total}",
   "catfishing.play.guessPlaceholder": "Là ai hoặc là gì? (Anh hoặc Việt)",
   "catfishing.play.guessButton": "Đoán",
