@@ -24,8 +24,13 @@
   "home.collections.type.strands": "Strands",
   "home.collections.type.catfishing": "Catfishing",
 
-  "footer.credit.nyt": "Custom edition inspired by the {link}.",
-  "footer.credit.nyt.linkText": "New York Times original game",
+  "footer.credit.inspired": "Custom edition inspired by {link}.",
+  "footer.credit.link.connections": "New York Times Connections",
+  "footer.credit.link.strands": "New York Times Strands",
+  "footer.credit.link.nyt": "New York Times games",
+  "footer.credit.link.catfishing": "catfishing.net",
+  "footer.credit.wiki": "Categories sourced from the {link}.",
+  "footer.credit.link.wiki": "Harry Potter Wiki",
   "footer.credit.instructions": "Vietnamese instructions adapted from {name}.",
 
   "info.title": "How to play",

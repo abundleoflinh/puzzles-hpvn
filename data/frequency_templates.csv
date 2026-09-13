@@ -1,64 +1,56 @@
 count,category,likely_pattern,slot_value
-88,Unnamed family members,{X} members,Unnamed family
-78,Battle of Hogwarts participants,{X} participants,Battle of Hogwarts
-27,Hogsmeade residents,{X} residents,Hogsmeade
-26,Siege of Hogwarts participants,{X} participants,Siege of Hogwarts
+76,Battle of Hogwarts participants,{X} participants,Battle of Hogwarts
 25,Battle of the Department of Mysteries participants,{X} participants,Battle of the Department of Mysteries
-23,Duelling Club members,{X} members,Duelling Club
+24,Unnamed family members,{X} members,Unnamed family
 21,Battle of the Astronomy Tower participants,{X} participants,Battle of the Astronomy Tower
+20,Duelling Club members,{X} members,Duelling Club
 19,Battle of the Seven Potters participants,{X} participants,Battle of the Seven Potters
-17,Individuals with shortened names,Individuals with {X},shortened names
+16,Individuals with shortened names,Individuals with {X},shortened names
 16,Meeting at Malfoy Manor participants,{X} participants,Meeting at Malfoy Manor
+16,Siege of Hogwarts participants,{X} participants,Siege of Hogwarts
 15,Skirmish at Malfoy Manor participants,{X} participants,Skirmish at Malfoy Manor
-11,Daily Prophet staff,{X} staff,Daily Prophet
 10,Return of Lord Voldemort participants,{X} participants,Return of Lord Voldemort
+9,Daily Prophet staff,{X} staff,Daily Prophet
 9,Minister for Magic's Support Staff,{X} Staff,Minister for Magic's Support
-9,Non-graduate Hogwarts students,{X} students,Non-graduate Hogwarts
 9,Plot to kill Harry Potter participants,{X} participants,Plot to kill Harry Potter
 8,Attack at Godric's Hollow (1981) participants,{X} participants,Attack at Godric's Hollow (1981)
-8,Beauxbatons students,{X} students,Beauxbatons
-8,Godric's Hollow residents,{X} residents,Godric's Hollow
-7,Members of the Alliance,Members of {X},the Alliance
+8,Hogsmeade residents,{X} residents,Hogsmeade
 7,Plot to assassinate Albus Dumbledore participants,{X} participants,Plot to assassinate Albus Dumbledore
 6,Disciplinary hearing of Harry Potter participants,{X} participants,Disciplinary hearing of Harry Potter
 6,Plot to murder Peter Pettigrew participants,{X} participants,Plot to murder Peter Pettigrew
 6,Plot to steal the Philosopher's Stone participants,{X} participants,Plot to steal the Philosopher's Stone
 6,Skirmish at the Room of Requirement participants,{X} participants,Skirmish at the Room of Requirement
-6,Unidentified Hogwarts students,{X} students,Unidentified Hogwarts
-6,Wizengamot members,{X} members,Wizengamot
 5,Attack at Godric's Hollow (1997) participants,{X} participants,Attack at Godric's Hollow (1997)
-5,Crossed Wands members,{X} members,Crossed Wands
-5,Dragon Club members,{X} members,Dragon Club
-5,Durmstrang students,{X} students,Durmstrang
-5,Frog Choir members,{X} members,Frog Choir
-5,Gellert Grindelwald's Paris rally participants,{X} participants,Gellert Grindelwald's Paris rally
+5,Non-graduate Hogwarts students,{X} students,Non-graduate Hogwarts
 5,Plot to open the Chamber of Secrets participants,{X} participants,Plot to open the Chamber of Secrets
-4,Hippogriff Club members,{X} members,Hippogriff Club
-4,Hogwarts Gobstone Club members,{X} members,Hogwarts Gobstone Club
+5,Wizengamot members,{X} members,Wizengamot
+4,Beauxbatons students,{X} students,Beauxbatons
+4,Godric's Hollow residents,{X} residents,Godric's Hollow
 4,Individuals who could speak Gobbledegook,Individuals who {X},could speak Gobbledegook
 4,Little Hangleton residents,{X} residents,Little Hangleton
 4,Ousting of Severus Snape participants,{X} participants,Ousting of Severus Snape
-4,R members,{X} members,R
-4,Sphinx Club members,{X} members,Sphinx Club
 3,Council of Magical Law members,{X} members,Council of Magical Law
+3,Dragon Club members,{X} members,Dragon Club
 3,Duel at Godric's Hollow participants,{X} participants,Duel at Godric's Hollow
-3,Feldcroft residents,{X} residents,Feldcroft
-3,Individuals with disabilities,Individuals with {X},disabilities
-2,Beauxbatons staff,{X} staff,Beauxbatons
+3,Durmstrang students,{X} students,Durmstrang
+3,Gellert Grindelwald's Paris rally participants,{X} participants,Gellert Grindelwald's Paris rally
+3,Hippogriff Club members,{X} members,Hippogriff Club
+2,Committee for the Disposal of Dangerous Creatures members,{X} members,Committee for the Disposal of Dangerous Creatures
 2,Diagon Alley residents,{X} residents,Diagon Alley
-2,Erkstag residents,{X} residents,Erkstag
-2,Hogwarts exchange and transfer students,{X} students,Hogwarts exchange and transfer
 2,Individuals who could speak Mermish,Individuals who {X},could speak Mermish
-2,Nocturnal Order of Tricks and Magical Exhibitions members,{X} members,Nocturnal Order of Tricks and Magical Exhibitions
+2,Individuals with disabilities,Individuals with {X},disabilities
 2,Potions Club members,{X} members,Potions Club
 2,Smeltings students,{X} students,Smeltings
-2,St Oswald's residents,{X} residents,St Oswald's
-2,Wizard's Chess Club members,{X} members,Wizard's Chess Club
+1,Beauxbatons staff,{X} staff,Beauxbatons
 1,Club D'Échecs members,{X} members,Club D'Échecs
-1,Committee for the Disposal of Dangerous Creatures members,{X} members,Committee for the Disposal of Dangerous Creatures
 1,Dark Force Defence League members,{X} members,Dark Force Defence League
 1,Dumbledore's first army members,{X} members,Dumbledore's first army
+1,Erkstag residents,{X} residents,Erkstag
+1,Frog Choir members,{X} members,Frog Choir
+1,Hogwarts Gobstone Club members,{X} members,Hogwarts Gobstone Club
 1,Individuals who knew about Horcruxes,Individuals who {X},knew about Horcruxes
-1,The Unforgivable members,{X} members,The Unforgivable
-1,The Wizard's Voice staff,{X} staff,The Wizard's Voice
+1,Members of the Alliance,Members of {X},the Alliance
+1,R members,{X} members,R
+1,St Oswald's residents,{X} residents,St Oswald's
+1,Unidentified Hogwarts students,{X} students,Unidentified Hogwarts
 1,Wool's Orphanage residents,{X} residents,Wool's Orphanage

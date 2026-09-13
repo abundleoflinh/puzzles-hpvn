@@ -13,9 +13,21 @@
 //   source_bucket          — books | companion_books | fantastic_beasts |
 //                            cursed_child | pottermore | theme_park
 //                            (from raw_categories substring markers; default 'books')
-//   book_canon             — boolean, true iff source_bucket === 'books'.
-//                            Companion books (Broomology, Beedle etc.) count FALSE
-//                            per Linh's dict REVIEW notes ("không có trong 7 sách chính").
+//   book_canon             — boolean, always true for entities kept in the
+//                            catalog (non-book entities are dropped, not flagged).
+//                            When data/appearances.json is present it is
+//                            authoritative: an entity is book-canon if it APPEARS
+//                            in, or is MENTIONED in, at least one of the 7 novels
+//                            per its wiki Appearances section. Entities with no
+//                            novel presence at all are DROPPED (--books-appear-only
+//                            also drops mentioned-only ones). When appearances
+//                            data is missing for an entity, canonicity falls back
+//                            to source_bucket (category markers) and non-'books'
+//                            buckets are likewise dropped. Companion books
+//                            (Broomology, Beedle etc.) count non-book per Linh's
+//                            dict REVIEW notes ("không có trong 7 sách chính").
+//   canon_source           — how book_canon was decided: 'appears' | 'mentioned'
+//                            | 'category_fallback'.
 //
 // The editor pre-fills the difficulty dropdown from suggested_difficulty; editor
 // override wins at author time. This file is committed and read by the editor build,
@@ -27,17 +39,24 @@
 //   --min-char=N          min categories for character type (default 8)
 //   --min-nonchar=N       min categories for non-character types (default 2)
 //   --include-spinoff     bypass exclude_spinoff.txt (auditing only)
+//   --books-appear-only   keep only entities that APPEAR in a novel, dropping
+//                         mentioned-only ones too (default keeps appears+mentioned)
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from './lib/args.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
 const RAW_PATH = resolve(REPO_ROOT, 'data', 'scrape-raw.json');
 const OUT_PATH = resolve(REPO_ROOT, 'data', 'catalog.json');
 const EXCLUDE_PATH = resolve(REPO_ROOT, 'data', 'exclude_spinoff.txt');
+// Output of scripts/scrape-appearances.mjs. Optional: when present, an entity's
+// "actually appears in a novel" flag is authoritative for canonicity and any
+// entity that does NOT appear in a novel is dropped from the catalog entirely.
+const APPEARANCES_PATH = resolve(REPO_ROOT, 'data', 'appearances.json');
 
 // Type markers used to refine the seed tag. Kept narrow to categories that
 // appear on true species / spell / object / location PAGES, not on named
@@ -323,15 +342,13 @@ async function loadExcludeList() {
   return out;
 }
 
-// CLI flag parsing. --include-spinoff bypasses the exclusion list (auditing).
-function parseArgs(argv) {
-  const out = {};
-  for (const a of argv.slice(2)) {
-    if (!a.startsWith('--')) continue;
-    const [k, v] = a.slice(2).split('=');
-    out[k] = v === undefined ? true : v;
-  }
-  return out;
+// Load data/appearances.json (output of scrape-appearances.mjs) into a Map of
+// title -> { parsed, novels_appeared, novels_mentioned }. Empty Map when absent,
+// in which case canonicity falls back to category markers for every entity.
+async function loadAppearances() {
+  if (!existsSync(APPEARANCES_PATH)) return new Map();
+  const obj = JSON.parse(await readFile(APPEARANCES_PATH, 'utf8'));
+  return new Map(Object.entries(obj));
 }
 
 async function main() {
@@ -343,6 +360,14 @@ async function main() {
   const excludeList = args['include-spinoff'] ? new Set() : await loadExcludeList();
   if (excludeList.size) console.log(`spinoff exclude list: ${excludeList.size} entries`);
   else if (args['include-spinoff']) console.log('--include-spinoff: skipping exclusion filter');
+
+  const appearances = await loadAppearances();
+  // Default keeps entities that appear OR are mentioned in a novel (both are
+  // book-derived); --books-appear-only tightens to appears-only.
+  const booksAppearOnly = !!args['books-appear-only'];
+  console.log(appearances.size
+    ? `appearances data: ${appearances.size} records (authoritative for canonicity; policy=${booksAppearOnly ? 'appears-only' : 'appears-or-mentioned'})`
+    : 'appearances data: none found — canonicity falls back to category markers (run cf:appearances)');
 
   // Per-type minimum-categories floor. Characters need many categories because
   // their median is 5 and stub Muggle bystanders proliferate. Non-characters
@@ -410,6 +435,9 @@ async function main() {
   const excluded = [];
   let stubCount = 0;
   let conceptCount = 0;
+  let droppedNoNovel = 0;        // parsed Appearances, no novel presence at all (N)
+  let droppedMentionedOnly = 0;  // mentioned in a novel but not appearing (M) — only under --books-appear-only
+  let droppedFallback = 0;       // no appearances data, category markers say non-book
   const slugCollisions = new Map(); // slug -> count, for dedupe suffix
   for (const title of titles) {
     const e = raw[title];
@@ -486,8 +514,32 @@ async function main() {
       key = `${key}_${n}`;
     }
 
+    // Canonicity + drop decision. When Appearances data is present for this
+    // entity it is authoritative: keep if it APPEARS in a novel, or (default)
+    // is at least MENTIONED in one — both are book-derived knowledge. Only
+    // entities with no novel presence at all are dropped. --books-appear-only
+    // tightens this to appears-only, dropping mentioned-only entities too.
+    // Entities with no Appearances data fall back to category-marker
+    // classification. Anything not book-canon is dropped from the catalog.
     const source_bucket = classifyCanonicity(categories);
-    const book_canon = source_bucket === 'books';
+    const ap = appearances.get(title);
+    let book_canon, canon_source;
+    if (ap && ap.parsed) {
+      const appeared = (ap.novels_appeared || []).length > 0;
+      const mentioned = (ap.novels_mentioned || []).length > 0;
+      if (appeared) { canon_source = 'appears'; }
+      else if (mentioned && !booksAppearOnly) { canon_source = 'mentioned'; }
+      else {
+        if (mentioned) droppedMentionedOnly++; // dropped only under --books-appear-only
+        else droppedNoNovel++;                 // no novel presence at all (spin-off/other media)
+        continue;
+      }
+      book_canon = true;
+    } else {
+      book_canon = source_bucket === 'books';
+      if (!book_canon) { droppedFallback++; continue; }
+      canon_source = 'category_fallback';
+    }
 
     catalog[key] = {
       canonical_en: title,
@@ -499,6 +551,11 @@ async function main() {
       suggested_difficulty,
       source_bucket,
       book_canon,
+      // Audit trail: how canonicity was decided and, for entities with parsed
+      // Appearances, which novels they appear in / are only mentioned in.
+      canon_source,
+      novels_appeared: ap && ap.parsed ? ap.novels_appeared : undefined,
+      novels_mentioned: ap && ap.parsed ? ap.novels_mentioned : undefined,
     };
   }
 
@@ -511,6 +568,13 @@ async function main() {
   console.log(`stubs skipped (per-type floor char=${minChar} nonchar=${minNonChar}): ${stubCount}`);
   console.log(`concept pages skipped (title matches a category): ${conceptCount}`);
   if (excluded.length) console.log(`spinoff excluded: ${excluded.length}`);
+  console.log(`dropped — no novel presence (from Appearances section): ${droppedNoNovel}`);
+  console.log(`dropped — mentioned-only (only under --books-appear-only): ${droppedMentionedOnly}`);
+  console.log(`dropped — non-book by category fallback (no appearances data): ${droppedFallback}`);
+  // How the kept entities were classified, so the appears-vs-mentioned split is visible.
+  const byCanon = {};
+  for (const e of Object.values(catalog)) byCanon[e.canon_source] = (byCanon[e.canon_source] || 0) + 1;
+  console.log(`kept by canon source: ${Object.entries(byCanon).map(([k, v]) => `${k}=${v}`).join('  ')}`);
   const total = Object.keys(catalog).length || 1;
   const pct = (n) => `${((n / total) * 100).toFixed(1)}%`;
   console.log(`\ndifficulty mix (overall):`);

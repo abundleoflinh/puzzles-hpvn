@@ -28,6 +28,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from './lib/args.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
@@ -147,17 +148,6 @@ async function writeJson(path, data) {
 function isBlockedCategory(name) {
   const lower = name.toLowerCase();
   return CATEGORY_BLOCK_SUBSTRINGS.some((sub) => lower.includes(sub));
-}
-
-// Parse "--flag=value" and "--flag" from argv.
-function parseArgs(argv) {
-  const out = {};
-  for (const arg of argv.slice(2)) {
-    if (!arg.startsWith('--')) continue;
-    const [k, v] = arg.slice(2).split('=');
-    out[k] = v === undefined ? true : v;
-  }
-  return out;
 }
 
 // --------------------------------------------------------------------------

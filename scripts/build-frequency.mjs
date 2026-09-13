@@ -21,6 +21,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from './lib/args.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
@@ -46,16 +47,6 @@ function csvField(s) {
   const str = String(s ?? '');
   if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
   return str;
-}
-
-function parseArgs(argv) {
-  const out = {};
-  for (const a of argv.slice(2)) {
-    if (!a.startsWith('--')) continue;
-    const [k, v] = a.slice(2).split('=');
-    out[k] = v === undefined ? true : v;
-  }
-  return out;
 }
 
 async function main() {

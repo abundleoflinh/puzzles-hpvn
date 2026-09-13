@@ -14,20 +14,11 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from './lib/args.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..');
 const CATALOG_PATH = resolve(REPO_ROOT, 'data', 'catalog.json');
-
-function parseArgs(argv) {
-  const out = {};
-  for (const a of argv.slice(2)) {
-    if (!a.startsWith('--')) continue;
-    const [k, v] = a.slice(2).split('=');
-    out[k] = v === undefined ? true : v;
-  }
-  return out;
-}
 
 // Deterministic PRNG (mulberry32) — reproducible sampling when --seed is set.
 function mulberry32(a) {

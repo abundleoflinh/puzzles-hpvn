@@ -34,38 +34,88 @@ function renderHeader() {
   updateLangButton();
 }
 
-function renderFooter() {
-  const el = document.querySelector('[data-slot="footer"]');
-  if (!el) return;
-  el.innerHTML = `
-    <p class="footer-credit" data-slot="footer-nyt"></p>
-    <p class="footer-credit" data-slot="footer-instructions"></p>
-  `;
-  updateFooterNytLine();
-  updateFooterInstructionsLine();
+// Footer credit is game-aware. Each game contributes its own credit lines;
+// a page tells us which game(s) it is via initChrome({ games }). Play pages
+// pass a single game; home/editor pass none, so we credit all known games.
+// Only Connections and Strands descend from NYT; Catfishing is inspired by
+// catfishing.net and draws its clue categories from the Harry Potter Wiki.
+// Vietnamese instructions (by thu_nguyen_209) exist only for Connections and
+// Strands, so that line is suppressed on Catfishing.
+const FOOTER_CREDITS = {
+  connections: {
+    inspired: { url: 'https://www.nytimes.com/games/connections', linkKey: 'footer.credit.link.connections' },
+    viInstructions: true,
+  },
+  strands: {
+    inspired: { url: 'https://www.nytimes.com/games/strands', linkKey: 'footer.credit.link.strands' },
+    viInstructions: true,
+  },
+  catfishing: {
+    inspired: { url: 'https://catfishing.net', linkKey: 'footer.credit.link.catfishing' },
+    wiki: true,
+  },
+};
+
+// Generic NYT link used when more than one NYT game is in scope (home/editor),
+// so we don't stack two near-identical "inspired by" lines.
+const GENERIC_NYT = { url: 'https://www.nytimes.com/games', linkKey: 'footer.credit.link.nyt' };
+const WIKI_URL = 'https://harrypotter.fandom.com';
+
+// Resolve the games in scope: the page's list, or all known games as a fallback
+// for pages (home, editor) that don't name one.
+function footerScope(games) {
+  return Array.isArray(games) && games.length
+    ? games.filter((g) => FOOTER_CREDITS[g])
+    : Object.keys(FOOTER_CREDITS);
 }
 
-// The NYT credit interpolates a link into the translated string, so it can't
-// use plain data-i18n. Rebuild it whenever the language changes.
-function updateFooterNytLine() {
-  const line = document.querySelector('[data-slot="footer-nyt"]');
-  if (!line) return;
-  const linkText = escapeHtml(t('footer.credit.nyt.linkText'));
-  const link = `<a href="https://www.nytimes.com/games/connections" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
-  const template = t('footer.credit.nyt');
-  // Split on {link} so we can safely escape the surrounding translation text.
-  const parts = template.split('{link}');
-  line.innerHTML = parts.map(escapeHtml).join(link);
+// The credit lines interpolate a link into the translated string, so they can't
+// use plain data-i18n. Rebuild from scratch on first render and on language flip.
+function renderFooter(games) {
+  const el = document.querySelector('[data-slot="footer"]');
+  if (!el) return;
+  const scope = footerScope(games);
+  const lines = [];
+
+  // "Inspired by" lines. NYT games collapse to one generic link when several
+  // are in scope; a single NYT game links to its own page.
+  const nytGames = scope.filter((g) => g !== 'catfishing');
+  if (nytGames.length === 1) {
+    const c = FOOTER_CREDITS[nytGames[0]].inspired;
+    lines.push(creditLine('footer.credit.inspired', c.url, c.linkKey));
+  } else if (nytGames.length > 1) {
+    lines.push(creditLine('footer.credit.inspired', GENERIC_NYT.url, GENERIC_NYT.linkKey));
+  }
+  if (scope.includes('catfishing')) {
+    const c = FOOTER_CREDITS.catfishing.inspired;
+    lines.push(creditLine('footer.credit.inspired', c.url, c.linkKey));
+  }
+
+  // Harry Potter Wiki data-source credit (Catfishing only).
+  if (scope.some((g) => FOOTER_CREDITS[g].wiki)) {
+    lines.push(creditLine('footer.credit.wiki', WIKI_URL, 'footer.credit.link.wiki'));
+  }
+
+  // Vietnamese-instructions credit (Connections + Strands only).
+  if (scope.some((g) => FOOTER_CREDITS[g].viInstructions)) {
+    lines.push(instructionsLine());
+  }
+
+  el.innerHTML = lines.map((html) => `<p class="footer-credit">${html}</p>`).join('');
+}
+
+// Interpolate a link into a translated {link} template, escaping the surrounding
+// translation text (and the URL) so the result is always safe.
+function creditLine(templateKey, url, linkKey) {
+  const linkText = escapeHtml(t(linkKey));
+  const link = `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
+  return t(templateKey).split('{link}').map(escapeHtml).join(link);
 }
 
 // Instructions credit: interpolate a styled (blue, bold) name span, no link.
-function updateFooterInstructionsLine() {
-  const line = document.querySelector('[data-slot="footer-instructions"]');
-  if (!line) return;
+function instructionsLine() {
   const name = '<span class="credit-name">thu_nguyen_209</span>';
-  const template = t('footer.credit.instructions');
-  const parts = template.split('{name}');
-  line.innerHTML = parts.map(escapeHtml).join(name);
+  return t('footer.credit.instructions').split('{name}').map(escapeHtml).join(name);
 }
 
 // Focusable-element selector for the trap. Excludes disabled controls and
@@ -220,7 +270,7 @@ export function initChrome({ puzzleDefaultTheme, games } = {}) {
   initTheme(puzzleDefaultTheme);
   initI18n();
   renderHeader();
-  renderFooter();
+  renderFooter(games);
   renderInfoModal(games);
   applyTranslations(document);
   wireActions();
@@ -229,7 +279,6 @@ export function initChrome({ puzzleDefaultTheme, games } = {}) {
   window.addEventListener('lang-changed', () => {
     updateThemeButton();
     updateLangButton();
-    updateFooterNytLine();
-    updateFooterInstructionsLine();
+    renderFooter(games);
   });
 }
