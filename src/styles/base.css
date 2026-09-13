@@ -336,6 +336,9 @@ input, textarea, select { font: inherit; color: inherit; }
   color: var(--fg);
 }
 .modal-body p + p { margin-top: 10px; }
+/* Space each game section off the one above it (multi-game info modals only;
+   single-game pages render just one section, so this never fires there). */
+.modal-body section + section h3 { margin-top: 24px; }
 .modal-body strong, .modal-body em { color: var(--fg); }
 
 /* ============== HOME ============== */

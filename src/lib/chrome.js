@@ -34,13 +34,13 @@ function renderHeader() {
   updateLangButton();
 }
 
-// Footer credit is game-aware. Each game contributes its own credit lines;
-// a page tells us which game(s) it is via initChrome({ games }). Play pages
-// pass a single game; home/editor pass none, so we credit all known games.
-// Only Connections and Strands descend from NYT; Catfishing is inspired by
+// Footer credit is game-aware. A page tells us which game it is via
+// initChrome({ games }); each game contributes its own credit lines. Only
+// Connections and Strands descend from NYT; Catfishing is inspired by
 // catfishing.net and draws its clue categories from the Harry Potter Wiki.
 // Vietnamese instructions (by thu_nguyen_209) exist only for Connections and
-// Strands, so that line is suppressed on Catfishing.
+// Strands, so that line is suppressed on Catfishing. Non-game pages (home,
+// editor) pass no game and carry no credits at all — see renderFooter.
 const FOOTER_CREDITS = {
   connections: {
     inspired: { url: 'https://www.nytimes.com/games/connections', linkKey: 'footer.credit.link.connections' },
@@ -56,38 +56,22 @@ const FOOTER_CREDITS = {
   },
 };
 
-// Generic NYT link used when more than one NYT game is in scope (home/editor),
-// so we don't stack two near-identical "inspired by" lines.
-const GENERIC_NYT = { url: 'https://www.nytimes.com/games', linkKey: 'footer.credit.link.nyt' };
 const WIKI_URL = 'https://harrypotter.fandom.com';
-
-// Resolve the games in scope: the page's list, or all known games as a fallback
-// for pages (home, editor) that don't name one.
-function footerScope(games) {
-  return Array.isArray(games) && games.length
-    ? games.filter((g) => FOOTER_CREDITS[g])
-    : Object.keys(FOOTER_CREDITS);
-}
 
 // The credit lines interpolate a link into the translated string, so they can't
 // use plain data-i18n. Rebuild from scratch on first render and on language flip.
 function renderFooter(games) {
   const el = document.querySelector('[data-slot="footer"]');
   if (!el) return;
-  const scope = footerScope(games);
+  // Credits belong to games. Pages that name no game (home, editor) stay
+  // uncluttered — clear the footer and stop.
+  const scope = Array.isArray(games) ? games.filter((g) => FOOTER_CREDITS[g]) : [];
+  if (!scope.length) { el.innerHTML = ''; return; }
   const lines = [];
 
-  // "Inspired by" lines. NYT games collapse to one generic link when several
-  // are in scope; a single NYT game links to its own page.
-  const nytGames = scope.filter((g) => g !== 'catfishing');
-  if (nytGames.length === 1) {
-    const c = FOOTER_CREDITS[nytGames[0]].inspired;
-    lines.push(creditLine('footer.credit.inspired', c.url, c.linkKey));
-  } else if (nytGames.length > 1) {
-    lines.push(creditLine('footer.credit.inspired', GENERIC_NYT.url, GENERIC_NYT.linkKey));
-  }
-  if (scope.includes('catfishing')) {
-    const c = FOOTER_CREDITS.catfishing.inspired;
+  // "Inspired by" line(s), in scope order.
+  for (const g of scope) {
+    const c = FOOTER_CREDITS[g].inspired;
     lines.push(creditLine('footer.credit.inspired', c.url, c.linkKey));
   }
 
